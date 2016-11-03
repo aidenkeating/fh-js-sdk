@@ -1,4 +1,4 @@
-appForm.web.ajax = function (module) {
+appForm.web.ajax = function(module) {
   module = typeof $fh !== 'undefined' && $fh.__ajax ? $fh.__ajax : _myAjax;
   module.get = get;
   module.post = post;
@@ -11,11 +11,11 @@ appForm.web.ajax = function (module) {
       'url': url,
       'type': 'GET',
       'dataType': 'json',
-      'success': function (data, text) {
+      'success': function(data, text) {
         $fh.forms.log.d("Ajax get", url, "Success");
         cb(null, data);
       },
-      'error': function (xhr, status, err) {
+      'error': function(xhr, status, err) {
         $fh.forms.log.e("Ajax get", url, "Fail", xhr, status, err);
         cb(xhr);
       }
@@ -37,19 +37,19 @@ appForm.web.ajax = function (module) {
       }
     }
     var param = {
-        'url': url,
-        'type': 'POST',
-        'data': body,
-        'dataType': 'json',
-        'success': function (data, text) {
-          $fh.forms.log.d("Ajax post ", url, " Success");
-          cb(null, data);
-        },
-        'error': function (xhr, status, err) {
-          $fh.forms.log.e("Ajax post ", url, " Fail ", xhr, status, err);
-          cb(xhr);
-        }
-      };
+      'url': url,
+      'type': 'POST',
+      'data': body,
+      'dataType': 'json',
+      'success': function(data, text) {
+        $fh.forms.log.d("Ajax post ", url, " Success");
+        cb(null, data);
+      },
+      'error': function(xhr, status, err) {
+        $fh.forms.log.e("Ajax post ", url, " Fail ", xhr, status, err);
+        cb(xhr);
+      }
+    };
     if (file === false) {
       param.contentType = 'application/json';
     }

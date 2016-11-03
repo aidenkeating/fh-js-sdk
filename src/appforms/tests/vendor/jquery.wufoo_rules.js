@@ -29,24 +29,24 @@
     if (['checkbox', 'radio'].indexOf(type) > -1) {
       switch (filter) {
         // ignore fieldValue as value will either be true/false depending on checked status
-        case 'is':
-          retVal = value;
-          break;
-        case 'is not':
-          retVal = value;
-          break;
+      case 'is':
+        retVal = value;
+        break;
+      case 'is not':
+        retVal = value;
+        break;
       }
     } else if (['money', 'number'].indexOf(type) > -1) {
       switch (filter) {
-        case 'is equal to':
-          retVal = fieldValue === value;
-          break;
-        case 'is greater than':
-          retVal = fieldValue < value;
-          break;
-        case 'is less than':
-          retVal = fieldValue > value;
-          break;
+      case 'is equal to':
+        retVal = fieldValue === value;
+        break;
+      case 'is greater than':
+        retVal = fieldValue < value;
+        break;
+      case 'is less than':
+        retVal = fieldValue > value;
+        break;
       }
     } else if (['date', 'time'].indexOf(type) > -1) {
       // TODO:
@@ -63,41 +63,41 @@
         fieldValueDate = new Date(fieldValueDate.getFullYear(), fieldValueDate.getUTCMonth(), fieldValueDate.getUTCDate());
       }
       switch (filter) {
-        case 'is on': // date only
+      case 'is on': // date only
           // year/month/date match
-          retVal = valueDate.getTime() === fieldValueDate.getTime();
-          break;
-        case 'is before':
-          retVal = valueDate.getTime() < fieldValueDate.getTime();
-          break;
-        case 'is after':
-          retVal = valueDate.getTime() > fieldValueDate.getTime();
-          break;
-        case 'is at': // time only
+        retVal = valueDate.getTime() === fieldValueDate.getTime();
+        break;
+      case 'is before':
+        retVal = valueDate.getTime() < fieldValueDate.getTime();
+        break;
+      case 'is after':
+        retVal = valueDate.getTime() > fieldValueDate.getTime();
+        break;
+      case 'is at': // time only
           // hours/min/sec/ms match
-          retVal = valueDate.getTime() === fieldValueDate.getTime();
-          break;
+        retVal = valueDate.getTime() === fieldValueDate.getTime();
+        break;
       }
     } else { // assume some form of text field
       switch (filter) {
-        case 'is':
-          retVal = fieldValue === value;
-          break;
-        case 'is not':
-          retVal = fieldValue !== value;
-          break;
-        case 'contains':
-          retVal = value.indexOf(fieldValue) > -1;
-          break;
-        case 'does not contain':
-          retVal = value.indexOf(fieldValue) === -1;
-          break;
-        case 'begins with':
-          retVal = value.indexOf(fieldValue) === 0;
-          break;
-        case 'ends with':
-          retVal = value.indexOf(fieldValue) === (value.length - fieldValue.length);
-          break;
+      case 'is':
+        retVal = fieldValue === value;
+        break;
+      case 'is not':
+        retVal = fieldValue !== value;
+        break;
+      case 'contains':
+        retVal = value.indexOf(fieldValue) > -1;
+        break;
+      case 'does not contain':
+        retVal = value.indexOf(fieldValue) === -1;
+        break;
+      case 'begins with':
+        retVal = value.indexOf(fieldValue) === 0;
+        break;
+      case 'ends with':
+        retVal = value.indexOf(fieldValue) === (value.length - fieldValue.length);
+        break;
       }
     }
 
@@ -114,7 +114,7 @@
     }
     var elEvents = events[elType];
 
-    el.bind(elEvents, function (e) {
+    el.bind(elEvents, function(e) {
       eventHandler.call(this);
     });
   }
@@ -124,22 +124,22 @@
     rules = rules || (jqEl.data('wufoo_rules') || []);
 
     var value = jqEl.is(typeSelector.text) ? jqEl.val() : jqEl.is(':checked');
-    $.each(rules, function (index, rule) {
+    $.each(rules, function(index, rule) {
       check(value, jqEl, rule);
     });
   }
 
   $.extend($.fn, {
 
-    wufoo_rules : function (command, argument) {
+    wufoo_rules : function(command, argument) {
       var element = this[0];
-      if(!element) {
+      if (!element) {
         $fh.logger.warn('wufoo_rules : element is null');
       }
       if (command) {
         var rules = element ?  $.data(element, 'wufoo_rules') : [];
         rules = rules || [];
-        switch(command) {
+        switch (command) {
         case "add": // add 1 rule
           rules.push(argument);
           $.data(element, 'wufoo_rules', rules);

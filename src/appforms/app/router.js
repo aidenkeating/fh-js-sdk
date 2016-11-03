@@ -1,11 +1,11 @@
-if (typeof App =="undefined"){
-    App={};
+if (typeof App =="undefined") {
+  App={};
 }
 var configView;
 App.Router = Backbone.Router.extend({
 
-  /* 
- 
+  /*
+
   Known unsupported rules/validation
   - text ranges i.e. 'Range' option e.g. input text/words must be between 1 & 4 long (rules n/a via api or rules json)
   - number ranges i.e. 'Range' option e.g. number value/digits must be between 2 & 8 (rules n/a via api or rules json)
@@ -33,7 +33,7 @@ App.Router = Backbone.Router.extend({
     "config":"config",
     "": "startApp" // Default route
   },
-  config:function(){
+  config:function() {
     configView= new $fh.forms.backbone.ConfigView();
     $("body").html(configView.render().$el);
   },
@@ -64,10 +64,10 @@ App.Router = Backbone.Router.extend({
     $('#formList').addClass('hidden');
     $('#page').removeClass('hidden');
     var formView = new FormView({parentEl:$("#backbone #page")});
-      formView.loadForm({formId:"527d4539639f521e0a000004"}, function(){
+    formView.loadForm({formId:"527d4539639f521e0a000004"}, function() {
       formView.render();
      // Backbone.history.navigate('form',true);
-    })
+    });
   },
 
   checkSubmissions: function() {
@@ -81,15 +81,15 @@ App.Router = Backbone.Router.extend({
         var fields = sub.get('formFields');
         self.showForm();
         var formView = new FormView({parentEl:$("#backbone #page")});
-        formView.loadForm({formId:"527d4539639f521e0a000004",submission:sub},function(){
+        formView.loadForm({formId:"527d4539639f521e0a000004",submission:sub},function() {
           formView.render();
         });
       });
 
-    })
+    });
   },
 
-  fromJson: function(){
+  fromJson: function() {
     $('#page').addClass('hidden');
     $('#formList').addClass('hidden');
     $('#jsonPage').removeClass('hidden');

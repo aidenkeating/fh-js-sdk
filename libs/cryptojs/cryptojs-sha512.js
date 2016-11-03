@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function () {
+(function() {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -65,7 +65,7 @@
 
   // Reusable objects
   var W = [];
-  (function () {
+  (function() {
     for (var i = 0; i < 80; i++) {
       W[i] = X64Word_create();
     }
@@ -75,7 +75,7 @@
    * SHA-512 hash algorithm.
    */
   var SHA512 = C_algo.SHA512 = Hasher.extend({
-    _doReset: function () {
+    _doReset: function() {
       this._hash = new X64WordArray.init([
         new X64Word.init(0x6a09e667, 0xf3bcc908), new X64Word.init(0xbb67ae85, 0x84caa73b),
         new X64Word.init(0x3c6ef372, 0xfe94f82b), new X64Word.init(0xa54ff53a, 0x5f1d36f1),
@@ -84,7 +84,7 @@
       ]);
     },
 
-    _doProcessBlock: function (M, offset) {
+    _doProcessBlock: function(M, offset) {
       // Shortcuts
       var H = this._hash.words;
 
@@ -242,7 +242,7 @@
       H7.high = (H7h + hh + ((H7l >>> 0) < (hl >>> 0) ? 1 : 0));
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcuts
       var data = this._data;
       var dataWords = data.words;
@@ -266,7 +266,7 @@
       return hash;
     },
 
-    clone: function () {
+    clone: function() {
       var clone = Hasher.clone.call(this);
       clone._hash = this._hash.clone();
 

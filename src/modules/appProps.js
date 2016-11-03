@@ -10,16 +10,16 @@ var load = function(cb) {
   var doc_url = document.location.href;
   var url_params = qs(doc_url.replace(/#.*?$/g, ''));
   var url_props = {};
-  
+
   //only use fh_ prefixed params
-  for(var key in url_params){
-    if(url_params.hasOwnProperty(key) ){
-      if(key.indexOf('fh_') === 0){
-        url_props[key.substr(3)] = decodeURI(url_params[key]); 
+  for (var key in url_params) {
+    if (url_params.hasOwnProperty(key) ) {
+      if (key.indexOf('fh_') === 0) {
+        url_props[key.substr(3)] = decodeURI(url_params[key]);
       }
     }
   }
-  
+
   //default properties
   app_props = {
     appid: "000000000000000000000000",
@@ -27,14 +27,14 @@ var load = function(cb) {
     projectid: "000000000000000000000000",
     connectiontag: "0.0.1"
   };
-  
-  function setProps(props){
+
+  function setProps(props) {
     _.extend(app_props, props, url_props);
-    
-    if(typeof url_params.url !== 'undefined'){
-     app_props.host = url_params.url; 
+
+    if (typeof url_params.url !== 'undefined') {
+      app_props.host = url_params.url;
     }
-    
+
     app_props.local = !!(url_props.host || url_params.url);
     cb(null, app_props);
   }
@@ -44,11 +44,11 @@ var load = function(cb) {
     url: config_url,
     dataType: "json",
     success: function(data) {
-      logger.debug("fhconfig = " + JSON.stringify(data));
+      logger.debug(`fhconfig = ${JSON.stringify(data)}`);
       //when load the config file on device, because file:// protocol is used, it will never call fail call back. The success callback will be called but the data value will be null.
       if (null == data) {
         //fh v2 only
-        if(window.fh_app_props){
+        if (window.fh_app_props) {
           return setProps(window.fh_app_props);
         }
         return cb(new Error("app_config_missing"));
@@ -59,10 +59,10 @@ var load = function(cb) {
     },
     error: function(req, statusText, error) {
       //fh v2 only
-      if(window.fh_app_props){
+      if (window.fh_app_props) {
         return setProps(window.fh_app_props);
       }
-      logger.error(consts.config_js + " Not Found");
+      logger.error(`${consts.config_js} Not Found`);
       cb(new Error("app_config_missing"));
     }
   });

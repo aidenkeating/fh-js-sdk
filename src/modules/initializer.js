@@ -79,12 +79,12 @@ var loadCloudProps = function(app_props, callback) {
       "error": function(req, statusText, error) {
         var errormsg = "unknown";
         if (req) {
-          errormsg = req.status + " - " + req.responseText;
+          errormsg = `${req.status} - ${req.responseText}`;
         }
-        logger.error("App init returned error : " + errormsg);
+        logger.error(`App init returned error : ${errormsg}`);
         //use the cached host if we have a copy
         if (savedHost) {
-          logger.info("Using cached host: " + JSON.stringify(savedHost));
+          logger.info(`Using cached host: ${JSON.stringify(savedHost)}`);
           if (callback) {
             callback(null, {
               cloud: savedHost
@@ -106,7 +106,7 @@ var loadCloudProps = function(app_props, callback) {
   };
 
   var storage = null;
-  var path = app_props.host + consts.boxprefix + "app/init";
+  var path = `${app_props.host + consts.boxprefix}app/init`;
   try {
     storage = data.getStorage("fh_init_storage", typeof Titanium !== "undefined"?['titanium']:null);
     storage.get('fh_init', function(storage_res) {

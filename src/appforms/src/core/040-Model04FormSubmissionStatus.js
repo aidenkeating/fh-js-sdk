@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   module.FormSubmissionStatus = FormSubmissionStatus;
   function FormSubmissionStatus(submissionTask) {

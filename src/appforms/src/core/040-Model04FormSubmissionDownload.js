@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   module.FormSubmissionDownload = FormSubmissionDownload;
   function FormSubmissionDownload(uploadTask) {
@@ -8,7 +8,7 @@ appForm.models = function (module) {
     });
   }
   appForm.utils.extend(FormSubmissionDownload, Model);
-  FormSubmissionDownload.prototype.getSubmissionId = function () {
+  FormSubmissionDownload.prototype.getSubmissionId = function() {
     return this.get('data').get("submissionId", "not-set");
   };
   return module;

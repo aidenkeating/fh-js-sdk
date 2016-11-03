@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   function Model(opt) {
     this.props = {
       '_id': null,
@@ -14,7 +14,7 @@ appForm.models = function (module) {
     }
     this.touch();
   }
-  Model.prototype.on = function (name, func) {
+  Model.prototype.on = function(name, func) {
     if (!this.events[name]) {
       this.events[name] = [];
     }
@@ -22,7 +22,7 @@ appForm.models = function (module) {
       this.events[name].push(func);
     }
   };
-  Model.prototype.off = function (name, func) {
+  Model.prototype.off = function(name, func) {
     if (this.events[name]) {
       if (this.events[name].indexOf(func) >= 0) {
         this.events[name].splice(this.events[name].indexOf(func), 1);
@@ -30,14 +30,14 @@ appForm.models = function (module) {
     }
   };
 
-  Model.prototype.getType = function(){
+  Model.prototype.getType = function() {
     return this.get('_type');
   };
 
-  Model.prototype.clearEvents = function(){
+  Model.prototype.clearEvents = function() {
     this.events = {};
   };
-  Model.prototype.emit = function () {
+  Model.prototype.emit = function() {
     var args = Array.prototype.slice.call(arguments, 0);
     var eventName = args.shift();
     var funcs = this.events[eventName];
@@ -50,7 +50,7 @@ appForm.models = function (module) {
         func.apply(this, args);
         //Also emitting a global event if the
         var type = this.getType();
-        if(type){
+        if (type) {
           var globalEmitName = this.utils.generateGlobalEventName(type, eventName);
           globalArgs.unshift(globalEmitName);
           $fh.forms.emit.apply(this, globalArgs);
@@ -59,29 +59,29 @@ appForm.models = function (module) {
       }
     }
   };
-  Model.prototype.getProps = function () {
+  Model.prototype.getProps = function() {
     return this.props;
   };
-  Model.prototype.get = function (key, def) {
+  Model.prototype.get = function(key, def) {
     return typeof this.props[key] === 'undefined' ? def : this.props[key];
   };
-  Model.prototype.set = function (key, val) {
+  Model.prototype.set = function(key, val) {
     this.props[key] = val;
   };
-  Model.prototype.setLocalId = function (localId) {
+  Model.prototype.setLocalId = function(localId) {
     this.set('_ludid', localId);
   };
-  Model.prototype.getLocalId = function () {
+  Model.prototype.getLocalId = function() {
     return this.get('_ludid');
   };
-  Model.prototype.toJSON = function () {
+  Model.prototype.toJSON = function() {
     var retJSON = {};
     for (var key in this.props) {
       retJSON[key]= this.props[key];
     }
     return retJSON;
   };
-  Model.prototype.fromJSON = function (json) {
+  Model.prototype.fromJSON = function(json) {
     if (typeof json === 'string') {
       this.fromJSONStr(json);
     } else {
@@ -91,7 +91,7 @@ appForm.models = function (module) {
     }
     this.touch();
   };
-  Model.prototype.fromJSONStr = function (jsonStr) {
+  Model.prototype.fromJSONStr = function(jsonStr) {
     try {
       var json = JSON.parse(jsonStr);
       this.fromJSON(json);
@@ -100,13 +100,13 @@ appForm.models = function (module) {
     }
   };
 
-  Model.prototype.touch = function () {
+  Model.prototype.touch = function() {
     this.set('_localLastUpdate', appForm.utils.getTime());
   };
-  Model.prototype.getLocalUpdateTimeStamp = function () {
+  Model.prototype.getLocalUpdateTimeStamp = function() {
     return this.get('_localLastUpdate');
   };
-  Model.prototype.genLocalId = function () {
+  Model.prototype.genLocalId = function() {
     return appForm.utils.localId(this);
   };
   /**
@@ -115,7 +115,7 @@ appForm.models = function (module) {
      * @param  {Function} cb (err,currentModel)
      * @return {[type]}      [description]
      */
-  Model.prototype.refresh = function (fromRemote, cb) {
+  Model.prototype.refresh = function(fromRemote, cb) {
     var dataAgent = this.getDataAgent();
     var that = this;
     if (typeof cb === 'undefined') {
@@ -136,14 +136,14 @@ appForm.models = function (module) {
       }
     }
   };
-  Model.prototype.attemptRefresh=function(cb){
+  Model.prototype.attemptRefresh=function(cb) {
     var dataAgent = this.getDataAgent();
     var self=this;
-    dataAgent.attemptRead(this,function(err,res){
-      if (!err && res){
+    dataAgent.attemptRead(this,function(err,res) {
+      if (!err && res) {
         self.fromJSON(res);
         cb(null,self);
-      }else{
+      } else {
         cb(err,self);
       }
     });
@@ -153,10 +153,10 @@ appForm.models = function (module) {
      * @param  {Function} cb (err, curModel)
      * @return {[type]}      [description]
      */
-  Model.prototype.loadLocal = function (cb) {
+  Model.prototype.loadLocal = function(cb) {
     var localStorage = appForm.stores.localStorage;
     var that = this;
-    localStorage.read(this, function (err, res) {
+    localStorage.read(this, function(err, res) {
       if (err) {
         cb(err);
       } else {
@@ -172,7 +172,7 @@ appForm.models = function (module) {
      * @param  {Function} cb [description]
      * @return {[type]}      [description]
      */
-  Model.prototype.saveLocal = function (cb) {
+  Model.prototype.saveLocal = function(cb) {
     var localStorage = appForm.stores.localStorage;
     localStorage.upsert(this, cb);
   };
@@ -181,17 +181,17 @@ appForm.models = function (module) {
      * @param  {Function} cb [description]
      * @return {[type]}      [description]
      */
-  Model.prototype.clearLocal = function (cb) {
+  Model.prototype.clearLocal = function(cb) {
     var localStorage = appForm.stores.localStorage;
     localStorage.removeEntry(this, cb);
   };
-  Model.prototype.getDataAgent = function () {
+  Model.prototype.getDataAgent = function() {
     if (!this.dataAgent) {
       this.setDataAgent(appForm.stores.dataAgent);
     }
     return this.dataAgent;
   };
-  Model.prototype.setDataAgent = function (dataAgent) {
+  Model.prototype.setDataAgent = function(dataAgent) {
     this.dataAgent = dataAgent;
   };
   module.Model = Model;

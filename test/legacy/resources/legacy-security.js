@@ -217,7 +217,7 @@ function hexToDigit(s) {
   var sl = Math.min(s.length, 4);
   for (var i = 0; i < sl; ++i) {
     result <<= 4;
-    result |= charToHex(s.charCodeAt(i))
+    result |= charToHex(s.charCodeAt(i));
   }
   return result;
 }
@@ -696,7 +696,7 @@ function encryptedString(key, s)
     }
     var crypt = key.barrett.powMod(block, key.e);
     var text = key.radix == 16 ? biToHex(crypt) : biToString(crypt, key.radix);
-    result += text + " ";
+    result += `${text} `;
   }
   return result.substring(0, result.length - 1); // Remove last space.
 }
@@ -734,7 +734,7 @@ function decryptedString(key, s) {
  */
 var __Crypto = __Crypto || {};
 function initPackages(__scope) {
-  var __package = function (packageRoot, pathString) {
+  var __package = function(packageRoot, pathString) {
     var paths = pathString.split(".");
     var currentPackage = packageRoot;
     for (var i = 0; i < paths.length; i++) {
@@ -747,7 +747,7 @@ function initPackages(__scope) {
     return currentPackage;
   };
 
-  var __export = function (packageRoot, pathString, object) {
+  var __export = function(packageRoot, pathString, object) {
     var paths = pathString.split(".");
     var currentPackage = packageRoot;
     for (var i = 0; i < paths.length; i++) {
@@ -756,27 +756,25 @@ function initPackages(__scope) {
         if (currentPackage[id] == null) {
           currentPackage[id] = {};
         }
+      } else if (currentPackage[id] == null) {
+        currentPackage[id] = object;
       } else {
-        if (currentPackage[id] == null) {
-          currentPackage[id] = object;
-        } else {
-          throw "The specified package path is already defined. " + pathString;
-        }
+        throw `The specified package path is already defined. ${pathString}`;
       }
       currentPackage = currentPackage[id];
     }
     return currentPackage;
   };
 
-  var __import = function (packageRoot, pathString, object) {
+  var __import = function(packageRoot, pathString, object) {
     var paths = pathString.split(".");
     var currentPackage = packageRoot;
     var currentPath = "[package root]";
     for (var i = 0; i < paths.length; i++) {
       var id = paths[i];
-      currentPath += "." + id;
+      currentPath += `.${id}`;
       if (currentPackage[id] == null) {
-        throw pathString + " is not found. " + currentPath + " is null in " + __CURRENT_UNIT.unit_name + ".";
+        throw `${pathString} is not found. ${currentPath} is null in ${__CURRENT_UNIT.unit_name}.`;
       }
       currentPackage = currentPackage[id];
     }
@@ -785,19 +783,19 @@ function initPackages(__scope) {
 
   var __DEFINED_UNITS = {};
   var __CURRENT_UNIT = "";
-  var __unit = function (unit_name) {
+  var __unit = function(unit_name) {
     __DEFINED_UNITS[unit_name] = true;
     __CURRENT_UNIT = {
       unit_name: unit_name,
       requring_units: {}
     };
-  }
-  var __uses = function (unit_name) {
+  };
+  var __uses = function(unit_name) {
     if (__DEFINED_UNITS[unit_name]) {
       __CURRENT_UNIT.requring_units[unit_name] = true;
       return true;
     } else {
-      throw "Unit Not Found Error : " + __CURRENT_UNIT.unit_name + " requires " + unit_name;
+      throw `Unit Not Found Error : ${__CURRENT_UNIT.unit_name} requires ${unit_name}`;
     }
   };
 
@@ -876,7 +874,7 @@ function initBinary(packageRoot) {
 
   function get_a2i(c) {
     var result = (0 <= c) && (c < a2i.length) ? a2i[c] : -1;
-    if (result < 0) throw "Illegal character " + c;
+    if (result < 0) throw `Illegal character ${c}`;
     return result;
   }
 
@@ -1003,7 +1001,7 @@ function initBinary(packageRoot) {
     //if ( i < 0 ) i+=256;
     i &= 0xff;
     var result = i.toString(16);
-    return (result.length < 2) ? "0" + result : result;
+    return (result.length < 2) ? `0${result}` : result;
   }
 
   function base16(data, columns, delim) {
@@ -1230,7 +1228,7 @@ function initBinary(packageRoot) {
 
   function ba2ia_be(ba) {
     var length = (ba.length + 3) >> 2;
-    var ia = new Array(length);;
+    var ia = new Array(length);
     for (var ii = 0, bi = 0; ii < ia.length && bi < ba.length;) {
       ia[ii++] = (bi < ba.length ? (ba[bi++] << 24) : 0) | (bi < ba.length ? (ba[bi++] << 16) : 0) | (bi < ba.length ? (ba[bi++] << 8) : 0) | (bi < ba.length ? (ba[bi++] /*<< 0*/ ) : 0);
     }
@@ -1252,7 +1250,7 @@ function initBinary(packageRoot) {
 
   function ba2ia_le(ba) {
     var length = (ba.length + 3) >> 2;
-    var ia = new Array(length);;
+    var ia = new Array(length);
     for (var ii = 0, bi = 0; ii < ia.length && bi < ba.length;) {
       ia[ii++] = (bi < ba.length ? (ba[bi++] /*<< 0*/ ) : 0) | (bi < ba.length ? (ba[bi++] << 8) : 0) | (bi < ba.length ? (ba[bi++] << 16) : 0) | (bi < ba.length ? (ba[bi++] << 24) : 0);
     }
@@ -1275,7 +1273,7 @@ function initBinary(packageRoot) {
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   function mktst(encode, decode) {
-    return function (trial, from, to) {
+    return function(trial, from, to) {
       var flg = true;
       for (var i = 0; i < trial; i++) {
         for (var j = from; j < to; j++) {
@@ -1292,13 +1290,13 @@ function initBinary(packageRoot) {
           // trace( "in:"+arr);
           // trace( "base64:"+s );
           // trace( "out:"+b );
-          trace("in :" + arr.length + ":" + base16_encode(arr));
-          trace("b64:" + s.length + ":" + s);
-          trace("out:" + b.length + ":" + base16_encode(arr));
+          trace(`in :${arr.length}:${base16_encode(arr)}`);
+          trace(`b64:${s.length}:${s}`);
+          trace(`out:${b.length}:${base16_encode(arr)}`);
           if (equals(arr, b)) {
-            trace("OK! ( " + i + "," + j + ")");
+            trace(`OK! ( ${i},${j})`);
           } else {
-            trace("ERR ( " + i + "," + j + ")");
+            trace(`ERR ( ${i},${j})`);
             flg = false;
           }
           trace("-----------");
@@ -1457,7 +1455,7 @@ function initBlockCipher(packageRoot) {
     var algorithmName = null;
     //var idx2          = -1;
     //
-    algorithmName = "rijndael"
+    algorithmName = "rijndael";
 
     var aesNk;
     var aesNr;
@@ -1725,7 +1723,7 @@ function initBlockCipher(packageRoot) {
 
     var srpS = [
 
-      function (r, x0, x1, x2, x3, x4) {
+      function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x3];
         r[x3] |= r[x0];
         r[x0] ^= r[x4];
@@ -1743,7 +1741,7 @@ function initBlockCipher(packageRoot) {
         r[x1] = ~r[x1];
         r[x2] ^= r[x4];
         r[x1] ^= r[x2];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x1];
         r[x1] ^= r[x0];
         r[x0] ^= r[x3];
@@ -1762,7 +1760,7 @@ function initBlockCipher(packageRoot) {
         r[x0] = ~r[x0];
         r[x0] ^= r[x2];
         r[x4] ^= r[x1];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x3] = ~r[x3];
         r[x1] ^= r[x0];
         r[x4] = r[x0];
@@ -1780,7 +1778,7 @@ function initBlockCipher(packageRoot) {
         r[x4] ^= r[x0];
         r[x0] ^= r[x2];
         r[x1] |= r[x2];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x1];
         r[x1] ^= r[x3];
         r[x3] |= r[x0];
@@ -1800,7 +1798,7 @@ function initBlockCipher(packageRoot) {
         r[x4] ^= r[x3];
         r[x0] ^= r[x3];
         r[x3] ^= r[x2];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x3];
         r[x3] &= r[x0];
         r[x0] ^= r[x4];
@@ -1818,7 +1816,7 @@ function initBlockCipher(packageRoot) {
         r[x3] |= r[x1];
         r[x1] = ~r[x1];
         r[x3] ^= r[x0];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x1];
         r[x1] |= r[x0];
         r[x2] ^= r[x1];
@@ -1836,7 +1834,7 @@ function initBlockCipher(packageRoot) {
         r[x1] ^= r[x2];
         r[x2] &= r[x0];
         r[x3] ^= r[x2];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x1];
         r[x3] ^= r[x0];
         r[x1] ^= r[x2];
@@ -1854,7 +1852,7 @@ function initBlockCipher(packageRoot) {
         r[x3] &= r[x1];
         r[x3] ^= r[x0];
         r[x1] ^= r[x2];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x1] = ~r[x1];
         r[x4] = r[x1];
         r[x0] = ~r[x0];
@@ -1878,7 +1876,7 @@ function initBlockCipher(packageRoot) {
 
     var srpSI = [
 
-      function (r, x0, x1, x2, x3, x4) {
+      function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x3];
         r[x1] ^= r[x0];
         r[x3] |= r[x1];
@@ -1896,7 +1894,7 @@ function initBlockCipher(packageRoot) {
         r[x1] ^= r[x0];
         r[x0] ^= r[x2];
         r[x4] ^= r[x3];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x1] ^= r[x3];
         r[x4] = r[x0];
         r[x0] ^= r[x2];
@@ -1914,7 +1912,7 @@ function initBlockCipher(packageRoot) {
         r[x2] ^= r[x4];
         r[x1] ^= r[x0];
         r[x4] ^= r[x1];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x2] ^= r[x1];
         r[x4] = r[x3];
         r[x3] = ~r[x3];
@@ -1932,7 +1930,7 @@ function initBlockCipher(packageRoot) {
         r[x2] ^= r[x3];
         r[x3] ^= r[x4];
         r[x4] ^= r[x0];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x2] ^= r[x1];
         r[x4] = r[x1];
         r[x1] &= r[x2];
@@ -1951,7 +1949,7 @@ function initBlockCipher(packageRoot) {
         r[x4] ^= r[x3];
         r[x3] ^= r[x0];
         r[x0] ^= r[x1];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x2] ^= r[x3];
         r[x4] = r[x0];
         r[x0] &= r[x1];
@@ -1970,7 +1968,7 @@ function initBlockCipher(packageRoot) {
         r[x1] &= r[x0];
         r[x4] ^= r[x1];
         r[x0] ^= r[x3];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x1];
         r[x1] |= r[x2];
         r[x2] ^= r[x4];
@@ -1991,7 +1989,7 @@ function initBlockCipher(packageRoot) {
         r[x0] ^= r[x2];
         r[x2] ^= r[x4];
         r[x4] ^= r[x3];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x0] ^= r[x2];
         r[x4] = r[x0];
         r[x0] &= r[x3];
@@ -2009,7 +2007,7 @@ function initBlockCipher(packageRoot) {
         r[x4] ^= r[x2];
         r[x0] ^= r[x1];
         r[x2] ^= r[x0];
-      }, function (r, x0, x1, x2, x3, x4) {
+      }, function(r, x0, x1, x2, x3, x4) {
         r[x4] = r[x3];
         r[x3] &= r[x0];
         r[x0] ^= r[x2];
@@ -2099,7 +2097,7 @@ function initBlockCipher(packageRoot) {
 
       srpK(r, 0, 1, 2, 3, 0);
       var n = 0,
-          m = srpEc[n];
+        m = srpEc[n];
       while (srpS[n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
         m = srpEc[++n];
         srpLK(r, m % 5, m % 7, m % 11, m % 13, m % 17, n);
@@ -2118,7 +2116,7 @@ function initBlockCipher(packageRoot) {
 
       srpK(r, 0, 1, 2, 3, 32);
       var n = 0,
-          m = srpDc[n];
+        m = srpDc[n];
       while (srpSI[7 - n % 8](r, m % 5, m % 7, m % 11, m % 13, m % 17), n < 31) {
         m = srpDc[++n];
         srpKL(r, m % 5, m % 7, m % 11, m % 13, m % 17, 32 - n);
@@ -2172,8 +2170,8 @@ function initBlockCipher(packageRoot) {
     function tfsInit(key) {
       keyBytes = key;
       var i, a, b, c, d, meKey = [],
-          moKey = [],
-          inKey = [];
+        moKey = [],
+        inKey = [];
       var kLen;
       var sKey = [];
       var f01, f5b, fef;
@@ -2246,25 +2244,25 @@ function initBlockCipher(packageRoot) {
 
       function hFun(x, key) {
         var a = getB(x, 0),
-            b = getB(x, 1),
-            c = getB(x, 2),
-            d = getB(x, 3);
+          b = getB(x, 1),
+          c = getB(x, 2),
+          d = getB(x, 3);
         switch (kLen) {
-          case 4:
-            a = q[1][a] ^ getB(key[3], 0);
-            b = q[0][b] ^ getB(key[3], 1);
-            c = q[0][c] ^ getB(key[3], 2);
-            d = q[1][d] ^ getB(key[3], 3);
-          case 3:
-            a = q[1][a] ^ getB(key[2], 0);
-            b = q[1][b] ^ getB(key[2], 1);
-            c = q[0][c] ^ getB(key[2], 2);
-            d = q[0][d] ^ getB(key[2], 3);
-          case 2:
-            a = q[0][q[0][a] ^ getB(key[1], 0)] ^ getB(key[0], 0);
-            b = q[0][q[1][b] ^ getB(key[1], 1)] ^ getB(key[0], 1);
-            c = q[1][q[0][c] ^ getB(key[1], 2)] ^ getB(key[0], 2);
-            d = q[1][q[1][d] ^ getB(key[1], 3)] ^ getB(key[0], 3);
+        case 4:
+          a = q[1][a] ^ getB(key[3], 0);
+          b = q[0][b] ^ getB(key[3], 1);
+          c = q[0][c] ^ getB(key[3], 2);
+          d = q[1][d] ^ getB(key[3], 3);
+        case 3:
+          a = q[1][a] ^ getB(key[2], 0);
+          b = q[1][b] ^ getB(key[2], 1);
+          c = q[0][c] ^ getB(key[2], 2);
+          d = q[0][d] ^ getB(key[2], 3);
+        case 2:
+          a = q[0][q[0][a] ^ getB(key[1], 0)] ^ getB(key[0], 0);
+          b = q[0][q[1][b] ^ getB(key[1], 1)] ^ getB(key[0], 1);
+          c = q[1][q[0][c] ^ getB(key[1], 2)] ^ getB(key[0], 2);
+          d = q[1][q[1][d] ^ getB(key[1], 3)] ^ getB(key[0], 3);
         }
         return m[0][a] ^ m[1][b] ^ m[2][c] ^ m[3][d];
       }
@@ -2312,21 +2310,21 @@ function initBlockCipher(packageRoot) {
       for (i = 0; i < 256; i++) {
         a = b = c = d = i;
         switch (kLen) {
-          case 4:
-            a = q[1][a] ^ getB(sKey[3], 0);
-            b = q[0][b] ^ getB(sKey[3], 1);
-            c = q[0][c] ^ getB(sKey[3], 2);
-            d = q[1][d] ^ getB(sKey[3], 3);
-          case 3:
-            a = q[1][a] ^ getB(sKey[2], 0);
-            b = q[1][b] ^ getB(sKey[2], 1);
-            c = q[0][c] ^ getB(sKey[2], 2);
-            d = q[0][d] ^ getB(sKey[2], 3);
-          case 2:
-            tfsM[0][i] = m[0][q[0][q[0][a] ^ getB(sKey[1], 0)] ^ getB(sKey[0], 0)];
-            tfsM[1][i] = m[1][q[0][q[1][b] ^ getB(sKey[1], 1)] ^ getB(sKey[0], 1)];
-            tfsM[2][i] = m[2][q[1][q[0][c] ^ getB(sKey[1], 2)] ^ getB(sKey[0], 2)];
-            tfsM[3][i] = m[3][q[1][q[1][d] ^ getB(sKey[1], 3)] ^ getB(sKey[0], 3)];
+        case 4:
+          a = q[1][a] ^ getB(sKey[3], 0);
+          b = q[0][b] ^ getB(sKey[3], 1);
+          c = q[0][c] ^ getB(sKey[3], 2);
+          d = q[1][d] ^ getB(sKey[3], 3);
+        case 3:
+          a = q[1][a] ^ getB(sKey[2], 0);
+          b = q[1][b] ^ getB(sKey[2], 1);
+          c = q[0][c] ^ getB(sKey[2], 2);
+          d = q[0][d] ^ getB(sKey[2], 3);
+        case 2:
+          tfsM[0][i] = m[0][q[0][q[0][a] ^ getB(sKey[1], 0)] ^ getB(sKey[0], 0)];
+          tfsM[1][i] = m[1][q[0][q[1][b] ^ getB(sKey[1], 1)] ^ getB(sKey[0], 1)];
+          tfsM[2][i] = m[2][q[1][q[0][c] ^ getB(sKey[1], 2)] ^ getB(sKey[0], 2)];
+          tfsM[3][i] = m[3][q[1][q[1][d] ^ getB(sKey[1], 3)] ^ getB(sKey[0], 3)];
         }
       }
     }
@@ -2753,7 +2751,7 @@ function initBlockCipher(packageRoot) {
       append: appendPaddingRFC1321,
       remove: removePaddingRFC1321
     };
-  };
+  }
   PADDINGS.RFC1321 = createRFC1321();
 
   /*
@@ -2999,7 +2997,7 @@ function initBlockCipher(packageRoot) {
   Cipher.PKCS7 = "PKCS7";
   Cipher.NO_PADDING = "NO_PADDING";
 
-  Cipher.create = function (algorithmName, directionName, modeName, paddingName) {
+  Cipher.create = function(algorithmName, directionName, modeName, paddingName) {
 
     if (algorithmName == null) algorithmName = Cipher.RIJNDAEL;
     if (directionName == null) directionName = Cipher.ENCRYPT;
@@ -3011,22 +3009,22 @@ function initBlockCipher(packageRoot) {
     var mode = MODES[modeName];
     var padding = PADDINGS[paddingName];
 
-    if (algorithm == null) throw "Invalid algorithm name '" + algorithmName + "'.";
-    if (direction == null) throw "Invalid direction name '" + directionName + "'.";
-    if (mode == null) throw "Invalid mode name '" + modeName + "'.";
-    if (padding == null) throw "Invalid padding name '" + paddingName + "'.";
+    if (algorithm == null) throw `Invalid algorithm name '${algorithmName}'.`;
+    if (direction == null) throw `Invalid direction name '${directionName}'.`;
+    if (mode == null) throw `Invalid mode name '${modeName}'.`;
+    if (padding == null) throw `Invalid padding name '${paddingName}'.`;
 
     return new Cipher(algorithm.create(), direction, mode, padding);
   };
 
-  Cipher.algorithm = function (algorithmName) {
+  Cipher.algorithm = function(algorithmName) {
     if (algorithmName == null) throw "Null Pointer Exception ( algorithmName )";
     var algorithm = ALGORITHMS[algorithmName];
-    if (algorithm == null) throw "Invalid algorithm name '" + algorithmName + "'.";
+    if (algorithm == null) throw `Invalid algorithm name '${algorithmName}'.`;
     // trace( "ss" );
     // trace( algorithm );
     return algorithm.create();
-  }
+  };
 
 
   ///////////////////////////////////
@@ -3075,14 +3073,14 @@ function initRNG(packages) {
   //
   // Arcfour
   //
-  var Arcfour = function () {
+  var Arcfour = function() {
     this.i = 0;
     this.j = 0;
     this.S = new Array();
   };
 
   // Initialize arcfour context from key, an array of ints, each from [0..255]
-  Arcfour.prototype.init = function (key) {
+  Arcfour.prototype.init = function(key) {
     var i, j, t;
     for (i = 0; i < 256; ++i)
       this.S[i] = i;
@@ -3097,7 +3095,7 @@ function initRNG(packages) {
     this.j = 0;
   };
 
-  Arcfour.prototype.next = function () {
+  Arcfour.prototype.next = function() {
     var t;
     this.i = (this.i + 1) & 255;
     this.j = (this.j + this.S[this.i]) & 255;
@@ -3109,7 +3107,7 @@ function initRNG(packages) {
 
 
   // Plug in your RNG constructor here
-  Arcfour.create = function () {
+  Arcfour.create = function() {
     return new Arcfour();
   };
 
@@ -3125,7 +3123,7 @@ function initRNG(packages) {
   var rng_pptr = 0;
 
   // Mix in a 32-bit integer into the pool
-  rng_seed_int = function (x) {
+  rng_seed_int = function(x) {
     // FIXED 7 DEC,2008 http://oka.nu/
     // >>
     // rng_pool[rng_pptr++] ^= x & 255;
@@ -3145,12 +3143,12 @@ function initRNG(packages) {
   };
 
   // Mix in the current time (w/milliseconds) into the pool
-  rng_seed_time = function () {
+  rng_seed_time = function() {
     rng_seed_int(new Date().getTime());
   };
 
   // Initialize the pool with junk if needed.
-  pool_init = function () {
+  pool_init = function() {
     var t;
     //if ( navigator.appName == "Netscape" && navigator.appVersion < "5" && window.crypto ) {
     // Extract entropy (256 bits) from NS4 RNG if available
@@ -3169,7 +3167,7 @@ function initRNG(packages) {
     //rng_seed_int(window.screenY);
   };
 
-  var rng_get_byte = function () {
+  var rng_get_byte = function() {
     if (rng_state == null) {
       rng_seed_time();
       // rng_state = Arcfour.prng_newstate();
@@ -3184,8 +3182,8 @@ function initRNG(packages) {
     return rng_state.next();
   };
 
-  var SecureRandom = function () {};
-  SecureRandom.prototype.nextBytes = function (ba) {
+  var SecureRandom = function() {};
+  SecureRandom.prototype.nextBytes = function(ba) {
     for (var i = 0; i < ba.length; ++i)
       ba[i] = rng_get_byte();
   };
@@ -3199,7 +3197,7 @@ function initRNG(packages) {
   // __package( packages, path ).RNG = RNG;
   // __package( packages, path ).SecureRandom = SecureRandom;
   __Crypto.__export(packages, "titaniumcore.crypto.SecureRandom", SecureRandom);
-};
+}
 initRNG(__Crypto);
 
 
@@ -3226,43 +3224,48 @@ var b64pad  = "";  /* base-64 pad character. "=" for strict RFC compliance   */
  * These are the functions you'll usually want to call
  * They take string arguments and return either hex or base-64 encoded strings
  */
-function hex_md5(s)    { return rstr2hex(rstr_md5(str2rstr_utf8(s))); }
-function b64_md5(s)    { return rstr2b64(rstr_md5(str2rstr_utf8(s))); }
-function any_md5(s, e) { return rstr2any(rstr_md5(str2rstr_utf8(s)), e); }
-function hex_hmac_md5(k, d)
-{ return rstr2hex(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d))); }
-function b64_hmac_md5(k, d)
-{ return rstr2b64(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d))); }
-function any_hmac_md5(k, d, e)
-{ return rstr2any(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d)), e); }
+function hex_md5(s)    {
+  return rstr2hex(rstr_md5(str2rstr_utf8(s)));
+}
+function b64_md5(s)    {
+  return rstr2b64(rstr_md5(str2rstr_utf8(s)));
+}
+function any_md5(s, e) {
+  return rstr2any(rstr_md5(str2rstr_utf8(s)), e);
+}
+function hex_hmac_md5(k, d) {
+  return rstr2hex(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d)));
+}
+function b64_hmac_md5(k, d) {
+  return rstr2b64(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d)));
+}
+function any_hmac_md5(k, d, e) {
+  return rstr2any(rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d)), e);
+}
 
 /*
  * Perform a simple self-test to see if the VM is working
  */
-function md5_vm_test()
-{
+function md5_vm_test() {
   return hex_md5("abc").toLowerCase() == "900150983cd24fb0d6963f7d28e17f72";
 }
 
 /*
  * Calculate the MD5 of a raw string
  */
-function rstr_md5(s)
-{
+function rstr_md5(s) {
   return binl2rstr(binl_md5(rstr2binl(s), s.length * 8));
 }
 
 /*
  * Calculate the HMAC-MD5, of a key and some data (raw strings)
  */
-function rstr_hmac_md5(key, data)
-{
+function rstr_hmac_md5(key, data) {
   var bkey = rstr2binl(key);
-  if(bkey.length > 16) bkey = binl_md5(bkey, key.length * 8);
+  if (bkey.length > 16) bkey = binl_md5(bkey, key.length * 8);
 
   var ipad = Array(16), opad = Array(16);
-  for(var i = 0; i < 16; i++)
-  {
+  for (var i = 0; i < 16; i++)  {
     ipad[i] = bkey[i] ^ 0x36363636;
     opad[i] = bkey[i] ^ 0x5C5C5C5C;
   }
@@ -3274,14 +3277,16 @@ function rstr_hmac_md5(key, data)
 /*
  * Convert a raw string to a hex string
  */
-function rstr2hex(input)
-{
-  try { hexcase } catch(e) { hexcase=0; }
+function rstr2hex(input) {
+  try {
+    hexcase;
+  } catch (e) {
+    hexcase=0;
+  }
   var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
   var output = "";
   var x;
-  for(var i = 0; i < input.length; i++)
-  {
+  for (var i = 0; i < input.length; i++)  {
     x = input.charCodeAt(i);
     output += hex_tab.charAt((x >>> 4) & 0x0F)
         +  hex_tab.charAt( x        & 0x0F);
@@ -3292,20 +3297,21 @@ function rstr2hex(input)
 /*
  * Convert a raw string to a base-64 string
  */
-function rstr2b64(input)
-{
-  try { b64pad } catch(e) { b64pad=''; }
+function rstr2b64(input) {
+  try {
+    b64pad;
+  } catch (e) {
+    b64pad='';
+  }
   var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   var output = "";
   var len = input.length;
-  for(var i = 0; i < len; i += 3)
-  {
+  for (var i = 0; i < len; i += 3)  {
     var triplet = (input.charCodeAt(i) << 16)
         | (i + 1 < len ? input.charCodeAt(i+1) << 8 : 0)
         | (i + 2 < len ? input.charCodeAt(i+2)      : 0);
-    for(var j = 0; j < 4; j++)
-    {
-      if(i * 8 + j * 6 > input.length * 8) output += b64pad;
+    for (var j = 0; j < 4; j++)    {
+      if (i * 8 + j * 6 > input.length * 8) output += b64pad;
       else output += tab.charAt((triplet >>> 6*(3-j)) & 0x3F);
     }
   }
@@ -3315,15 +3321,13 @@ function rstr2b64(input)
 /*
  * Convert a raw string to an arbitrary string encoding
  */
-function rstr2any(input, encoding)
-{
+function rstr2any(input, encoding) {
   var divisor = encoding.length;
   var i, j, q, x, quotient;
 
   /* Convert to an array of 16-bit big-endian values, forming the dividend */
   var dividend = Array(Math.ceil(input.length / 2));
-  for(i = 0; i < dividend.length; i++)
-  {
+  for (i = 0; i < dividend.length; i++)  {
     dividend[i] = (input.charCodeAt(i * 2) << 8) | input.charCodeAt(i * 2 + 1);
   }
 
@@ -3336,16 +3340,14 @@ function rstr2any(input, encoding)
   var full_length = Math.ceil(input.length * 8 /
       (Math.log(encoding.length) / Math.log(2)));
   var remainders = Array(full_length);
-  for(j = 0; j < full_length; j++)
-  {
+  for (j = 0; j < full_length; j++)  {
     quotient = Array();
     x = 0;
-    for(i = 0; i < dividend.length; i++)
-    {
+    for (i = 0; i < dividend.length; i++)    {
       x = (x << 16) + dividend[i];
       q = Math.floor(x / divisor);
       x -= q * divisor;
-      if(quotient.length > 0 || q > 0)
+      if (quotient.length > 0 || q > 0)
         quotient[quotient.length] = q;
     }
     remainders[j] = x;
@@ -3354,7 +3356,7 @@ function rstr2any(input, encoding)
 
   /* Convert the remainders to the output string */
   var output = "";
-  for(i = remainders.length - 1; i >= 0; i--)
+  for (i = remainders.length - 1; i >= 0; i--)
     output += encoding.charAt(remainders[i]);
 
   return output;
@@ -3364,34 +3366,31 @@ function rstr2any(input, encoding)
  * Encode a string as utf-8.
  * For efficiency, this assumes the input is valid utf-16.
  */
-function str2rstr_utf8(input)
-{
+function str2rstr_utf8(input) {
   var output = "";
   var i = -1;
   var x, y;
 
-  while(++i < input.length)
-  {
+  while (++i < input.length)  {
     /* Decode utf-16 surrogate pairs */
     x = input.charCodeAt(i);
     y = i + 1 < input.length ? input.charCodeAt(i + 1) : 0;
-    if(0xD800 <= x && x <= 0xDBFF && 0xDC00 <= y && y <= 0xDFFF)
-    {
+    if (0xD800 <= x && x <= 0xDBFF && 0xDC00 <= y && y <= 0xDFFF)    {
       x = 0x10000 + ((x & 0x03FF) << 10) + (y & 0x03FF);
       i++;
     }
 
     /* Encode output as utf-8 */
-    if(x <= 0x7F)
+    if (x <= 0x7F)
       output += String.fromCharCode(x);
-    else if(x <= 0x7FF)
+    else if (x <= 0x7FF)
       output += String.fromCharCode(0xC0 | ((x >>> 6 ) & 0x1F),
           0x80 | ( x         & 0x3F));
-    else if(x <= 0xFFFF)
+    else if (x <= 0xFFFF)
       output += String.fromCharCode(0xE0 | ((x >>> 12) & 0x0F),
           0x80 | ((x >>> 6 ) & 0x3F),
           0x80 | ( x         & 0x3F));
-    else if(x <= 0x1FFFFF)
+    else if (x <= 0x1FFFFF)
       output += String.fromCharCode(0xF0 | ((x >>> 18) & 0x07),
           0x80 | ((x >>> 12) & 0x3F),
           0x80 | ((x >>> 6 ) & 0x3F),
@@ -3403,19 +3402,17 @@ function str2rstr_utf8(input)
 /*
  * Encode a string as utf-16
  */
-function str2rstr_utf16le(input)
-{
+function str2rstr_utf16le(input) {
   var output = "";
-  for(var i = 0; i < input.length; i++)
+  for (var i = 0; i < input.length; i++)
     output += String.fromCharCode( input.charCodeAt(i)        & 0xFF,
         (input.charCodeAt(i) >>> 8) & 0xFF);
   return output;
 }
 
-function str2rstr_utf16be(input)
-{
+function str2rstr_utf16be(input) {
   var output = "";
-  for(var i = 0; i < input.length; i++)
+  for (var i = 0; i < input.length; i++)
     output += String.fromCharCode((input.charCodeAt(i) >>> 8) & 0xFF,
         input.charCodeAt(i)        & 0xFF);
   return output;
@@ -3425,12 +3422,11 @@ function str2rstr_utf16be(input)
  * Convert a raw string to an array of little-endian words
  * Characters >255 have their high-byte silently ignored.
  */
-function rstr2binl(input)
-{
+function rstr2binl(input) {
   var output = Array(input.length >> 2);
-  for(var i = 0; i < output.length; i++)
+  for (var i = 0; i < output.length; i++)
     output[i] = 0;
-  for(var i = 0; i < input.length * 8; i += 8)
+  for (var i = 0; i < input.length * 8; i += 8)
     output[i>>5] |= (input.charCodeAt(i / 8) & 0xFF) << (i%32);
   return output;
 }
@@ -3438,10 +3434,9 @@ function rstr2binl(input)
 /*
  * Convert an array of little-endian words to a string
  */
-function binl2rstr(input)
-{
+function binl2rstr(input) {
   var output = "";
-  for(var i = 0; i < input.length * 32; i += 8)
+  for (var i = 0; i < input.length * 32; i += 8)
     output += String.fromCharCode((input[i>>5] >>> (i % 32)) & 0xFF);
   return output;
 }
@@ -3449,8 +3444,7 @@ function binl2rstr(input)
 /*
  * Calculate the MD5 of an array of little-endian words, and a bit length.
  */
-function binl_md5(x, len)
-{
+function binl_md5(x, len) {
   /* append padding */
   x[len >> 5] |= 0x80 << ((len) % 32);
   x[(((len + 64) >>> 9) << 4) + 14] = len;
@@ -3460,8 +3454,7 @@ function binl_md5(x, len)
   var c = -1732584194;
   var d =  271733878;
 
-  for(var i = 0; i < x.length; i += 16)
-  {
+  for (var i = 0; i < x.length; i += 16)  {
     var olda = a;
     var oldb = b;
     var oldc = c;
@@ -3546,24 +3539,19 @@ function binl_md5(x, len)
 /*
  * These functions implement the four basic operations the algorithm uses.
  */
-function md5_cmn(q, a, b, x, s, t)
-{
+function md5_cmn(q, a, b, x, s, t) {
   return safe_add(bit_rol(safe_add(safe_add(a, q), safe_add(x, t)), s),b);
 }
-function md5_ff(a, b, c, d, x, s, t)
-{
+function md5_ff(a, b, c, d, x, s, t) {
   return md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
 }
-function md5_gg(a, b, c, d, x, s, t)
-{
+function md5_gg(a, b, c, d, x, s, t) {
   return md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
 }
-function md5_hh(a, b, c, d, x, s, t)
-{
+function md5_hh(a, b, c, d, x, s, t) {
   return md5_cmn(b ^ c ^ d, a, b, x, s, t);
 }
-function md5_ii(a, b, c, d, x, s, t)
-{
+function md5_ii(a, b, c, d, x, s, t) {
   return md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
 }
 
@@ -3571,8 +3559,7 @@ function md5_ii(a, b, c, d, x, s, t)
  * Add integers, wrapping at 2^32. This uses 16-bit operations internally
  * to work around bugs in some JS interpreters.
  */
-function safe_add(x, y)
-{
+function safe_add(x, y) {
   var lsw = (x & 0xFFFF) + (y & 0xFFFF);
   var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
   return (msw << 16) | (lsw & 0xFFFF);
@@ -3581,7 +3568,6 @@ function safe_add(x, y)
 /*
  * Bitwise rotate a 32-bit number to the left.
  */
-function bit_rol(num, cnt)
-{
+function bit_rol(num, cnt) {
   return (num << cnt) | (num >>> (32 - cnt));
 }

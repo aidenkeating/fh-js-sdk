@@ -1,5 +1,5 @@
 module.exports = {
-  createUUID : function () {
+  createUUID : function() {
     //from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
     //based on RFC 4122, section 4.4 (Algorithms for creating UUID from truely random pr pseudo-random number)
     var s = [];

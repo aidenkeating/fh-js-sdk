@@ -12,13 +12,13 @@ var eventsHandler = require("./events");
 var XDomainRequestWrapper = require("./XDomainRequestWrapper");
 var logger = require("./logger");
 
-var type
+var type;
 try {
-  type = require('type-of')
+  type = require('type-of');
 } catch (ex) {
   //hide from browserify
-  var r = require
-  type = r('type')
+  var r = require;
+  type = r('type');
 }
 
 var jsonpID = 0,
@@ -32,33 +32,33 @@ var jsonpID = 0,
   htmlType = 'text/html',
   blankRE = /^\s*$/;
 
-var ajax = module.exports = function (options) {
-  var settings = extend({}, options || {})
+var ajax = module.exports = function(options) {
+  var settings = extend({}, options || {});
   //keep backward compatibility
-  if(window && window.$fh && typeof window.$fh.fh_timeout === "number"){
+  if (window && window.$fh && typeof window.$fh.fh_timeout === "number") {
     ajax.settings.timeout = window.$fh.fh_timeout;
   }
 
   for (key in ajax.settings)
-    if (settings[key] === undefined) settings[key] = ajax.settings[key]
+    if (settings[key] === undefined) settings[key] = ajax.settings[key];
 
-  ajaxStart(settings)
+  ajaxStart(settings);
 
   if (!settings.crossDomain) {
-    settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) && (RegExp.$1 != window.location.protocol || RegExp.$2 != window.location.host)
+    settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) && (RegExp.$1 != window.location.protocol || RegExp.$2 != window.location.host);
   }
 
   var dataType = settings.dataType,
-    hasPlaceholder = /=\?/.test(settings.url)
-    if (dataType == 'jsonp' || hasPlaceholder) {
-      if (!hasPlaceholder) {
-        settings.url = appendQuery(settings.url, (settings.jsonp? settings.jsonp: '_callback') + '=?');
-      }
-      return ajax.JSONP(settings)
+    hasPlaceholder = /=\?/.test(settings.url);
+  if (dataType == 'jsonp' || hasPlaceholder) {
+    if (!hasPlaceholder) {
+      settings.url = appendQuery(settings.url, `${settings.jsonp? settings.jsonp: '_callback'}=?`);
     }
+    return ajax.JSONP(settings);
+  }
 
-  if (!settings.url) settings.url = window.location.toString()
-  serializeData(settings)
+  if (!settings.url) settings.url = window.location.toString();
+  serializeData(settings);
 
   var mime = settings.accepts[dataType],
     baseHeaders = {},
@@ -66,19 +66,19 @@ var ajax = module.exports = function (options) {
     xhr = settings.xhr(settings.crossDomain),
     abortTimeout = null;
 
-  if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest'
+  if (!settings.crossDomain) baseHeaders['X-Requested-With'] = 'XMLHttpRequest';
   if (mime) {
-    baseHeaders['Accept'] = mime
-    if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0]
-    xhr.overrideMimeType && xhr.overrideMimeType(mime)
+    baseHeaders['Accept'] = mime;
+    if (mime.indexOf(',') > -1) mime = mime.split(',', 2)[0];
+    xhr.overrideMimeType && xhr.overrideMimeType(mime);
   }
   if (settings.contentType || (settings.data && !settings.formdata && settings.type.toUpperCase() != 'GET'))
-    baseHeaders['Content-Type'] = (settings.contentType || 'application/x-www-form-urlencoded')
-  settings.headers = extend(baseHeaders, settings.headers || {})
+    baseHeaders['Content-Type'] = (settings.contentType || 'application/x-www-form-urlencoded');
+  settings.headers = extend(baseHeaders, settings.headers || {});
 
   if (typeof Titanium !== 'undefined') {
-    xhr.onerror  = function(){
-      if (!abortTimeout){
+    xhr.onerror  = function() {
+      if (!abortTimeout) {
         return;
       }
       clearTimeout(abortTimeout);
@@ -86,78 +86,77 @@ var ajax = module.exports = function (options) {
     };
   }
 
-  xhr.onreadystatechange = function () {
+  xhr.onreadystatechange = function() {
 
     if (xhr.readyState == 4) {
-      clearTimeout(abortTimeout)
+      clearTimeout(abortTimeout);
       abortTimeout = undefined;
-      var result, error = false
-      if(settings.tryJSONP){
+      var result, error = false;
+      if (settings.tryJSONP) {
         //check if the request has fail. In some cases, we may want to try jsonp as well. Again, FH only...
-        if(xhr.status === 0 && settings.crossDomain && !xhr.isTimeout &&  protocol != 'file:'){
-          logger.debug("retry ajax call with jsonp")
+        if (xhr.status === 0 && settings.crossDomain && !xhr.isTimeout &&  protocol != 'file:') {
+          logger.debug("retry ajax call with jsonp");
           settings.type = "GET";
           settings.dataType = "jsonp";
 
           if (settings.data) {
-            settings.data = "_jsonpdata=" + JSON.stringify(
+            settings.data = `_jsonpdata=${JSON.stringify(
               require("./fhparams").addFHParams(JSON.parse(settings.data))
-            );
+            )}`;
           } else {
-            settings.data = "_jsonpdata=" + settings.data;
+            settings.data = `_jsonpdata=${settings.data}`;
           }
 
           return ajax(settings);
         }
       }
       if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && protocol == 'file:')) {
-        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'))
-        result = xhr.responseText
-        logger.debug("ajax response :: status = " + xhr.status + " :: body = " + result)
+        dataType = dataType || mimeToDataType(xhr.getResponseHeader('content-type'));
+        result = xhr.responseText;
+        logger.debug(`ajax response :: status = ${xhr.status} :: body = ${result}`);
 
         try {
-          if (dataType == 'script')(1, eval)(result)
-          else if (dataType == 'xml') result = xhr.responseXML
-          else if (dataType == 'json') result = blankRE.test(result) ? null : JSON.parse(result)
+          if (dataType == 'script')(1, eval)(result);
+          else if (dataType == 'xml') result = xhr.responseXML;
+          else if (dataType == 'json') result = blankRE.test(result) ? null : JSON.parse(result);
         } catch (e) {
-          error = e
+          error = e;
         }
 
         if (error) {
           logger.debug("ajax error", error);
-          ajaxError(error, 'parsererror', xhr, settings)
-        }
-        else ajaxSuccess(result, xhr, settings)
+          ajaxError(error, 'parsererror', xhr, settings);
+        }        else ajaxSuccess(result, xhr, settings);
       } else {
-        ajaxError(null, 'error', xhr, settings)
+        ajaxError(null, 'error', xhr, settings);
       }
     }
-  }
+  };
 
-  var async = 'async' in settings ? settings.async : true
-  logger.debug("ajax call settings", settings)
-  xhr.open(settings.type, settings.url, async)
+  var async = 'async' in settings ? settings.async : true;
+  logger.debug("ajax call settings", settings);
+  xhr.open(settings.type, settings.url, async);
 
-  for (name in settings.headers) xhr.setRequestHeader(name, settings.headers[name])
+  for (name in settings.headers) xhr.setRequestHeader(name, settings.headers[name]);
 
   if (ajaxBeforeSend(xhr, settings) === false) {
-    logger.debug("ajax call is aborted due to ajaxBeforeSend")
-    xhr.abort()
-    return false
+    logger.debug("ajax call is aborted due to ajaxBeforeSend");
+    xhr.abort();
+    return false;
   }
 
-  if (settings.timeout > 0) abortTimeout = setTimeout(function () {
-    logger.debug("ajax call timed out")
-    xhr.onreadystatechange = empty
-    xhr.abort()
-    xhr.isTimeout = true
-    ajaxError(null, 'timeout', xhr, settings)
-  }, settings.timeout)
+  if (settings.timeout > 0) abortTimeout = setTimeout(function() {
+    logger.debug("ajax call timed out");
+    xhr.onreadystatechange = empty;
+    xhr.abort();
+    xhr.isTimeout = true;
+    ajaxError(null, 'timeout', xhr, settings);
+  }, settings.timeout);
 
   // avoid sending empty string (#319)
-  xhr.send(settings.data ? settings.data : null)
-  return xhr
-}
+  xhr.send(settings.data ? settings.data : null);
+  return xhr;
+};
 
 
 // trigger a custom event and return true
@@ -168,121 +167,121 @@ function triggerAndReturn(context, eventName, data) {
 
 // trigger an Ajax "global" event
 function triggerGlobal(settings, context, eventName, data) {
-  if (settings.global) return triggerAndReturn(context || document, eventName, data)
+  if (settings.global) return triggerAndReturn(context || document, eventName, data);
 }
 
 // Number of active Ajax requests
-ajax.active = 0
+ajax.active = 0;
 
 function ajaxStart(settings) {
-  if (settings.global && ajax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart')
+  if (settings.global && ajax.active++ === 0) triggerGlobal(settings, null, 'ajaxStart');
 }
 
 function ajaxStop(settings) {
-  if (settings.global && !(--ajax.active)) triggerGlobal(settings, null, 'ajaxStop')
+  if (settings.global && !(--ajax.active)) triggerGlobal(settings, null, 'ajaxStop');
 }
 
 // triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
 function ajaxBeforeSend(xhr, settings) {
-  var context = settings.context
+  var context = settings.context;
   if (settings.beforeSend.call(context, xhr, settings) === false)
-    return false
+    return false;
 
-  triggerGlobal(settings, context, 'ajaxSend', [xhr, settings])
+  triggerGlobal(settings, context, 'ajaxSend', [xhr, settings]);
 }
 
 function ajaxSuccess(data, xhr, settings) {
   var context = settings.context,
-    status = 'success'
-  settings.success.call(context, data, status, xhr)
-  triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data])
-  ajaxComplete(status, xhr, settings)
+    status = 'success';
+  settings.success.call(context, data, status, xhr);
+  triggerGlobal(settings, context, 'ajaxSuccess', [xhr, settings, data]);
+  ajaxComplete(status, xhr, settings);
 }
 // type: "timeout", "error", "abort", "parsererror"
 function ajaxError(error, type, xhr, settings) {
-  var context = settings.context
-  settings.error.call(context, xhr, type, error)
-  triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error])
-  ajaxComplete(type, xhr, settings)
+  var context = settings.context;
+  settings.error.call(context, xhr, type, error);
+  triggerGlobal(settings, context, 'ajaxError', [xhr, settings, error]);
+  ajaxComplete(type, xhr, settings);
 }
 // status: "success", "notmodified", "error", "timeout", "abort", "parsererror"
 function ajaxComplete(status, xhr, settings) {
-  var context = settings.context
-  settings.complete.call(context, xhr, status)
-  triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings])
-  ajaxStop(settings)
+  var context = settings.context;
+  settings.complete.call(context, xhr, status);
+  triggerGlobal(settings, context, 'ajaxComplete', [xhr, settings]);
+  ajaxStop(settings);
 }
 
 // Empty function, used as default callback
 function empty() {}
 
-ajax.JSONP = function (options) {
-  if (!('type' in options)) return ajax(options)
+ajax.JSONP = function(options) {
+  if (!('type' in options)) return ajax(options);
 
-  var callbackName = 'jsonp' + (++jsonpID),
+  var callbackName = `jsonp${++jsonpID}`,
     script = document.createElement('script'),
-    abort = function () {
+    abort = function() {
       //todo: remove script
       //$(script).remove()
-      if (callbackName in window) window[callbackName] = empty
-      ajaxComplete('abort', xhr, options)
+      if (callbackName in window) window[callbackName] = empty;
+      ajaxComplete('abort', xhr, options);
     },
     xhr = {
       abort: abort
     }, abortTimeout,
-    head = document.getElementsByTagName("head")[0] || document.documentElement
+    head = document.getElementsByTagName("head")[0] || document.documentElement;
 
-  if (options.error) script.onerror = function () {
-    xhr.abort()
-    options.error()
-  }
+  if (options.error) script.onerror = function() {
+    xhr.abort();
+    options.error();
+  };
 
-  window[callbackName] = function (data) {
-    clearTimeout(abortTimeout)
+  window[callbackName] = function(data) {
+    clearTimeout(abortTimeout);
     abortTimeout = undefined;
     //todo: remove script
     //$(script).remove()
-    delete window[callbackName]
-    ajaxSuccess(data, xhr, options)
-  }
+    delete window[callbackName];
+    ajaxSuccess(data, xhr, options);
+  };
 
-  serializeData(options)
-  script.src = options.url.replace(/=\?/, '=' + callbackName)
+  serializeData(options);
+  script.src = options.url.replace(/=\?/, `=${callbackName}`);
 
   // Use insertBefore instead of appendChild to circumvent an IE6 bug.
   // This arises when a base node is used (see jQuery bugs #2709 and #4378).
   head.insertBefore(script, head.firstChild);
 
-  if (options.timeout > 0) abortTimeout = setTimeout(function () {
-    xhr.abort()
-    ajaxComplete('timeout', xhr, options)
-  }, options.timeout)
+  if (options.timeout > 0) abortTimeout = setTimeout(function() {
+    xhr.abort();
+    ajaxComplete('timeout', xhr, options);
+  }, options.timeout);
 
-  return xhr
-}
+  return xhr;
+};
 
-function isIE(){
+function isIE() {
   var ie = false;
-  if(navigator.userAgent && navigator.userAgent.indexOf("MSIE") >=0 ){
+  if (navigator.userAgent && navigator.userAgent.indexOf("MSIE") >=0 ) {
     ie = true;
   }
   return ie;
 }
 
-function getXhr(crossDomain){
+function getXhr(crossDomain) {
   var xhr = null;
   //always use XMLHttpRequest if available
-  if(window.XMLHttpRequest){
+  if (window.XMLHttpRequest) {
     xhr = new XMLHttpRequest();
   }
   //for IE8 only. Need to make sure it's not used when running inside Cordova.
-  if(isIE() && (crossDomain === true) && typeof window.XDomainRequest !== "undefined" && typeof window.cordova === "undefined"){
+  if (isIE() && (crossDomain === true) && typeof window.XDomainRequest !== "undefined" && typeof window.cordova === "undefined") {
     xhr = new XDomainRequestWrapper(new XDomainRequest());
   }
   // For Titanium SDK
-  if (typeof Titanium !== 'undefined'){
+  if (typeof Titanium !== 'undefined') {
     var params = {};
-    if(ajax.settings && ajax.settings.timeout){
+    if (ajax.settings && ajax.settings.timeout) {
       params.timeout = ajax.settings.timeout;
     }
     xhr = Titanium.Network.createHTTPClient(params);
@@ -318,58 +317,58 @@ ajax.settings = {
   },
   // Whether the request is to another domain
   crossDomain: false
-}
+};
 
 function mimeToDataType(mime) {
   return mime && (mime == htmlType ? 'html' :
     mime == jsonType ? 'json' :
     scriptTypeRE.test(mime) ? 'script' :
-    xmlTypeRE.test(mime) && 'xml') || 'text'
+    xmlTypeRE.test(mime) && 'xml') || 'text';
 }
 
 function appendQuery(url, query) {
-  return (url + '&' + query).replace(/[&?]{1,2}/, '?')
+  return (`${url}&${query}`).replace(/[&?]{1,2}/, '?');
 }
 
 // serialize payload and append it to the URL for GET requests
 function serializeData(options) {
   if (type(options.data) === 'object') {
-    if(typeof options.data.append === "function"){
+    if (typeof options.data.append === "function") {
       //we are dealing with FormData, do not serialize
       options.formdata = true;
     } else {
-      options.data = param(options.data)
+      options.data = param(options.data);
     }
   }
   if (options.data && (!options.type || options.type.toUpperCase() == 'GET'))
-    options.url = appendQuery(options.url, options.data)
+    options.url = appendQuery(options.url, options.data);
 }
 
-ajax.get = function (url, success) {
+ajax.get = function(url, success) {
   return ajax({
     url: url,
     success: success
-  })
-}
+  });
+};
 
-ajax.post = function (url, data, success, dataType) {
-  if (type(data) === 'function') dataType = dataType || success, success = data, data = null
+ajax.post = function(url, data, success, dataType) {
+  if (type(data) === 'function') dataType = dataType || success, success = data, data = null;
   return ajax({
     type: 'POST',
     url: url,
     data: data,
     success: success,
     dataType: dataType
-  })
-}
+  });
+};
 
-ajax.getJSON = function (url, success) {
+ajax.getJSON = function(url, success) {
   return ajax({
     url: url,
     success: success,
     dataType: 'json'
-  })
-}
+  });
+};
 
 var escape = encodeURIComponent;
 
@@ -378,31 +377,31 @@ function serialize(params, obj, traditional, scope) {
   for (var key in obj) {
     var value = obj[key];
 
-    if (scope) key = traditional ? scope : scope + '[' + (array ? '' : key) + ']'
+    if (scope) key = traditional ? scope : `${scope}[${array ? '' : key}]`;
     // handle data in serializeArray() format
-    if (!scope && array) params.add(value.name, value.value)
+    if (!scope && array) params.add(value.name, value.value);
     // recurse into nested objects
     else if (traditional ? (type(value) === 'array') : (type(value) === 'object'))
-      serialize(params, value, traditional, key)
-    else params.add(key, value)
+      serialize(params, value, traditional, key);
+    else params.add(key, value);
   }
 }
 
 function param(obj, traditional) {
-  var params = []
-  params.add = function (k, v) {
-    this.push(escape(k) + '=' + escape(v))
-  }
-  serialize(params, obj, traditional)
-  return params.join('&').replace('%20', '+')
+  var params = [];
+  params.add = function(k, v) {
+    this.push(`${escape(k)}=${escape(v)}`);
+  };
+  serialize(params, obj, traditional);
+  return params.join('&').replace('%20', '+');
 }
 
 function extend(target) {
   var slice = Array.prototype.slice;
-  slice.call(arguments, 1).forEach(function (source) {
+  slice.call(arguments, 1).forEach(function(source) {
     for (key in source)
       if (source[key] !== undefined)
-        target[key] = source[key]
-  })
-  return target
+        target[key] = source[key];
+  });
+  return target;
 }

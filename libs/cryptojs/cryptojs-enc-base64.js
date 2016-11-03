@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function () {
+(function() {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -29,7 +29,7 @@
      *
      *     var base64String = CryptoJS.enc.Base64.stringify(wordArray);
      */
-    stringify: function (wordArray) {
+    stringify: function(wordArray) {
       // Shortcuts
       var words = wordArray.words;
       var sigBytes = wordArray.sigBytes;
@@ -76,7 +76,7 @@
      *
      *     var wordArray = CryptoJS.enc.Base64.parse(base64String);
      */
-    parse: function (base64Str) {
+    parse: function(base64Str) {
       // Shortcuts
       var base64StrLength = base64Str.length;
       var map = this._map;

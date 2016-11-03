@@ -51,15 +51,15 @@ var PageView=BaseView.extend({
 
     var sections = this.model.getSections();
 
-    function toggleSection(fieldTarget){
-      if(fieldTarget){
-        $('#' + fieldTarget).slideToggle(600);
-        $('#' + fieldTarget + "_icon").toggleClass('icon-chevron-sign-up');
-        $('#' + fieldTarget + "_icon").toggleClass('icon-chevron-sign-down');
+    function toggleSection(fieldTarget) {
+      if (fieldTarget) {
+        $(`#${fieldTarget}`).slideToggle(600);
+        $(`#${fieldTarget}_icon`).toggleClass('icon-chevron-sign-up');
+        $(`#${fieldTarget}_icon`).toggleClass('icon-chevron-sign-down');
       }
     }
 
-    if(sections != null){
+    if (sections != null) {
       var sectionKey;
       var sectionIndex = 0;
 
@@ -67,34 +67,34 @@ var PageView=BaseView.extend({
 
 
       //Add the section fields
-      for(sectionKey in sections){
+      for (sectionKey in sections) {
         var sectionEl = $(_.template(self.options.formView.$el.find('#temp_page_structure').html())( {"sectionId": sectionKey, title: sections[sectionKey].title, description: sections[sectionKey].description, index: sectionIndex}));
-        var sectionDivId = '#fh_appform_' + sectionKey + '_body_icon';
+        var sectionDivId = `#fh_appform_${sectionKey}_body_icon`;
         sectionIndex++;
         sectionEl.find('.panel-heading').off('click');
         sectionEl.find(sectionDivId).off('click');
 
-        sectionEl.find(sectionDivId).on('click', function(e){
+        sectionEl.find(sectionDivId).on('click', function(e) {
           var fieldTarget = $(this).parent().data().field;
           toggleSection(fieldTarget);
         });
 
-        sectionEl.find('.panel-heading').on('click', function(e){
-          if($(e.target).data()){
-            if($(e.target).data().field){
+        sectionEl.find('.panel-heading').on('click', function(e) {
+          if ($(e.target).data()) {
+            if ($(e.target).data().field) {
               toggleSection($(e.target).data().field);
             }
           }
         });
         sectionGroup.append(sectionEl);
-        sections[sectionKey].fields.forEach(function(field, index){
+        sections[sectionKey].fields.forEach(function(field, index) {
           var fieldType = field.getType();
           if (self.viewMap[fieldType]) {
 
-            $fh.forms.log.l("*- "+fieldType);
+            $fh.forms.log.l(`*- ${fieldType}`);
 
-            if(fieldType !== "sectionBreak"){
-                self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+            if (fieldType !== "sectionBreak") {
+              self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
                 parentEl: sectionEl.find('.panel-body'),
                 parentView: self,
                 model: field,
@@ -103,21 +103,21 @@ var PageView=BaseView.extend({
               });
             }
           } else {
-            $fh.forms.log.w('FIELD NOT SUPPORTED:' + fieldType);
+            $fh.forms.log.w(`FIELD NOT SUPPORTED:${fieldType}`);
           }
         });
       }
 
       this.$el.append(sectionGroup);
     } else {
-      fieldModelList.forEach(function (field, index) {
-        if(!field) {
+      fieldModelList.forEach(function(field, index) {
+        if (!field) {
           return;
         }
         var fieldType = field.getType();
         if (self.viewMap[fieldType]) {
 
-          $fh.forms.log.l("*- "+fieldType);
+          $fh.forms.log.l(`*- ${fieldType}`);
 
           self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
             parentEl: self.$el,
@@ -126,66 +126,66 @@ var PageView=BaseView.extend({
             formView: self.options.formView
           });
         } else {
-          console.warn('FIELD NOT SUPPORTED:' + fieldType);
+          console.warn(`FIELD NOT SUPPORTED:${fieldType}`);
         }
       });
     }
   },
 
-  expandSection: function(fieldId){
+  expandSection: function(fieldId) {
     var sections = this.model.getSections();
     var sectionFound = false;
     var sectionId = "";
-    for(var sectionKey in sections){
-      sections[sectionKey].fields.forEach(function(field, index){
-        if(field.get("_id") === fieldId){
+    for (var sectionKey in sections) {
+      sections[sectionKey].fields.forEach(function(field, index) {
+        if (field.get("_id") === fieldId) {
           sectionFound = true;
           sectionId = sectionKey;
         }
       });
     }
 
-    if(sectionFound){
-      $("#fh_appform_" + sectionId + "_body").slideDown(20);
-      $("#fh_appform_" + sectionId + "_body_icon").removeClass('icon-minus');
+    if (sectionFound) {
+      $(`#fh_appform_${sectionId}_body`).slideDown(20);
+      $(`#fh_appform_${sectionId}_body_icon`).removeClass('icon-minus');
 
-      if(!$("#fh_appform_" + sectionId + "_body_icon").hasClass('icon-plus')){
-         $("#fh_appform_" + sectionId + "_body_icon").addClass('icon-plus');
+      if (!$(`#fh_appform_${sectionId}_body_icon`).hasClass('icon-plus')) {
+        $(`#fh_appform_${sectionId}_body_icon`).addClass('icon-plus');
       }
     }
   },
 
-  show: function () {
+  show: function() {
     var self = this;
     self.$el.show();
 
-    for(var fieldViewId in self.fieldViews){
-      if(self.fieldViews[fieldViewId].mapResize){
+    for (var fieldViewId in self.fieldViews) {
+      if (self.fieldViews[fieldViewId].mapResize) {
         self.fieldViews[fieldViewId].mapResize();
       }
     }
   },
 
-  hide: function () {
+  hide: function() {
 
     this.$el.hide();
   },
 
-  showField: function (id) {
+  showField: function(id) {
     // show field if it's on this page
     if (this.fieldViews[id]) {
       this.fieldViews[id].show();
     }
   },
 
-  hideField: function (id) {
+  hideField: function(id) {
     // hide field if it's on this page
     if (this.fieldViews[id]) {
       this.fieldViews[id].hide();
     }
   },
 
-  isValid: function () {
+  isValid: function() {
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
     var validateEls = this.$el.find('.fh_appform_field_input').not('.validate_ignore]:hidden');
     return validateEls.length ? validateEls.valid() : true;

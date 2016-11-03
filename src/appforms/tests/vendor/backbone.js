@@ -5,7 +5,7 @@
 //     For all details and documentation:
 //     http://backbonejs.org
 
-(function(){
+(function() {
 
   // Initial Setup
   // -------------
@@ -229,7 +229,7 @@
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
-    initialize: function(){},
+    initialize: function() {},
 
     // Return a copy of the model's `attributes` object.
     toJSON: function(options) {
@@ -246,7 +246,7 @@
       var html;
       if (html = this._escapedAttributes[attr]) return html;
       var val = this.get(attr);
-      return this._escapedAttributes[attr] = _.escape(val == null ? '' : '' + val);
+      return this._escapedAttributes[attr] = _.escape(val == null ? '' : `${val}`);
     },
 
     // Returns `true` if the attribute contains a value that is not null
@@ -470,7 +470,7 @@
       var changes = _.extend({}, options.changes, this._silent);
       this._silent = {};
       for (var attr in changes) {
-        this.trigger('change:' + attr, this, this.get(attr), options);
+        this.trigger(`change:${attr}`, this, this.get(attr), options);
       }
       if (changing) return this;
 
@@ -574,12 +574,14 @@
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
-    initialize: function(){},
+    initialize: function() {},
 
     // The JSON representation of a Collection is an array of the
     // models' attributes.
     toJSON: function(options) {
-      return this.map(function(model){ return model.toJSON(options); });
+      return this.map(function(model) {
+        return model.toJSON(options);
+      });
     },
 
     // Add a model, or list of models to the set. Pass **silent** to avoid
@@ -729,7 +731,9 @@
 
     // Pluck an attribute from each model in the collection.
     pluck: function(attr) {
-      return _.map(this.models, function(model){ return model.get(attr); });
+      return _.map(this.models, function(model) {
+        return model.get(attr);
+      });
     },
 
     // When you have more items than you want to add or remove individually,
@@ -794,7 +798,7 @@
     // Proxy to _'s chain. Can't be proxied the same way the rest of the
     // underscore methods are proxied because it relies on the underscore
     // constructor.
-    chain: function () {
+    chain: function() {
       return _(this.models).chain();
     },
 
@@ -837,7 +841,7 @@
       if (event == 'destroy') {
         this.remove(model, options);
       }
-      if (model && event === 'change:' + model.idAttribute) {
+      if (model && event === `change:${model.idAttribute}`) {
         delete this._byId[model.previous(model.idAttribute)];
         this._byId[model.id] = model;
       }
@@ -883,7 +887,7 @@
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
-    initialize: function(){},
+    initialize: function() {},
 
     // Manually bind a single named route to a callback. For example:
     //
@@ -898,7 +902,7 @@
       Backbone.history.route(route, _.bind(function(fragment) {
         var args = this._extractParameters(route, fragment);
         callback && callback.apply(this, args);
-        this.trigger.apply(this, ['route:' + name].concat(args));
+        this.trigger.apply(this, [`route:${name}`].concat(args));
         Backbone.history.trigger('route', this, name, args);
       }, this));
       return this;
@@ -929,7 +933,7 @@
       route = route.replace(escapeRegExp, '\\$&')
                    .replace(namedParam, '([^\/]+)')
                    .replace(splatParam, '(.*?)');
-      return new RegExp('^' + route + '$');
+      return new RegExp(`^${route}$`);
     },
 
     // Given a route, and a URL fragment that it matches, return the array of
@@ -1031,7 +1035,7 @@
       // but we're currently in a browser that doesn't support it...
       if (this._wantsHashChange && this._wantsPushState && !this._hasPushState && !atRoot) {
         this.fragment = this.getFragment(null, true);
-        window.location.replace(this.options.root + '#' + this.fragment);
+        window.location.replace(`${this.options.root}#${this.fragment}`);
         // Return immediately as browser will do redirect to new url
         return true;
 
@@ -1039,7 +1043,7 @@
       // in a browser where it could be `pushState`-based instead...
       } else if (this._wantsPushState && this._hasPushState && atRoot && loc.hash) {
         this.fragment = this.getHash().replace(routeStripper, '');
-        window.history.replaceState({}, document.title, loc.protocol + '//' + loc.host + this.options.root + this.fragment);
+        window.history.replaceState({}, document.title, `${loc.protocol}//${loc.host}${this.options.root}${this.fragment}`);
       }
 
       if (!this.options.silent) {
@@ -1112,7 +1116,7 @@
         if (this.iframe && (frag != this.getFragment(this.getHash(this.iframe)))) {
           // Opening and closing the iframe tricks IE7 and earlier to push a history entry on hash-tag change.
           // When replace is true, we don't want this.
-          if(!options.replace) this.iframe.document.open().close();
+          if (!options.replace) this.iframe.document.open().close();
           this._updateHash(this.iframe.location, frag, options.replace);
         }
 
@@ -1128,7 +1132,7 @@
     // a new one to the browser history.
     _updateHash: function(location, fragment, replace) {
       if (replace) {
-        location.replace(location.toString().replace(/(javascript:|#).*$/, '') + '#' + fragment);
+        location.replace(`${location.toString().replace(/(javascript:|#).*$/, '')}#${fragment}`);
       } else {
         location.hash = fragment;
       }
@@ -1168,7 +1172,7 @@
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
-    initialize: function(){},
+    initialize: function() {},
 
     // **render** is the core function that your view should override, in order
     // to populate its element (`this.el`), with the appropriate HTML. The
@@ -1227,11 +1231,11 @@
       for (var key in events) {
         var method = events[key];
         if (!_.isFunction(method)) method = this[events[key]];
-        if (!method) throw new Error('Method "' + events[key] + '" does not exist');
+        if (!method) throw new Error(`Method "${events[key]}" does not exist`);
         var match = key.match(delegateEventSplitter);
         var eventName = match[1], selector = match[2];
         method = _.bind(method, this);
-        eventName += '.delegateEvents' + this.cid;
+        eventName += `.delegateEvents${this.cid}`;
         if (selector === '') {
           this.$el.bind(eventName, method);
         } else {
@@ -1244,7 +1248,7 @@
     // You usually don't need to use this, but may wish to if you have multiple
     // Backbone views attached to the same DOM element.
     undelegateEvents: function() {
-      this.$el.unbind('.delegateEvents' + this.cid);
+      this.$el.unbind(`.delegateEvents${this.cid}`);
     },
 
     // Performs the initial configuration of a View with a set of options.
@@ -1277,7 +1281,7 @@
   });
 
   // The self-propagating extend function that Backbone classes use.
-  var extend = function (protoProps, classProps) {
+  var extend = function(protoProps, classProps) {
     var child = inherits(this, protoProps, classProps);
     child.extend = this.extend;
     return child;
@@ -1375,7 +1379,7 @@
   // -------
 
   // Shared empty constructor function to aid in prototype-chain creation.
-  var ctor = function(){};
+  var ctor = function() {};
 
   // Helper function to correctly set up the prototype chain, for subclasses.
   // Similar to `goog.inherits`, but uses a hash of prototype properties and
@@ -1389,7 +1393,9 @@
     if (protoProps && protoProps.hasOwnProperty('constructor')) {
       child = protoProps.constructor;
     } else {
-      child = function(){ parent.apply(this, arguments); };
+      child = function() {
+        parent.apply(this, arguments);
+      };
     }
 
     // Inherit class (static) properties from parent.

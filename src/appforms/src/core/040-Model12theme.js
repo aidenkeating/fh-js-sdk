@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   function Theme() {
     Model.call(this, {
@@ -6,7 +6,7 @@ appForm.models = function (module) {
       '_ludid': 'theme_object'
     });
   }
-  Theme.prototype.getCSS = function () {
+  Theme.prototype.getCSS = function() {
     return this.get('css', '');
   };
   appForm.utils.extend(Theme, Model);

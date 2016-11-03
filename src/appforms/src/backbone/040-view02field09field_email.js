@@ -1,3 +1,3 @@
 FieldEmailView = FieldView.extend({
-   type:"email"
+  type:"email"
 });

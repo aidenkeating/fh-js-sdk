@@ -16,8 +16,8 @@ var Geo = {};  // Geo namespace, representing static class
  * Parses string representing degrees/minutes/seconds into numeric degrees
  *
  * This is very flexible on formats, allowing signed decimal degrees, or deg-min-sec optionally
- * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Âº 37' 09"W) 
- * or fixed-width format without separators (eg 0033709W). Seconds and minutes may be omitted. 
+ * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Âº 37' 09"W)
+ * or fixed-width format without separators (eg 0033709W). Seconds and minutes may be omitted.
  * (Note minimal validation is done).
  *
  * @param   {String|Number} dmsStr: Degrees or deg/min/sec in variety of formats
@@ -26,36 +26,36 @@ var Geo = {};  // Geo namespace, representing static class
  */
 Geo.parseDMS = function(dmsStr) {
   if (typeof deg == 'object') throw new TypeError('Geo.parseDMS - dmsStr is [DOM?] object');
-  
+
   // check for signed decimal degrees without NSEW, if so return it directly
   if (typeof dmsStr === 'number' && isFinite(dmsStr)) return Number(dmsStr);
-  
+
   // strip off any sign or compass dir'n & split out separate d/m/s
   var dms = String(dmsStr).trim().replace(/^-/,'').replace(/[NSEW]$/i,'').split(/[^0-9.,]+/);
   if (dms[dms.length-1]=='') dms.splice(dms.length-1);  // from trailing symbol
-  
+
   if (dms == '') return NaN;
-  
+
   // and convert to decimal degrees...
   switch (dms.length) {
-    case 3:  // interpret 3-part result as d/m/s
-      var deg = dms[0]/1 + dms[1]/60 + dms[2]/3600; 
-      break;
-    case 2:  // interpret 2-part result as d/m
-      var deg = dms[0]/1 + dms[1]/60; 
-      break;
-    case 1:  // just d (possibly decimal) or non-separated dddmmss
-      var deg = dms[0];
+  case 3:  // interpret 3-part result as d/m/s
+    var deg = dms[0]/1 + dms[1]/60 + dms[2]/3600;
+    break;
+  case 2:  // interpret 2-part result as d/m
+    var deg = dms[0]/1 + dms[1]/60;
+    break;
+  case 1:  // just d (possibly decimal) or non-separated dddmmss
+    var deg = dms[0];
       // check for fixed-width unseparated format eg 0033709W
       //if (/[NS]/i.test(dmsStr)) deg = '0' + deg;  // - normalise N/S to 3-digit degrees
-      //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600; 
-      break;
-    default:
-      return NaN;
+      //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600;
+    break;
+  default:
+    return NaN;
   }
   if (/^-|[WS]$/i.test(dmsStr.trim())) deg = -deg; // take '-', west and south as -ve
   return Number(deg);
-}
+};
 
 
 /**
@@ -73,51 +73,51 @@ Geo.parseDMS = function(dmsStr) {
 Geo.toDMS = function(deg, format, dp) {
   if (typeof deg == 'object') throw new TypeError('Geo.toDMS - deg is [DOM?] object');
   if (isNaN(deg)) return null;  // give up here if we can't make a number from deg
-  
+
     // default values
   if (typeof format == 'undefined') format = 'dms';
   if (typeof dp == 'undefined') {
     switch (format) {
-      case 'd': dp = 4; break;
-      case 'dm': dp = 2; break;
-      case 'dms': dp = 0; break;
-      default: format = 'dms'; dp = 0;  // be forgiving on invalid format
+    case 'd': dp = 4; break;
+    case 'dm': dp = 2; break;
+    case 'dms': dp = 0; break;
+    default: format = 'dms'; dp = 0;  // be forgiving on invalid format
     }
   }
-  
+
   deg = Math.abs(deg);  // (unsigned result ready for appending compass dir'n)
-  
+
   switch (format) {
-    case 'd':
-      d = deg.toFixed(dp);     // round degrees
-      if (d<100) d = '0' + d;  // pad with leading zeros
-      if (d<10) d = '0' + d;
-      dms = d + '\u00B0';      // add Âº symbol
-      break;
-    case 'dm':
-      var min = (deg*60).toFixed(dp);  // convert degrees to minutes & round
-      var d = Math.floor(min / 60);    // get component deg/min
-      var m = (min % 60).toFixed(dp);  // pad with trailing zeros
-      if (d<100) d = '0' + d;          // pad with leading zeros
-      if (d<10) d = '0' + d;
-      if (m<10) m = '0' + m;
-      dms = d + '\u00B0' + m + '\u2032';  // add Âº, ' symbols
-      break;
-    case 'dms':
-      var sec = (deg*3600).toFixed(dp);  // convert degrees to seconds & round
-      var d = Math.floor(sec / 3600);    // get component deg/min/sec
-      var m = Math.floor(sec/60) % 60;
-      var s = (sec % 60).toFixed(dp);    // pad with trailing zeros
-      if (d<100) d = '0' + d;            // pad with leading zeros
-      if (d<10) d = '0' + d;
-      if (m<10) m = '0' + m;
-      if (s<10) s = '0' + s;
-      dms = d + '\u00B0' + m + '\u2032' + s + '\u2033';  // add Âº, ', " symbols
-      break;
+  case 'd':
+    d = deg.toFixed(dp);     // round degrees
+    if (d<100) d = `0${d}`;  // pad with leading zeros
+    if (d<10) d = `0${d}`;
+    dms = `${d}\u00B0`;      // add Âº symbol
+    break;
+  case 'dm':
+    var min = (deg*60).toFixed(dp);  // convert degrees to minutes & round
+    var d = Math.floor(min / 60);    // get component deg/min
+    var m = (min % 60).toFixed(dp);  // pad with trailing zeros
+    if (d<100) d = `0${d}`;          // pad with leading zeros
+    if (d<10) d = `0${d}`;
+    if (m<10) m = `0${m}`;
+    dms = `${d}\u00B0${m}\u2032`;  // add Âº, ' symbols
+    break;
+  case 'dms':
+    var sec = (deg*3600).toFixed(dp);  // convert degrees to seconds & round
+    var d = Math.floor(sec / 3600);    // get component deg/min/sec
+    var m = Math.floor(sec/60) % 60;
+    var s = (sec % 60).toFixed(dp);    // pad with trailing zeros
+    if (d<100) d = `0${d}`;            // pad with leading zeros
+    if (d<10) d = `0${d}`;
+    if (m<10) m = `0${m}`;
+    if (s<10) s = `0${s}`;
+    dms = `${d}\u00B0${m}\u2032${s}\u2033`;  // add Âº, ', " symbols
+    break;
   }
-  
+
   return dms;
-}
+};
 
 
 /**
@@ -131,7 +131,7 @@ Geo.toDMS = function(deg, format, dp) {
 Geo.toLat = function(deg, format, dp) {
   var lat = Geo.toDMS(deg, format, dp);
   return lat==null ? 'â€“' : lat.slice(1) + (deg<0 ? 'S' : 'N');  // knock off initial '0' for lat!
-}
+};
 
 
 /**
@@ -145,7 +145,7 @@ Geo.toLat = function(deg, format, dp) {
 Geo.toLon = function(deg, format, dp) {
   var lon = Geo.toDMS(deg, format, dp);
   return lon==null ? 'â€“' : lon + (deg<0 ? 'W' : 'E');
-}
+};
 
 
 /**
@@ -160,7 +160,7 @@ Geo.toBrng = function(deg, format, dp) {
   deg = (Number(deg)+360) % 360;  // normalise -ve values to 180Âº..360Âº
   var brng =  Geo.toDMS(deg, format, dp);
   return brng==null ? 'â€“' : brng.replace('360', '0');  // just in case rounding took us up to 360Âº!
-}
+};
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -188,8 +188,8 @@ if (!window.console) window.console = { log: function() {} };
 /**
  * @requires Geo
  */
- 
- 
+
+
 /**
  * Creates a point on the earth's surface at the supplied latitude / longitude
  *
@@ -208,7 +208,7 @@ function LatLon(lat, lon, rad) {
 
 
 /**
- * Returns the distance from this point to the supplied point, in km 
+ * Returns the distance from this point to the supplied point, in km
  * (using Haversine formula)
  *
  * from: Haversine formula - R. W. Sinnott, "Virtues of the Haversine",
@@ -221,7 +221,7 @@ function LatLon(lat, lon, rad) {
 LatLon.prototype.distanceTo = function(point, precision) {
   // default 4 sig figs reflects typical 0.3% accuracy of spherical model
   if (typeof precision == 'undefined') precision = 4;
-  
+
   var R = this._radius;
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   var lat2 = point._lat.toRad(), lon2 = point._lon.toRad();
@@ -229,12 +229,12 @@ LatLon.prototype.distanceTo = function(point, precision) {
   var dLon = lon2 - lon1;
 
   var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(lat1) * Math.cos(lat2) * 
+          Math.cos(lat1) * Math.cos(lat2) *
           Math.sin(dLon/2) * Math.sin(dLon/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   var d = R * c;
   return d.toPrecisionFixed(precision);
-}
+};
 
 
 /**
@@ -252,13 +252,13 @@ LatLon.prototype.bearingTo = function(point) {
   var x = Math.cos(lat1)*Math.sin(lat2) -
           Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
   var brng = Math.atan2(y, x);
-  
+
   return (brng.toDeg()+360) % 360;
-}
+};
 
 
 /**
- * Returns final bearing arriving at supplied destination point from this point; the final bearing 
+ * Returns final bearing arriving at supplied destination point from this point; the final bearing
  * will differ from the initial bearing by varying degrees according to distance and latitude
  *
  * @param   {LatLon} point: Latitude/longitude of destination point
@@ -273,10 +273,10 @@ LatLon.prototype.finalBearingTo = function(point) {
   var x = Math.cos(lat1)*Math.sin(lat2) -
           Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
   var brng = Math.atan2(y, x);
-          
+
   // ... & reverse it by adding 180Â°
   return (brng.toDeg()+180) % 360;
-}
+};
 
 
 /**
@@ -298,13 +298,13 @@ LatLon.prototype.midpointTo = function(point) {
                     Math.sqrt( (Math.cos(lat1)+Bx)*(Math.cos(lat1)+Bx) + By*By) );
   lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
   lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
+};
 
 
 /**
- * Returns the destination point from this point having travelled the given distance (in km) on the 
+ * Returns the destination point from this point having travelled the given distance (in km) on the
  * given initial bearing (bearing may vary before destination is reached)
  *
  *   see http://williams.best.vwh.net/avform.htm#LL
@@ -316,17 +316,17 @@ LatLon.prototype.midpointTo = function(point) {
 LatLon.prototype.destinationPoint = function(brng, dist) {
   dist = typeof(dist)=='number' ? dist : typeof(dist)=='string' && dist.trim()!='' ? +dist : NaN;
   dist = dist/this._radius;  // convert dist to angular distance in radians
-  brng = brng.toRad();  // 
+  brng = brng.toRad();  //
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
 
-  var lat2 = Math.asin( Math.sin(lat1)*Math.cos(dist) + 
+  var lat2 = Math.asin( Math.sin(lat1)*Math.cos(dist) +
                         Math.cos(lat1)*Math.sin(dist)*Math.cos(brng) );
-  var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(dist)*Math.cos(lat1), 
+  var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(dist)*Math.cos(lat1),
                                Math.cos(dist)-Math.sin(lat1)*Math.sin(lat2));
   lon2 = (lon2+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
 
   return new LatLon(lat2.toDeg(), lon2.toDeg());
-}
+};
 
 
 /**
@@ -347,18 +347,18 @@ LatLon.intersection = function(p1, brng1, p2, brng2) {
   lat2 = p2._lat.toRad(), lon2 = p2._lon.toRad();
   brng13 = brng1.toRad(), brng23 = brng2.toRad();
   dLat = lat2-lat1, dLon = lon2-lon1;
-  
-  dist12 = 2*Math.asin( Math.sqrt( Math.sin(dLat/2)*Math.sin(dLat/2) + 
+
+  dist12 = 2*Math.asin( Math.sqrt( Math.sin(dLat/2)*Math.sin(dLat/2) +
     Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)*Math.sin(dLon/2) ) );
   if (dist12 == 0) return null;
-  
+
   // initial/final bearings between points
-  brngA = Math.acos( ( Math.sin(lat2) - Math.sin(lat1)*Math.cos(dist12) ) / 
+  brngA = Math.acos( ( Math.sin(lat2) - Math.sin(lat1)*Math.cos(dist12) ) /
     ( Math.sin(dist12)*Math.cos(lat1) ) );
   if (isNaN(brngA)) brngA = 0;  // protect against rounding
-  brngB = Math.acos( ( Math.sin(lat1) - Math.sin(lat2)*Math.cos(dist12) ) / 
+  brngB = Math.acos( ( Math.sin(lat1) - Math.sin(lat2)*Math.cos(dist12) ) /
     ( Math.sin(dist12)*Math.cos(lat2) ) );
-  
+
   if (Math.sin(lon2-lon1) > 0) {
     brng12 = brngA;
     brng21 = 2*Math.PI - brngB;
@@ -366,30 +366,30 @@ LatLon.intersection = function(p1, brng1, p2, brng2) {
     brng12 = 2*Math.PI - brngA;
     brng21 = brngB;
   }
-  
+
   alpha1 = (brng13 - brng12 + Math.PI) % (2*Math.PI) - Math.PI;  // angle 2-1-3
   alpha2 = (brng21 - brng23 + Math.PI) % (2*Math.PI) - Math.PI;  // angle 1-2-3
-  
+
   if (Math.sin(alpha1)==0 && Math.sin(alpha2)==0) return null;  // infinite intersections
   if (Math.sin(alpha1)*Math.sin(alpha2) < 0) return null;       // ambiguous intersection
-  
+
   //alpha1 = Math.abs(alpha1);
   //alpha2 = Math.abs(alpha2);
   // ... Ed Williams takes abs of alpha1/alpha2, but seems to break calculation?
-  
-  alpha3 = Math.acos( -Math.cos(alpha1)*Math.cos(alpha2) + 
+
+  alpha3 = Math.acos( -Math.cos(alpha1)*Math.cos(alpha2) +
                        Math.sin(alpha1)*Math.sin(alpha2)*Math.cos(dist12) );
-  dist13 = Math.atan2( Math.sin(dist12)*Math.sin(alpha1)*Math.sin(alpha2), 
-                       Math.cos(alpha2)+Math.cos(alpha1)*Math.cos(alpha3) )
-  lat3 = Math.asin( Math.sin(lat1)*Math.cos(dist13) + 
+  dist13 = Math.atan2( Math.sin(dist12)*Math.sin(alpha1)*Math.sin(alpha2),
+                       Math.cos(alpha2)+Math.cos(alpha1)*Math.cos(alpha3) );
+  lat3 = Math.asin( Math.sin(lat1)*Math.cos(dist13) +
                     Math.cos(lat1)*Math.sin(dist13)*Math.cos(brng13) );
-  dLon13 = Math.atan2( Math.sin(brng13)*Math.sin(dist13)*Math.cos(lat1), 
+  dLon13 = Math.atan2( Math.sin(brng13)*Math.sin(dist13)*Math.cos(lat1),
                        Math.cos(dist13)-Math.sin(lat1)*Math.sin(lat3) );
   lon3 = lon1+dLon13;
   lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
+};
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -407,19 +407,19 @@ LatLon.prototype.rhumbDistanceTo = function(point) {
   var lat1 = this._lat.toRad(), lat2 = point._lat.toRad();
   var dLat = (point._lat-this._lat).toRad();
   var dLon = Math.abs(point._lon-this._lon).toRad();
-  
+
   var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
   var q = (isFinite(dLat/dPhi)) ? dLat/dPhi : Math.cos(lat1);  // E-W line gives dPhi=0
-  
+
   // if dLon over 180Â° take shorter rhumb across anti-meridian:
   if (Math.abs(dLon) > Math.PI) {
     dLon = dLon>0 ? -(2*Math.PI-dLon) : (2*Math.PI+dLon);
   }
-  
-  var dist = Math.sqrt(dLat*dLat + q*q*dLon*dLon) * R; 
-  
+
+  var dist = Math.sqrt(dLat*dLat + q*q*dLon*dLon) * R;
+
   return dist.toPrecisionFixed(4);  // 4 sig figs reflects typical 0.3% accuracy of spherical model
-}
+};
 
 /**
  * Returns the bearing from this point to the supplied point along a rhumb line, in degrees
@@ -430,16 +430,16 @@ LatLon.prototype.rhumbDistanceTo = function(point) {
 LatLon.prototype.rhumbBearingTo = function(point) {
   var lat1 = this._lat.toRad(), lat2 = point._lat.toRad();
   var dLon = (point._lon-this._lon).toRad();
-  
+
   var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
   if (Math.abs(dLon) > Math.PI) dLon = dLon>0 ? -(2*Math.PI-dLon) : (2*Math.PI+dLon);
   var brng = Math.atan2(dLon, dPhi);
-  
+
   return (brng.toDeg()+360) % 360;
-}
+};
 
 /**
- * Returns the destination point from this point having travelled the given distance (in km) on the 
+ * Returns the destination point from this point having travelled the given distance (in km) on the
  * given bearing along a rhumb line
  *
  * @param   {Number} brng: Bearing in degrees from North
@@ -455,19 +455,19 @@ LatLon.prototype.rhumbDestinationPoint = function(brng, dist) {
   var dLat = d*Math.cos(brng);
   // nasty kludge to overcome ill-conditioned results around parallels of latitude:
   if (Math.abs(dLat) < 1e-10) dLat = 0; // dLat < 1 mm
-  
+
   var lat2 = lat1 + dLat;
   var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
   var q = (isFinite(dLat/dPhi)) ? dLat/dPhi : Math.cos(lat1);  // E-W line gives dPhi=0
   var dLon = d*Math.sin(brng)/q;
-  
+
   // check for some daft bugger going past the pole, normalise latitude if so
   if (Math.abs(lat2) > Math.PI/2) lat2 = lat2>0 ? Math.PI-lat2 : -Math.PI-lat2;
-  
+
   lon2 = (lon1+dLon+3*Math.PI)%(2*Math.PI) - Math.PI;
- 
+
   return new LatLon(lat2.toDeg(), lon2.toDeg());
-}
+};
 
 /**
  * Returns the loxodromic midpoint (along a rhumb line) between this point and the supplied point.
@@ -479,28 +479,28 @@ LatLon.prototype.rhumbDestinationPoint = function(brng, dist) {
 LatLon.prototype.rhumbMidpointTo = function(point) {
   lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   lat2 = point._lat.toRad(), lon2 = point._lon.toRad();
-  
+
   if (Math.abs(lon2-lon1) > Math.PI) lon1 += 2*Math.PI; // crossing anti-meridian
-  
+
   var lat3 = (lat1+lat2)/2;
   var f1 = Math.tan(Math.PI/4 + lat1/2);
   var f2 = Math.tan(Math.PI/4 + lat2/2);
   var f3 = Math.tan(Math.PI/4 + lat3/2);
   var lon3 = ( (lon2-lon1)*Math.log(f3) + lon1*Math.log(f2) - lon2*Math.log(f1) ) / Math.log(f2/f1);
-  
+
   if (!isFinite(lon3)) lon3 = (lon1+lon2)/2; // parallel of latitude
-  
+
   lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
+};
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 
 /**
- * Returns the latitude of this point; signed numeric degrees if no format, otherwise format & dp 
+ * Returns the latitude of this point; signed numeric degrees if no format, otherwise format & dp
  * as per Geo.toLat()
  *
  * @param   {String} [format]: Return value as 'd', 'dm', 'dms'
@@ -509,12 +509,12 @@ LatLon.prototype.rhumbMidpointTo = function(point) {
  */
 LatLon.prototype.lat = function(format, dp) {
   if (typeof format == 'undefined') return this._lat;
-  
+
   return Geo.toLat(this._lat, format, dp);
-}
+};
 
 /**
- * Returns the longitude of this point; signed numeric degrees if no format, otherwise format & dp 
+ * Returns the longitude of this point; signed numeric degrees if no format, otherwise format & dp
  * as per Geo.toLon()
  *
  * @param   {String} [format]: Return value as 'd', 'dm', 'dms'
@@ -523,9 +523,9 @@ LatLon.prototype.lat = function(format, dp) {
  */
 LatLon.prototype.lon = function(format, dp) {
   if (typeof format == 'undefined') return this._lon;
-  
+
   return Geo.toLon(this._lon, format, dp);
-}
+};
 
 /**
  * Returns a string representation of this point; format and dp as per lat()/lon()
@@ -536,9 +536,9 @@ LatLon.prototype.lon = function(format, dp) {
  */
 LatLon.prototype.toString = function(format, dp) {
   if (typeof format == 'undefined') format = 'dms';
-  
-  return Geo.toLat(this._lat, format, dp) + ', ' + Geo.toLon(this._lon, format, dp);
-}
+
+  return `${Geo.toLat(this._lat, format, dp)}, ${Geo.toLon(this._lon, format, dp)}`;
+};
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
@@ -548,52 +548,52 @@ LatLon.prototype.toString = function(format, dp) {
 if (typeof Number.prototype.toRad == 'undefined') {
   Number.prototype.toRad = function() {
     return this * Math.PI / 180;
-  }
+  };
 }
 
 /** Converts radians to numeric (signed) degrees */
 if (typeof Number.prototype.toDeg == 'undefined') {
   Number.prototype.toDeg = function() {
     return this * 180 / Math.PI;
-  }
+  };
 }
 
-/** 
+/**
  * Formats the significant digits of a number, using only fixed-point notation (no exponential)
- * 
+ *
  * @param   {Number} precision: Number of significant digits to appear in the returned string
  * @returns {String} A string representation of number which contains precision significant digits
  */
 if (typeof Number.prototype.toPrecisionFixed == 'undefined') {
   Number.prototype.toPrecisionFixed = function(precision) {
-    
+
     // use standard toPrecision method
     var n = this.toPrecision(precision);
-    
+
     // ... but replace +ve exponential format with trailing zeros
     n = n.replace(/(.+)e\+(.+)/, function(n, sig, exp) {
       sig = sig.replace(/\./, '');       // remove decimal from significand
       l = sig.length - 1;
-      while (exp-- > l) sig = sig + '0'; // append zeros from exponent
+      while (exp-- > l) sig = `${sig}0`; // append zeros from exponent
       return sig;
     });
-    
+
     // ... and replace -ve exponential format with leading zeros
     n = n.replace(/(.+)e-(.+)/, function(n, sig, exp) {
       sig = sig.replace(/\./, '');       // remove decimal from significand
-      while (exp-- > 1) sig = '0' + sig; // prepend zeros from exponent
-      return '0.' + sig;
+      while (exp-- > 1) sig = `0${sig}`; // prepend zeros from exponent
+      return `0.${sig}`;
     });
-    
+
     return n;
-  }
+  };
 }
 
 /** Trims whitespace from string (q.v. blog.stevenlevithan.com/archives/faster-trim-javascript) */
 if (typeof String.prototype.trim == 'undefined') {
   String.prototype.trim = function() {
     return String(this).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
+  };
 }
 
 
@@ -611,8 +611,8 @@ if (!window.console) window.console = { log: function() {} };
 /**
  * @requires LatLon
  */
- 
- 
+
+
 /**
  * Creates a OsGridRef object
  *
@@ -633,9 +633,9 @@ function OsGridRef(easting, northing) {
  * @return {OsGridRef} OS Grid Reference easting/northing
  */
 OsGridRef.latLongToOsGrid = function(point) {
-  var lat = point.lat().toRad(); 
-  var lon = point.lon().toRad(); 
-  
+  var lat = point.lat().toRad();
+  var lon = point.lon().toRad();
+
   var a = 6377563.396, b = 6356256.910;          // Airy 1830 major & minor semi-axes
   var F0 = 0.9996012717;                         // NatGrid scale factor on central meridian
   var lat0 = (49).toRad(), lon0 = (-2).toRad();  // NatGrid true origin is 49ºN,2ºW
@@ -674,7 +674,7 @@ OsGridRef.latLongToOsGrid = function(point) {
   var E = E0 + IV*dLon + V*dLon3 + VI*dLon5;
 
   return new OsGridRef(E, N);
-}
+};
 
 
 /**
@@ -726,9 +726,9 @@ OsGridRef.osGridToLatLong = function(gridref) {
   var dE = (E-E0), dE2 = dE*dE, dE3 = dE2*dE, dE4 = dE2*dE2, dE5 = dE3*dE2, dE6 = dE4*dE2, dE7 = dE5*dE2;
   lat = lat - VII*dE2 + VIII*dE4 - IX*dE6;
   var lon = lon0 + X*dE - XI*dE3 + XII*dE5 - XIIA*dE7;
-  
+
   return new LatLon(lat.toDeg(), lon.toDeg());
-}
+};
 
 
 /**
@@ -761,17 +761,17 @@ OsGridRef.parse = function(gridref) {
 
   // normalise to 1m grid, rounding up to centre of grid square:
   switch (gridref.length) {
-    case 0: e += '50000'; n += '50000'; break;
-    case 2: e += '5000'; n += '5000'; break;
-    case 4: e += '500'; n += '500'; break;
-    case 6: e += '50'; n += '50'; break;
-    case 8: e += '5'; n += '5'; break;
-    case 10: break; // 10-digit refs are already 1m
-    default: return new OsGridRef(NaN, NaN);
+  case 0: e += '50000'; n += '50000'; break;
+  case 2: e += '5000'; n += '5000'; break;
+  case 4: e += '500'; n += '500'; break;
+  case 6: e += '50'; n += '50'; break;
+  case 8: e += '5'; n += '5'; break;
+  case 10: break; // 10-digit refs are already 1m
+  default: return new OsGridRef(NaN, NaN);
   }
 
   return new OsGridRef(e, n);
-}
+};
 
 
 /**
@@ -784,10 +784,10 @@ OsGridRef.prototype.toString = function(digits) {
   digits = (typeof digits == 'undefined') ? 10 : digits;
   e = this.easting, n = this.northing;
   if (e==NaN || n==NaN) return '??';
-  
+
   // get the 100km-grid indices
   var e100k = Math.floor(e/100000), n100k = Math.floor(n/100000);
-  
+
   if (e100k<0 || e100k>6 || n100k<0 || n100k>12) return '';
 
   // translate those into numeric equivalents of the grid letters
@@ -803,10 +803,10 @@ OsGridRef.prototype.toString = function(digits) {
   e = Math.floor((e%100000)/Math.pow(10,5-digits/2));
   n = Math.floor((n%100000)/Math.pow(10,5-digits/2));
 
-  var gridRef = letPair + ' ' + e.padLz(digits/2) + ' ' + n.padLz(digits/2);
+  var gridRef = `${letPair} ${e.padLz(digits/2)} ${n.padLz(digits/2)}`;
 
   return gridRef;
-}
+};
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -815,7 +815,7 @@ OsGridRef.prototype.toString = function(digits) {
 if (typeof String.prototype.trim == 'undefined') {
   String.prototype.trim = function() {
     return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
+  };
 }
 
 /** Pads a number with sufficient leading zeros to make it w chars wide */
@@ -823,9 +823,9 @@ if (typeof String.prototype.padLz == 'undefined') {
   Number.prototype.padLz = function(w) {
     var n = this.toString();
     var l = n.length;
-    for (var i=0; i<w-l; i++) n = '0' + n;
+    for (var i=0; i<w-l; i++) n = `0${n}`;
     return n;
-  }
+  };
 }
 
 

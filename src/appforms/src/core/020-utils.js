@@ -5,8 +5,8 @@ appForm.utils = function(module) {
   module.getTime = getTime;
   module.send=send;
   module.isPhoneGap = isPhoneGap;
-  module.generateGlobalEventName = function(type, eventName){
-    return "" + type + ":" + eventName;
+  module.generateGlobalEventName = function(type, eventName) {
+    return `${type}:${eventName}`;
   };
 
   function isPhoneGap() {
@@ -41,11 +41,11 @@ appForm.utils = function(module) {
     var _type = props._type;
     var ts = getTime().getTime();
     if (_id && _type) {
-      return _id + '_' + _type + '_' + ts;
+      return `${_id}_${_type}_${ts}`;
     } else if (_id) {
-      return _id + '_' + ts;
+      return `${_id}_${ts}`;
     } else if (_type) {
-      return _type + '_' + ts;
+      return `${_type}_${ts}`;
     } else {
       return ts;
     }
@@ -73,11 +73,11 @@ appForm.utils = function(module) {
     }
   }
 
-  function send(params,cb){
+  function send(params,cb) {
     $fh.forms.log.d("Sending mail: ", params);
-    $fh.send(params,function(){
+    $fh.send(params,function() {
       cb(null);
-    },function(msg){
+    },function(msg) {
       cb(msg);
     });
   }

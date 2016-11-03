@@ -3,7 +3,7 @@ var assert = chai.assert;
 
 describe("Backbone - Dropdown Field View", function() {
 
-  beforeEach(function(done){
+  beforeEach(function(done) {
     var self = this;
     var Form = appForm.models.Form;
     new Form({
@@ -21,7 +21,7 @@ describe("Backbone - Dropdown Field View", function() {
 
       self.formView.loadForm({
         form: form
-      }, function(err){
+      }, function(err) {
         assert.ok(!err, "Expected no error");
         self.formView.render();
 

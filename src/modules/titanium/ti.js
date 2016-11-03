@@ -10,17 +10,17 @@ if (typeof Titanium !== 'undefined') {
   }
 
   window.push = {
-    register: function (onNotification, success, fail, config) {
+    register: function(onNotification, success, fail, config) {
       var push = require('AeroGearPush').init(config);
       push.registerDevice({
         extraOptions: {
           categories: config.categories,
           alias: config.alias
         },
-        onReceive: function (event) {
+        onReceive: function(event) {
           onNotification(event);
         },
-        onTokenSuccess: function () {
+        onTokenSuccess: function() {
           success();
         }
       });

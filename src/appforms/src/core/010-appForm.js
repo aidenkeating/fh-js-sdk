@@ -22,12 +22,12 @@ var appForm = function(module) {
         $fh.forms.log.e("Form config loading error: ", err);
       }
       appForm.models.log.loadLocal(function(err) {
-        if(err){
+        if (err) {
           console.error("Error loading config from local storage");
         }
 
-        appForm.models.submissions.loadLocal(function(err){
-          if(err){
+        appForm.models.submissions.loadLocal(function(err) {
+          if (err) {
             console.error("Error loading submissions");
           }
 

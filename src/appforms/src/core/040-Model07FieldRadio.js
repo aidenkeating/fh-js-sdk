@@ -1,8 +1,8 @@
 /**
  * extension of Field class to support radio field
  */
-appForm.models.Field = function (module) {
-  module.prototype.getRadioOption = function () {
+appForm.models.Field = function(module) {
+  module.prototype.getRadioOption = function() {
     var def = this.getFieldDefinition();
     if (def.options) {
       return def.options;

@@ -4,8 +4,8 @@ var sinonChai = require('sinon-chai');
 var url = require('url');
 
 var process = require("process");
-if(document && document.location){
-  if(document.location.href.indexOf("coverage=1") > -1){
+if (document && document.location) {
+  if (document.location.href.indexOf("coverage=1") > -1) {
     process.env.LIB_COV = 1;
   }
 }
@@ -36,31 +36,33 @@ var apphost = {
 
 var expectedUrl = "http://localhost:8101";
 
-if(document && document.location){
+if (document && document.location) {
   var doc_url = document.location.href;
   var url_params = qs(doc_url);
   var local = (typeof url_params.url !== 'undefined');
-  if(local){
+  if (local) {
     expectedUrl = url_params.url;
   }
 }
 
-describe("test all cloud related GETs", function(){
+describe("test all cloud related GETs", function() {
 
   var server;
   var requests;
 
-  beforeEach(function () {
-    server = sinon.useFakeXMLHttpRequest(); 
+  beforeEach(function() {
+    server = sinon.useFakeXMLHttpRequest();
     requests = [];
-    server.onCreate = function (xhr) {
+    server.onCreate = function(xhr) {
       requests.push(xhr);
     };
   });
 
-  afterEach(function () { server.restore(); });
+  afterEach(function() {
+    server.restore();
+  });
 
-  it("should work with cloud GET call", function(){
+  it("should work with cloud GET call", function() {
     var success = sinon.spy();
     var fail = sinon.spy();
 

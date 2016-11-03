@@ -1,6 +1,6 @@
 describe("Dropdown Field Model", function() {
 
-  function getMockDrowdownFieldData(include_blank_option){
+  function getMockDrowdownFieldData(include_blank_option) {
     return {
       "required": true,
       "type": "dropdown",

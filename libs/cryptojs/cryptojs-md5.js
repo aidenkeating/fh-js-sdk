@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function (Math) {
+(function(Math) {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -17,7 +17,7 @@
   var T = [];
 
   // Compute constants
-  (function () {
+  (function() {
     for (var i = 0; i < 64; i++) {
       T[i] = (Math.abs(Math.sin(i + 1)) * 0x100000000) | 0;
     }
@@ -27,14 +27,14 @@
    * MD5 hash algorithm.
    */
   var MD5 = C_algo.MD5 = Hasher.extend({
-    _doReset: function () {
+    _doReset: function() {
       this._hash = new WordArray.init([
         0x67452301, 0xefcdab89,
         0x98badcfe, 0x10325476
       ]);
     },
 
-    _doProcessBlock: function (M, offset) {
+    _doProcessBlock: function(M, offset) {
       // Swap endian
       for (var i = 0; i < 16; i++) {
         // Shortcuts
@@ -149,7 +149,7 @@
       H[3] = (H[3] + d) | 0;
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcuts
       var data = this._data;
       var dataWords = data.words;
@@ -193,7 +193,7 @@
       return hash;
     },
 
-    clone: function () {
+    clone: function() {
       var clone = Hasher.clone.call(this);
       clone._hash = this._hash.clone();
 

@@ -20,59 +20,59 @@ appForm.models = (function(module) {
   appForm.utils.extend(Log, Model);
 
   Log.prototype.info = function(logLevel, msgs) {
-      if ($fh.forms.config.get("logger") === true) {
-        var levelString = "";
-        var curLevel = $fh.forms.config.get("log_level");
-        var log_levels = $fh.forms.config.get("log_levels");
-        var self = this;
-        if (typeof logLevel === "string") {
-          levelString = logLevel;
-          logLevel = log_levels.indexOf(logLevel.toLowerCase());
-        } else {
-          logLevel = 0;
+    if ($fh.forms.config.get("logger") === true) {
+      var levelString = "";
+      var curLevel = $fh.forms.config.get("log_level");
+      var log_levels = $fh.forms.config.get("log_levels");
+      var self = this;
+      if (typeof logLevel === "string") {
+        levelString = logLevel;
+        logLevel = log_levels.indexOf(logLevel.toLowerCase());
+      } else {
+        logLevel = 0;
+      }
+
+      curLevel = isNaN(parseInt(curLevel, 10)) ? curLevel : parseInt(curLevel, 10);
+      logLevel = isNaN(parseInt(logLevel, 10)) ? logLevel : parseInt(logLevel, 10);
+
+      if (curLevel < logLevel) {
+        return;
+      } else {
+        var args = Array.prototype.splice.call(arguments, 0);
+        var logs = self.get("logs");
+        args.shift();
+        var logStr = "";
+        while (args.length > 0) {
+          logStr += `${JSON.stringify(args.shift())} `;
         }
-
-        curLevel = isNaN(parseInt(curLevel, 10)) ? curLevel : parseInt(curLevel, 10);
-        logLevel = isNaN(parseInt(logLevel, 10)) ? logLevel : parseInt(logLevel, 10);
-
-        if (curLevel < logLevel) {
-          return;
+        logs.push(self.wrap(logStr, levelString));
+        if (logs.length > $fh.forms.config.get("log_line_limit")) {
+          logs.shift();
+        }
+        if (self.isWriting) {
+          self.moreToWrite = true;
         } else {
-          var args = Array.prototype.splice.call(arguments, 0);
-          var logs = self.get("logs");
-          args.shift();
-          var logStr = "";
-          while (args.length > 0) {
-            logStr += JSON.stringify(args.shift()) + " ";
-          }
-          logs.push(self.wrap(logStr, levelString));
-          if (logs.length > $fh.forms.config.get("log_line_limit")) {
-            logs.shift();
-          }
-          if (self.isWriting) {
-            self.moreToWrite = true;
-          } else {
-            var _recursiveHandler = function() {
-              if (self.moreToWrite) {
-                self.moreToWrite = false;
-                self.write(_recursiveHandler);
-              }
-            };
-            self.write(_recursiveHandler);
-          }
+          var _recursiveHandler = function() {
+            if (self.moreToWrite) {
+              self.moreToWrite = false;
+              self.write(_recursiveHandler);
+            }
+          };
+          self.write(_recursiveHandler);
         }
       }
-    };
+    }
+  };
   Log.prototype.wrap = function(msg, levelString) {
     var now = new Date();
     var dateStr = now.toISOString();
     if (typeof msg === "object") {
       msg = JSON.stringify(msg);
     }
-    var finalMsg = dateStr + " " + levelString.toUpperCase() + " " + msg;
+    var finalMsg = `${dateStr} ${levelString.toUpperCase()} ${msg}`;
     return finalMsg;
   };
-  
+
   Log.prototype.write = function(cb) {
     var self = this;
     self.isWriting = true;
@@ -120,7 +120,7 @@ appForm.models = (function(module) {
       "type": "email",
       "to": email,
       "subject": "App Forms App Logs",
-      "body": "Configuration:\n" + JSON.stringify(config) + "\n\nApp Logs:\n" + logs.join("\n")
+      "body": `Configuration:\n${JSON.stringify(config)}\n\nApp Logs:\n${logs.join("\n")}`
     };
     appForm.utils.send(params, cb);
   };

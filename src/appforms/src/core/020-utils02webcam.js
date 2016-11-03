@@ -1,4 +1,4 @@
-appForm.utils = function (module) {
+appForm.utils = function(module) {
   module.takePhoto = takePhoto;
   module.isPhoneGapCamAvailable = isPhoneGapAvailable;
   module.isHtml5CamAvailable = isHtml5CamAvailable;
@@ -26,12 +26,12 @@ appForm.utils = function (module) {
   }
 
   function cancelHtml5Camera() {
-    if (localMediaStream){
+    if (localMediaStream) {
       if (localMediaStream.stop) {
         localMediaStream.stop();
-      } else{
+      } else {
         var tracks = localMediaStream.getTracks();
-        if(tracks && tracks.length!==0){
+        if (tracks && tracks.length!==0) {
           tracks[0].stop();
         }
       }
@@ -67,7 +67,7 @@ appForm.utils = function (module) {
       cb('Your device does not support camera.');
     }
   }
-  function _phoneGapPhoto(params, cb){
+  function _phoneGapPhoto(params, cb) {
     params.encodingType = params.encodingType === 'jpeg' ? Camera.EncodingType.JPEG : Camera.EncodingType.PNG;
     navigator.camera.getPicture(_phoneGapPhotoSuccess(cb), cb, {
       quality: params.quality,
@@ -80,7 +80,7 @@ appForm.utils = function (module) {
     });
   }
   function _phoneGapPhotoSuccess(cb) {
-    return function (imageData) {
+    return function(imageData) {
       var imageURI = imageData;
       cb(null, imageURI);
     };
@@ -94,7 +94,7 @@ appForm.utils = function (module) {
     canvas.width = width;
     canvas.height = height;
     if (!localMediaStream) {
-      navigator.getUserMedia({ video: true, audio:false }, function (stream) {
+      navigator.getUserMedia({ video: true, audio:false }, function(stream) {
         video.src = window.URL.createObjectURL(stream);
         localMediaStream = stream;
         cb(null, video);
@@ -108,17 +108,17 @@ appForm.utils = function (module) {
   /**
    * Capturing a barcode using the PhoneGap barcode plugin
    */
-  function _phoneGapBarcode(params, cb){
+  function _phoneGapBarcode(params, cb) {
     //Checking for a cordova barcodeScanner plugin.
-    if(window.cordova && window.cordova.plugins && window.cordova.plugins.barcodeScanner){
+    if (window.cordova && window.cordova.plugins && window.cordova.plugins.barcodeScanner) {
       cordova.plugins.barcodeScanner.scan(
-        function (result) {
-          $fh.forms.log.d("Barcode Found: " + JSON.stringify(result));
+        function(result) {
+          $fh.forms.log.d(`Barcode Found: ${JSON.stringify(result)}`);
           return cb(null, result);
         },
-        function (error) {
-          $fh.forms.log.e("Scanning failed: " + error);
-          cb("Scanning failed: " + error);
+        function(error) {
+          $fh.forms.log.e(`Scanning failed: ${error}`);
+          cb(`Scanning failed: ${error}`);
         }
       );
     } else {
@@ -133,14 +133,14 @@ appForm.utils = function (module) {
    * @param cb
    * @private
    */
-  function _webBarcode(params, cb){
+  function _webBarcode(params, cb) {
     //TODO Web barcode decoding not supported yet.
     $fh.forms.log.e("Web Barcode Decoding not supported yet.");
     return cb("Web Barcode Decoding not supported yet.");
   }
 
-  function captureBarcode(params, cb){
-    if(isPhoneGapAvailable()){
+  function captureBarcode(params, cb) {
+    if (isPhoneGapAvailable()) {
       _phoneGapBarcode(params,cb);
     } else {
       _webBarcode(params, cb);
@@ -189,13 +189,13 @@ appForm.utils = function (module) {
       var base64 = canvas.toDataURL('image/png');
       var imageData = ctx.getImageData(0, 0, params.targetWidth, params.targetHeight);
 
-      if(params.cancelHtml5Camera){
+      if (params.cancelHtml5Camera) {
         cancelHtml5Camera();
       }
 
       //Deciding whether to return raw image data or a base64 image.
       //rawData is mainly used for scanning for barcodes.
-      if(params.rawData){
+      if (params.rawData) {
         return cb(null, {imageData: imageData, width: params.targetWidth, height: params.targetHeight, base64: base64});
       } else {
         return cb(null, base64);

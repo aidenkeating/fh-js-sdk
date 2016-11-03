@@ -20,16 +20,16 @@ var backboneModules = modules.backbone;
 
 coreModules.forEach(function(name) {
   //source file
-  requiredFiles.push("./src/core/" + name + ".js");
+  requiredFiles.push(`./src/core/${name}.js`);
   //test file
-  requiredFiles.push("./tests/core/" + name + ".js");
+  requiredFiles.push(`./tests/core/${name}.js`);
 });
 
 backboneModules.forEach(function(name) {
   //source file
-  requiredFiles.push("./src/backbone/" + name + ".js");
+  requiredFiles.push(`./src/backbone/${name}.js`);
   //test file
-  requiredFiles.push("./tests/backbone/" + name + ".js");
+  requiredFiles.push(`./tests/backbone/${name}.js`);
 });
 
 /*globals mocha */

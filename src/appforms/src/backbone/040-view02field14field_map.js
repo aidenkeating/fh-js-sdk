@@ -42,7 +42,7 @@ FieldMapView = FieldView.extend({
   allMapInit: function() {
     var func = this.allMapInitFunc.shift();
     while (typeof(func) !== "undefined") {
-      if(typeof(func) === "function"){
+      if (typeof(func) === "function") {
         func();
         func = this.allMapInitFunc.shift();
       } else {
@@ -55,10 +55,8 @@ FieldMapView = FieldView.extend({
     if (this.mapInited === this.curRepeat) {
       func();
       this.mapResize();
-    } else {
-      if (this.allMapInitFunc.indexOf(func) === -1) {
-        this.allMapInitFunc.push(func);
-      }
+    } else if (this.allMapInitFunc.indexOf(func) === -1) {
+      this.allMapInitFunc.push(func);
     }
   },
   onElementShow: function(index) {
@@ -67,7 +65,7 @@ FieldMapView = FieldView.extend({
 
     var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
 
-    if($fh.geo){
+    if ($fh.geo) {
       $fh.geo({
         interval: 0
       }, function(geoRes) {
@@ -118,7 +116,7 @@ FieldMapView = FieldView.extend({
       }
     }
   },
-  onRender: function(){
+  onRender: function() {
     this.mapResize();
   },
   valueFromElement: function(index) {
@@ -145,7 +143,7 @@ FieldMapView = FieldView.extend({
       map.setZoom(value.zoom);
       that.markers[index].setPosition(pt);
     }
-    if (value){
+    if (value) {
       this.onAllMapInit(_handler);
     }
 

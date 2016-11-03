@@ -22,7 +22,7 @@
  *  var api = $('.sigPad').signaturePad({displayOnly:true})
  *  api.regenerate(sig)
  */
-(function ($) {
+(function($) {
   function SignaturePad(selector, options) {
     /**
    * Reference to the object for use in public methods
@@ -89,7 +89,7 @@
    */
     function stopDrawing() {
       if (touchable) {
-        canvas.each(function () {
+        canvas.each(function() {
           this.ontouchmove = null;
         });
       } else {
@@ -144,7 +144,7 @@
    */
     function startDrawing(e, o) {
       if (touchable) {
-        canvas.each(function () {
+        canvas.each(function() {
           this.addEventListener('touchmove', drawLine, false);
         });
       } else {
@@ -161,7 +161,7 @@
     function disableCanvas() {
       eventsBound = false;
       if (touchable) {
-        canvas.each(function () {
+        canvas.each(function() {
           this.removeEventListener('touchstart', stopDrawing);
           this.removeEventListener('touchend', stopDrawing);
           this.removeEventListener('touchmove', drawLine);
@@ -190,25 +190,25 @@
       if (typeof e.changedTouches !== 'undefined')
         touchable = true;
       if (touchable) {
-        canvas.each(function () {
+        canvas.each(function() {
           this.addEventListener('touchend', stopDrawing, false);
           this.addEventListener('touchcancel', stopDrawing, false);
         });
         canvas.unbind('mousedown.signaturepad');
       } else {
-        canvas.bind('mouseup.signaturepad', function (e) {
+        canvas.bind('mouseup.signaturepad', function(e) {
           stopDrawing();
         });
-        canvas.bind('mouseleave.signaturepad', function (e) {
+        canvas.bind('mouseleave.signaturepad', function(e) {
           if (!mouseLeaveTimeout) {
-            mouseLeaveTimeout = setTimeout(function () {
+            mouseLeaveTimeout = setTimeout(function() {
               stopDrawing();
               clearTimeout(mouseLeaveTimeout);
               mouseLeaveTimeout = false;
             }, 500);
           }
         });
-        canvas.each(function () {
+        canvas.each(function() {
           this.ontouchstart = null;
         });
       }
@@ -222,27 +222,27 @@
     function drawIt() {
       $(settings.typed, context).hide();
       clearCanvas();
-      canvas.each(function () {
-        this.ontouchstart = function (e) {
+      canvas.each(function() {
+        this.ontouchstart = function(e) {
           e.preventDefault();
           initDrawEvents(e);
           startDrawing(e, this);
         };
       });
-      canvas.bind('mousedown.signaturepad', function (e) {
+      canvas.bind('mousedown.signaturepad', function(e) {
         initDrawEvents(e);
         startDrawing(e, this);
       });
-      $(settings.clear, context).bind('click.signaturepad', function (e) {
+      $(settings.clear, context).bind('click.signaturepad', function(e) {
         e.preventDefault();
         clearCanvas();
       });
-      $(settings.typeIt, context).bind('click.signaturepad', function (e) {
+      $(settings.typeIt, context).bind('click.signaturepad', function(e) {
         e.preventDefault();
         typeIt();
       });
       $(settings.drawIt, context).unbind('click.signaturepad');
-      $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+      $(settings.drawIt, context).bind('click.signaturepad', function(e) {
         e.preventDefault();
       });
       $(settings.typeIt, context).removeClass(settings.currentClass);
@@ -262,12 +262,12 @@
       clearCanvas();
       disableCanvas();
       $(settings.typed, context).show();
-      $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+      $(settings.drawIt, context).bind('click.signaturepad', function(e) {
         e.preventDefault();
         drawIt();
       });
       $(settings.typeIt, context).unbind('click.signaturepad');
-      $(settings.typeIt, context).bind('click.signaturepad', function (e) {
+      $(settings.typeIt, context).bind('click.signaturepad', function(e) {
         e.preventDefault();
       });
       $(settings.output, context).val('');
@@ -290,7 +290,7 @@
       $(settings.typed, context).html(val.replace(/>/g, '&gt;').replace(/</g, '&lt;'));
       while ($(settings.typed, context).width() > element.width) {
         var oldSize = $(settings.typed, context).css('font-size').replace(/px/, '');
-        $(settings.typed, context).css('font-size', oldSize - 1 + 'px');
+        $(settings.typed, context).css('font-size', `${oldSize - 1}px`);
       }
     }
     /**
@@ -302,7 +302,7 @@
    * @param {Object} settings provided settings
    */
     function onBeforeValidate(context, settings) {
-      $('p.' + settings.errorClass, context).remove();
+      $(`p.${settings.errorClass}`, context).remove();
       context.removeClass(settings.errorClass);
       $('input, label', context).removeClass(settings.errorClass);
     }
@@ -326,7 +326,7 @@
         ].join(''));
         $(settings.name, context).focus();
         $(settings.name, context).addClass(settings.errorClass);
-        $('label[for=' + $(settings.name).attr('id') + ']', context).addClass(settings.errorClass);
+        $(`label[for=${$(settings.name).attr('id')}]`, context).addClass(settings.errorClass);
       }
       if (errors.drawInvalid)
         context.prepend([
@@ -417,11 +417,11 @@
       // https://gist.github.com/661844
       // http://bugs.jquery.com/ticket/6446
       if (parseFloat((/CPU.+OS ([0-9_]{3}).*AppleWebkit.*Mobile/i.exec(navigator.userAgent) || [
-          0,
-          '4_2'
-        ])[1].replace('_', '.')) < 4.1) {
+        0,
+        '4_2'
+      ])[1].replace('_', '.')) < 4.1) {
         $.fn.Oldoffset = $.fn.offset;
-        $.fn.offset = function () {
+        $.fn.offset = function() {
           var result = $(this).Oldoffset();
           result.top -= window.scrollY;
           result.left -= window.scrollX;
@@ -429,10 +429,10 @@
         };
       }
       // Disable selection on the typed div and canvas
-      $(settings.typed, context).bind('selectstart.signaturepad', function (e) {
+      $(settings.typed, context).bind('selectstart.signaturepad', function(e) {
         return $(e.target).is(':input');
       });
-      canvas.bind('selectstart.signaturepad', function (e) {
+      canvas.bind('selectstart.signaturepad', function(e) {
         return $(e.target).is(':input');
       });
       if (!element.getContext && FlashCanvas)
@@ -442,13 +442,13 @@
         $(settings.sig, context).show();
         if (!settings.displayOnly) {
           if (!settings.drawOnly) {
-            $(settings.name, context).bind('keyup.signaturepad', function () {
+            $(settings.name, context).bind('keyup.signaturepad', function() {
               type($(this).val());
             });
-            $(settings.name, context).bind('blur.signaturepad', function () {
+            $(settings.name, context).bind('blur.signaturepad', function() {
               type($(this).val());
             });
-            $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+            $(settings.drawIt, context).bind('click.signaturepad', function(e) {
               e.preventDefault();
               drawIt();
             });
@@ -460,11 +460,11 @@
           }
           if (settings.validateFields) {
             if ($(selector).is('form')) {
-              $(selector).bind('submit.signaturepad', function () {
+              $(selector).bind('submit.signaturepad', function() {
                 return validateForm();
               });
             } else {
-              $(selector).parents('form').bind('submit.signaturepad', function () {
+              $(selector).parents('form').bind('submit.signaturepad', function() {
                 return validateForm();
               });
             }
@@ -474,7 +474,7 @@
       }
     }
     $.extend(self, {
-      init: function () {
+      init: function() {
         init();
       }  /**
      * Regenerates a signature on the canvas using an array of objects
@@ -483,7 +483,7 @@
      *
      * @param {Array} paths An array of the lines and points
      */,
-      regenerate: function (paths) {
+      regenerate: function(paths) {
         self.clearCanvas();
         $(settings.typed, context).hide();
         if (typeof paths === 'string')
@@ -495,21 +495,21 @@
      * Clears the canvas
      * Redraws the background colour and the signature line
      */,
-      clearCanvas: function () {
+      clearCanvas: function() {
         clearCanvas();
       }  /**
      * Returns the signature as a Js array
      *
      * @return {Array}
      */,
-      getSignature: function () {
+      getSignature: function() {
         return output;
       }  /**
      * Returns the signature as a Json string
      *
      * @return {String}
      */,
-      getSignatureString: function () {
+      getSignatureString: function() {
         return JSON.stringify(output);
       }  /**
      * Returns the signature as an image
@@ -517,7 +517,7 @@
      *
      * @return {String}
      */,
-      getSignatureImage: function () {
+      getSignatureImage: function() {
         var tmpCanvas = document.createElement('canvas'), tmpContext = null, data = null;
         tmpCanvas.style.position = 'absolute';
         tmpCanvas.style.top = '-999em';
@@ -547,9 +547,9 @@
  *
  * @return {Object} The Api for controlling the instance
  */
-  $.fn.signaturePad = function (options) {
+  $.fn.signaturePad = function(options) {
     var api = null;
-    this.each(function () {
+    this.each(function() {
       api = new SignaturePad(this, options);
       api.init();
     });
@@ -592,7 +592,7 @@
     onFormError: null
   };
 }(jQuery));
-var toBitmapURL = function ($fromCharCode, FF, MAX_LENGTH) {
+var toBitmapURL = function($fromCharCode, FF, MAX_LENGTH) {
     /**
      * (C) WebReflection - Mit Style License
      *      given a canvas, returns BMP 32bit with alpha channel data uri representation
@@ -622,21 +622,21 @@ var toBitmapURL = function ($fromCharCode, FF, MAX_LENGTH) {
      *      Moreover, have you ever tried to use native toDataURL("image/bmp") ?
      *      Most likely you gonna have max 24bit bitmap with all alpha channel info lost.
      */
-    function fromCharCode(code) {
-      for (var result = [], i = 0, length = code.length; i < length; i += MAX_LENGTH) {
-        result.push($fromCharCode.apply(null, code.slice(i, i + MAX_LENGTH)));
-      }
-      return result.join('');
+  function fromCharCode(code) {
+    for (var result = [], i = 0, length = code.length; i < length; i += MAX_LENGTH) {
+      result.push($fromCharCode.apply(null, code.slice(i, i + MAX_LENGTH)));
     }
-    function numberToInvertedBytes(number) {
-      return [
-        number & FF,
-        number >> 8 & FF,
-        number >> 16 & FF,
-        number >> 24 & FF
-      ];
-    }
-    function swapAndInvertY(data, width, height) {
+    return result.join('');
+  }
+  function numberToInvertedBytes(number) {
+    return [
+      number & FF,
+      number >> 8 & FF,
+      number >> 16 & FF,
+      number >> 24 & FF
+    ];
+  }
+  function swapAndInvertY(data, width, height) {
       /**
          * Bitmap pixels array is stored "pseudo inverted"
          * RGBA => BGRA (read as Alpha + RGB)
@@ -651,29 +651,29 @@ var toBitmapURL = function ($fromCharCode, FF, MAX_LENGTH) {
          *   2, 1, 0,  3,  6,  5,  4,  7
          * ]
          */
-      for (var i, j, x0, x1, y0, y1, sizeX = 4 * width, sizeY = height - 1, result = []; height--;) {
-        y0 = sizeX * (sizeY - height);
-        y1 = sizeX * height;
-        for (i = 0; i < width; i++) {
-          j = i * 4;
-          x0 = y0 + j;
-          x1 = y1 + j;
-          result[x0] = data[x1 + 2];
-          result[x0 + 1] = data[x1 + 1];
-          result[x0 + 2] = data[x1];
-          result[x0 + 3] = data[x1 + 3];
-        }
+    for (var i, j, x0, x1, y0, y1, sizeX = 4 * width, sizeY = height - 1, result = []; height--;) {
+      y0 = sizeX * (sizeY - height);
+      y1 = sizeX * height;
+      for (i = 0; i < width; i++) {
+        j = i * 4;
+        x0 = y0 + j;
+        x1 = y1 + j;
+        result[x0] = data[x1 + 2];
+        result[x0 + 1] = data[x1 + 1];
+        result[x0 + 2] = data[x1];
+        result[x0 + 3] = data[x1 + 3];
       }
-      return result;
     }
-    function toBitmapURL(canvas) {
-      var width = canvas.width, height = canvas.height, header = [].concat(numberToInvertedBytes(width), numberToInvertedBytes(height), 1, 0, 32, 0, 3, 0, 0, 0, numberToInvertedBytes(width * height * 4), 19, 11, 0, 0, 19, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF, 0, 0, FF, 0, 0, FF, 0, 0, 0, 0, 0, 0, FF, 32, 110, 105, 87), data = swapAndInvertY(canvas.getContext('2d').getImageData(0, 0, width, height).data, width, height), offset;
-      header = numberToInvertedBytes(header.length).concat(header);
-      offset = 14 + header.length;
-      return 'data:image/bmp;base64,' + btoa(fromCharCode([
-        66,
-        77
-      ].concat(numberToInvertedBytes(offset + data.length), 0, 0, 0, 0, numberToInvertedBytes(offset), header, data)));
-    }
-    return toBitmapURL;
-  }(String.fromCharCode, 255, 32767);
+    return result;
+  }
+  function toBitmapURL(canvas) {
+    var width = canvas.width, height = canvas.height, header = [].concat(numberToInvertedBytes(width), numberToInvertedBytes(height), 1, 0, 32, 0, 3, 0, 0, 0, numberToInvertedBytes(width * height * 4), 19, 11, 0, 0, 19, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF, 0, 0, FF, 0, 0, FF, 0, 0, 0, 0, 0, 0, FF, 32, 110, 105, 87), data = swapAndInvertY(canvas.getContext('2d').getImageData(0, 0, width, height).data, width, height), offset;
+    header = numberToInvertedBytes(header.length).concat(header);
+    offset = 14 + header.length;
+    return `data:image/bmp;base64,${btoa(fromCharCode([
+      66,
+      77
+    ].concat(numberToInvertedBytes(offset + data.length), 0, 0, 0, 0, numberToInvertedBytes(offset), header, data)))}`;
+  }
+  return toBitmapURL;
+}(String.fromCharCode, 255, 32767);

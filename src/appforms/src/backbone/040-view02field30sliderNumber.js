@@ -40,7 +40,7 @@ FieldSliderNumberView = FieldView.extend({
       step: fieldDefinition.stepSize || 1,
       value: defaultValue || fieldValidation.min || 0,
       formatter: function(value) {
-        return 'Current value: ' + value;
+        return `Current value: ${value}`;
       }
     };
 
@@ -48,13 +48,13 @@ FieldSliderNumberView = FieldView.extend({
 
     var input = $(wrapperObj.find("input[type='range']"));
 
-    wrapperObj.find(".slideValue").html("Selected Value: " + defaultValue);
+    wrapperObj.find(".slideValue").html(`Selected Value: ${defaultValue}`);
 
     //If the bootstrap plugin does not exist, the input will be type 'range'
-    if(typeof(input.slider) === "function" || typeof(input.bootstrapSlider) === "function"){
+    if (typeof(input.slider) === "function" || typeof(input.bootstrapSlider) === "function") {
       //If the bootstrap slide is in compatibility mode then use that one instead.
 
-      if(input.bootstrapSlider){
+      if (input.bootstrapSlider) {
         input.bootstrapSlider(params);
         if (this.readonly) {
 
@@ -76,13 +76,13 @@ FieldSliderNumberView = FieldView.extend({
     var wrapperObj = this.getWrapper(index);
     var input = $(wrapperObj.find("input[type='range']"));
 
-    if(value){
+    if (value) {
       input.val(value);
       input.slider('setValue', parseInt(value), true);
-      wrapperObj.find(".slideValue").html("Selected Value: " + value);
+      wrapperObj.find(".slideValue").html(`Selected Value: ${value}`);
     }
   },
-  contentChanged: function(e){
+  contentChanged: function(e) {
     var self = this;
     var fileEle = e.target;
     var filejQ = $(fileEle);
@@ -99,7 +99,7 @@ FieldSliderNumberView = FieldView.extend({
       value: value,
       isStore: true
     }, function() {
-      wrapperObj.find(".slideValue").html("Selected Value: " + value);
+      wrapperObj.find(".slideValue").html(`Selected Value: ${value}`);
       self.validateElement(index, value);
       self.checkRules();
     });

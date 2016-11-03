@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function () {
+(function() {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -25,7 +25,7 @@
   var INV_SUB_MIX_3 = [];
 
   // Compute lookup tables
-  (function () {
+  (function() {
     // Compute double table
     var d = [];
     for (var i = 0; i < 256; i++) {
@@ -82,14 +82,14 @@
    * AES block cipher algorithm.
    */
   var AES = C_algo.AES = BlockCipher.extend({
-    _doReset: function () {
+    _doReset: function() {
       // Shortcuts
       var key = this._key;
       var keyWords = key.words;
       var keySize = key.sigBytes / 4;
 
       // Compute number of rounds
-      var nRounds = this._nRounds = keySize + 6
+      var nRounds = this._nRounds = keySize + 6;
 
       // Compute number of key schedule rows
       var ksRows = (nRounds + 1) * 4;
@@ -140,11 +140,11 @@
       }
     },
 
-    encryptBlock: function (M, offset) {
+    encryptBlock: function(M, offset) {
       this._doCryptBlock(M, offset, this._keySchedule, SUB_MIX_0, SUB_MIX_1, SUB_MIX_2, SUB_MIX_3, SBOX);
     },
 
-    decryptBlock: function (M, offset) {
+    decryptBlock: function(M, offset) {
       // Swap 2nd and 4th rows
       var t = M[offset + 1];
       M[offset + 1] = M[offset + 3];
@@ -158,7 +158,7 @@
       M[offset + 3] = t;
     },
 
-    _doCryptBlock: function (M, offset, keySchedule, SUB_MIX_0, SUB_MIX_1, SUB_MIX_2, SUB_MIX_3, SBOX) {
+    _doCryptBlock: function(M, offset, keySchedule, SUB_MIX_0, SUB_MIX_1, SUB_MIX_2, SUB_MIX_3, SBOX) {
       // Shortcut
       var nRounds = this._nRounds;
 

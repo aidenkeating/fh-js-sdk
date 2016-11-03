@@ -4,13 +4,13 @@ if (typeof $fh === 'undefined') {
 if (!$fh.forms) {
   $fh.forms = {};
 }
-$fh.forms.renderForm = function (params, cb) {
+$fh.forms.renderForm = function(params, cb) {
   var parentEl = params.container;
   var formId = params.formId;
   var fromRemote = params.fromRemote || false;
   var type = params.type || 'backbone';
   var form = new FormView({ parentEl: parentEl });
-  form.loadForm(params, function () {
+  form.loadForm(params, function() {
     if (type === 'backbone') {
       cb(null, form);
     } else if (type === 'html') {
@@ -24,8 +24,8 @@ $fh.forms.renderForm = function (params, cb) {
  * @param params Object {"formId":String,"rawMode":Boolean,"rawMode":Boolean}
  * no io being done so no need for callback
  */
-$fh.forms.renderFormFromJSON = function (params) {
-  if (!params){
+$fh.forms.renderFormFromJSON = function(params) {
+  if (!params) {
     throw new Error('params cannot be empty');
   }
   if (!params.rawData) {
@@ -38,17 +38,17 @@ $fh.forms.renderFormFromJSON = function (params) {
   params.formId = new Date().getTime();
   params.rawMode = true;
   var formView = new FormView({ parentEl: params.container });
-  formView.loadForm(params, function (err) {
+  formView.loadForm(params, function(err) {
     if (err) {
       console.error('error loading form for renderFormFromJSON ', err);
     }
     formView.render();
   });
 };
-$fh.forms.renderFormList = function (params, cb) {
+$fh.forms.renderFormList = function(params, cb) {
   var fromRemote = params.fromRemote || false;
   var parentEl = params.parentEl;
-  $fh.forms.getForms({ fromRemote: fromRemote }, function (err, forms) {
+  $fh.forms.getForms({ fromRemote: fromRemote }, function(err, forms) {
     formListView = new FormListView({
       'model': forms,
       'parentEl': parentEl
@@ -57,8 +57,8 @@ $fh.forms.renderFormList = function (params, cb) {
   });
 };
 $fh.forms.backbone = {};
-$fh.forms.backbone.alert = function(message){
-  if(navigator && navigator.notification && navigator.notification.alert){
+$fh.forms.backbone.alert = function(message) {
+  if (navigator && navigator.notification && navigator.notification.alert) {
     navigator.notification.alert(message);
   } else {
     alert(message);

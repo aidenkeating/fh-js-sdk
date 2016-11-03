@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   module.FormSubmission = FormSubmission;
   function FormSubmission(submissionJSON) {
@@ -8,11 +8,11 @@ appForm.models = function (module) {
     });
   }
   appForm.utils.extend(FormSubmission, Model);
-  FormSubmission.prototype.getProps = function () {
+  FormSubmission.prototype.getProps = function() {
     return this.get('data');
   };
-  FormSubmission.prototype.getFormId = function () {
-    if(!this.get('data')){
+  FormSubmission.prototype.getFormId = function() {
+    if (!this.get('data')) {
       $fh.forms.log.e("No form data for form submission");
     }
 

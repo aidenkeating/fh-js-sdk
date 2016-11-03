@@ -1,7 +1,7 @@
 /**
  * extension of Field class to support file field
  */
-appForm.models.Field = function (module) {
+appForm.models.Field = function(module) {
   function checkFileObj(obj) {
     return obj.fileName && obj.fileType && obj.hashName;
   }
@@ -17,30 +17,30 @@ appForm.models.Field = function (module) {
 
     //Input value can be either a base64 String or file uri, the behaviour of upload will change accordingly.
 
-    if(inputValue.length < 1){
-      return cb("Expected base64 string or file uri but got string of lenght 0:  " + inputValue, null);
+    if (inputValue.length < 1) {
+      return cb(`Expected base64 string or file uri but got string of lenght 0:  ${inputValue}`, null);
     }
 
-    if(inputValue.indexOf(";base64,") > -1){
+    if (inputValue.indexOf(";base64,") > -1) {
       var imgName = '';
       var dataArr = inputValue.split(';base64,');
       var imgType = dataArr[0].split(':')[1];
       var extension = imgType.split('/')[1];
       var size = inputValue.length;
-      genImageName(function (err, n) {
-        imgName = previousFile.hashName ? previousFile.hashName : 'filePlaceHolder' + n;
+      genImageName(function(err, n) {
+        imgName = previousFile.hashName ? previousFile.hashName : `filePlaceHolder${n}`;
         //TODO Abstract this out
         var meta = {
-          'fileName': imgName + '.' + extension,
+          'fileName': `${imgName}.${extension}`,
           'hashName': imgName,
           'contentType': 'base64',
           'fileSize': size,
           'fileType': imgType,
-          'imgHeader': 'data:' + imgType + ';base64,',
+          'imgHeader': `data:${imgType};base64,`,
           'fileUpdateTime': new Date().getTime()
         };
         if (isStore) {
-          appForm.stores.localStorage.updateTextFile(imgName, dataArr[1], function (err, res) {
+          appForm.stores.localStorage.updateTextFile(imgName, dataArr[1], function(err, res) {
             if (err) {
               $fh.forms.log.e(err);
               cb(err);
@@ -56,8 +56,8 @@ appForm.models.Field = function (module) {
       //Image is a file uri, the file needs to be saved as a file.
       //Can use the process_file function to do this.
       //Need to read the file as a file first
-      appForm.utils.fileSystem.readAsFile(inputValue, function(err, file){
-        if(err){
+      appForm.utils.fileSystem.readAsFile(inputValue, function(err, file) {
+        if (err) {
           return cb(err);
         }
 
@@ -67,7 +67,7 @@ appForm.models.Field = function (module) {
     }
   }
   function genImageName(cb) {
-    var name = new Date().getTime() + '' + Math.ceil(Math.random() * 100000);
+    var name = `${new Date().getTime()}${Math.ceil(Math.random() * 100000)}`;
     appForm.utils.md5(name, cb);
   }
   function convertImage(value, cb) {
@@ -77,7 +77,7 @@ appForm.models.Field = function (module) {
       var count = value.length;
       for (var i = 0; i < value.length; i++) {
         var meta = value[i];
-        _loadImage(meta, function (err, data) {
+        _loadImage(meta, function(err, data) {
           count--;
           if (count === 0) {
             cb(null, [data]);
@@ -96,26 +96,26 @@ appForm.models.Field = function (module) {
       /**
        * If the file already contains a local uri, then no need to load it.
        */
-      if(meta.localURI){
+      if (meta.localURI) {
         return cb(null, meta);
       }
 
       var name = meta.hashName;
-      if(meta.contentType === "base64"){
-        appForm.stores.localStorage.readFileText(name, function (err, text) {
+      if (meta.contentType === "base64") {
+        appForm.stores.localStorage.readFileText(name, function(err, text) {
           if (err) {
             $fh.forms.log.e(err);
           }
           meta.data = text;
           cb(err, meta);
         });
-      } else if(meta.contentType === "binary"){
-        appForm.stores.localStorage.readFile(name, function(err, file){
-          if(err){
-            $fh.forms.log.e("Error reading file " + name, err);
+      } else if (meta.contentType === "binary") {
+        appForm.stores.localStorage.readFile(name, function(err, file) {
+          if (err) {
+            $fh.forms.log.e(`Error reading file ${name}`, err);
           }
 
-          if(file && file.localURL){
+          if (file && file.localURL) {
             meta.data = file.localURL;
           } else {
             meta.data = "file-not-found";
@@ -124,7 +124,7 @@ appForm.models.Field = function (module) {
           cb(err, meta);
         });
       } else {
-        $fh.forms.log.e("Error load image with invalid meta" + meta.contentType);
+        $fh.forms.log.e(`Error load image with invalid meta${meta.contentType}`);
       }
     } else {
       cb(null, meta);

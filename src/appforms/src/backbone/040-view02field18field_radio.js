@@ -30,7 +30,7 @@ FieldRadioView = FieldView.extend({
       }
 
       jQObj.off('click');
-      jQObj.on('click', function(e){
+      jQObj.on('click', function(e) {
         $(this).parent().find('.option-checked').removeClass('option-checked');
         $(this).parent().find('.active').removeClass('active');
         $(this).parent().find('.choice_icon').removeClass('icon-circle');
@@ -47,9 +47,9 @@ FieldRadioView = FieldView.extend({
 
     return inputElement;
   },
-  valuePopulateToElement: function (index, value) {
+  valuePopulateToElement: function(index, value) {
     var wrapperObj = this.getWrapper(index);
-    var opt = wrapperObj.find('button[data-value=\'' + value + '\']');
+    var opt = wrapperObj.find(`button[data-value='${value}']`);
 
     $(wrapperObj).find('button.active').removeClass("active");
     $(wrapperObj).find('button.option-checked').removeClass("option-checked");
@@ -65,17 +65,17 @@ FieldRadioView = FieldView.extend({
     opt.find('.choice_icon').addClass('icon-circle');
     $(opt).trigger('change');
   },
-  valueFromElement: function (index) {
+  valueFromElement: function(index) {
     var wrapperObj = this.getWrapper(index);
 
     var data = wrapperObj.find('button.option-checked').data();
-    if(data){
+    if (data) {
       return wrapperObj.find('button.option-checked').data().value;
     } else {
       return null;
     }
   },
-  onElementShow: function(index){
-    
+  onElementShow: function(index) {
+
   }
 });

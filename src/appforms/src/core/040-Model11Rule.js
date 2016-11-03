@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   /**
      * Describe rules associated to one field.
@@ -13,7 +13,7 @@ appForm.models = function (module) {
      * Return source fields id required from input value for this rule
      * @return [fieldid1, fieldid2...] [description]
      */
-  Rule.prototype.getRelatedFieldId = function () {
+  Rule.prototype.getRelatedFieldId = function() {
     var def = this.getDefinition();
     var statements = def.ruleConditionalStatements;
     var rtn = [];
@@ -28,7 +28,7 @@ appForm.models = function (module) {
      * @param  {[type]} param {fieldId:value, fieldId2:value2}
      * @return {[type]}       true - meet rule  / false -  not meet rule
      */
-  Rule.prototype.test = function (param) {
+  Rule.prototype.test = function(param) {
     var fields = this.getRelatedFieldId();
     var logic = this.getLogic();
     var res = logic === 'or' ? false : true;
@@ -50,12 +50,10 @@ appForm.models = function (module) {
             return false;
           }
         }
+      } else if (logic === 'or') {
+        res = res || false;
       } else {
-        if (logic === 'or') {
-          res = res || false;
-        } else {
-          return false;
-        }
+        return false;
       }
     }
     return res;
@@ -66,13 +64,13 @@ appForm.models = function (module) {
      * @param  {[type]} val     [description]
      * @return {[type]}         [description]
      */
-  Rule.prototype.testField = function (fieldId, val) {
+  Rule.prototype.testField = function(fieldId, val) {
     var statement = this.getRuleConditionStatement(fieldId);
     var condition = statement.restriction;
     var expectVal = statement.sourceValue;
     return appForm.models.checkRule(condition, expectVal, val);
   };
-  Rule.prototype.getRuleConditionStatement = function (fieldId) {
+  Rule.prototype.getRuleConditionStatement = function(fieldId) {
     var statements = this.getDefinition().ruleConditionalStatements;
     for (var i = 0; i<statements.length; i++) {
       var statement = statements[i];
@@ -82,20 +80,20 @@ appForm.models = function (module) {
     }
     return null;
   };
-  Rule.prototype.getLogic = function () {
+  Rule.prototype.getLogic = function() {
     var def = this.getDefinition();
     return def.ruleConditionalOperator.toLowerCase();
   };
-  Rule.prototype.getDefinition = function () {
+  Rule.prototype.getDefinition = function() {
     return this.get('definition');
   };
-  Rule.prototype.getAction = function () {
+  Rule.prototype.getAction = function() {
     var def = this.getDefinition();
     var target = {
-        'action': def.type,
-        'targetId': this.get('type') === 'page' ? def.targetPage : def.targetField,
-        'targetType': this.get('type')
-      };
+      'action': def.type,
+      'targetId': this.get('type') === 'page' ? def.targetPage : def.targetField,
+      'targetType': this.get('type')
+    };
     return target;
   };
   module.Rule = Rule;

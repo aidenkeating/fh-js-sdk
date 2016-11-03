@@ -11,15 +11,15 @@ module.exports = function(grunt) {
     meta: {},
     jshint: {
       all: ['src/modules/**/*.js',
-            '!src/modules/ajax.js',
-            'src/appforms/src/core/*.js',
-            'src/appforms/src/backbone/*.js',
-            '!src/appforms/src/core/000*.js',
-            '!src/appforms/src/core/060*.js',
-            '!src/appforms/src/core/999*.js',
-            '!src/appforms/src/backbone/000*.js',
-            '!src/appforms/src/backbone/001*.js',
-            '!src/appforms/src/backbone/999*.js'],
+        '!src/modules/ajax.js',
+        'src/appforms/src/core/*.js',
+        'src/appforms/src/backbone/*.js',
+        '!src/appforms/src/core/000*.js',
+        '!src/appforms/src/core/060*.js',
+        '!src/appforms/src/core/999*.js',
+        '!src/appforms/src/backbone/000*.js',
+        '!src/appforms/src/backbone/001*.js',
+        '!src/appforms/src/backbone/999*.js'],
       options: {
         curly: true,
         eqeqeq: true,
@@ -131,20 +131,22 @@ module.exports = function(grunt) {
         dest: 'dist/feedhenry.js',
         options: {
           standalone: 'feedhenry',
-          transform: [function(file){
+          transform: [function(file) {
             var data = '';
 
-            function write (buf) { data += buf }
-            function end () {
+            function write(buf) {
+              data += buf;
+            }
+            function end() {
               var t = data;
-              if(file.indexOf("constants.js") >= 0){
+              if (file.indexOf("constants.js") >= 0) {
                 var version = pkg.version;
-                console.log("found current version = " + version);
-                if(process.env.TRAVIS_BUILD_NUMBER){
-                  console.log("found BUILD_NUMBER in process.env " + process.env.TRAVIS_BUILD_NUMBER);
-                  version = version + '-' + process.env.TRAVIS_BUILD_NUMBER;
+                console.log(`found current version = ${version}`);
+                if (process.env.TRAVIS_BUILD_NUMBER) {
+                  console.log(`found BUILD_NUMBER in process.env ${process.env.TRAVIS_BUILD_NUMBER}`);
+                  version = `${version}-${process.env.TRAVIS_BUILD_NUMBER}`;
                 }
-                console.log("Version to inject is " + version);
+                console.log(`Version to inject is ${version}`);
                 t = data.replace("BUILD_VERSION", version);
               }
               this.queue(t);
@@ -160,20 +162,22 @@ module.exports = function(grunt) {
         dest: 'dist/feedhenry-titanium.js',
         options: {
           standalone: 'feedhenry',
-          transform: [function(file){
+          transform: [function(file) {
             var data = '';
 
-            function write (buf) { data += buf }
-            function end () {
+            function write(buf) {
+              data += buf;
+            }
+            function end() {
               var t = data;
-              if(file.indexOf("constants.js") >= 0){
+              if (file.indexOf("constants.js") >= 0) {
                 var version = pkg.version;
-                console.log("found current version = " + version);
-                if(process.env.TRAVIS_BUILD_NUMBER){
-                  console.log("found BUILD_NUMBER in process.env " + process.env.TRAVIS_BUILD_NUMBER);
-                  version = version + '-' + process.env.TRAVIS_BUILD_NUMBER;
+                console.log(`found current version = ${version}`);
+                if (process.env.TRAVIS_BUILD_NUMBER) {
+                  console.log(`found BUILD_NUMBER in process.env ${process.env.TRAVIS_BUILD_NUMBER}`);
+                  version = `${version}-${process.env.TRAVIS_BUILD_NUMBER}`;
                 }
-                console.log("Version to inject is " + version);
+                console.log(`Version to inject is ${version}`);
                 t = data.replace("BUILD_VERSION", version);
               }
               this.queue(t);
@@ -182,9 +186,9 @@ module.exports = function(grunt) {
             return through(write, end);
           }],
           alias: ['./src/modules/titanium/cookies.js:./cookies',
-                  './src/modules/titanium/appProps.js:./appProps',
-                  './src/modules/titanium/appProps.js:./modules/appProps'
-                 ]
+            './src/modules/titanium/appProps.js:./appProps',
+            './src/modules/titanium/appProps.js:./modules/appProps'
+          ]
         }
       },
       // This browserify build can be required by other browserify modules that
@@ -240,7 +244,7 @@ module.exports = function(grunt) {
         },
         replacements: [{
           from: '************TEMPLATES***************',                   // string replacement
-          to: function(){
+          to: function() {
             return grunt.file.read("src/appforms/src/backbone/040-view00Templates.html", {encoding: 'utf8'}).replace(/(\r\n|\n|\r)/gm,"");
           }
         }]
@@ -269,7 +273,7 @@ module.exports = function(grunt) {
         router: function(filepath) {
           grunt.log.writeln(filepath);
           var filename = path.basename(filepath);
-          return 'feedhenry-js-sdk/' + filename;
+          return `feedhenry-js-sdk/${filename}`;
         },
         dest: 'dist/fh-starter-project-latest.zip',
         src: ['src/index.html', 'src/fhconfig.json', 'dist/feedhenry.min.js']
@@ -278,7 +282,7 @@ module.exports = function(grunt) {
         router: function(filepath) {
           grunt.log.writeln(filepath);
           var filename = path.basename(filepath);
-          return 'feedhenry-js/' + filename;
+          return `feedhenry-js/${filename}`;
         },
         dest: 'dist/feedhenry-js.zip',
         src:['dist/feedhenry.js', 'dist/feedhenry-forms.js', 'dist/feedhenry.min.js', 'dist/feedhenry-forms.min.js', 'dist/appForms-backbone.js']
@@ -287,7 +291,7 @@ module.exports = function(grunt) {
         router: function(filepath) {
           grunt.log.writeln(filepath);
           var filename = path.basename(filepath);
-          return 'feedhenry-titanium/' + filename;
+          return `feedhenry-titanium/${filename}`;
         },
         dest: 'dist/feedhenry-titanium.zip',
         src:['dist/feedhenry-titanium.js', 'dist/feedhenry-titanium.min.js']
@@ -324,42 +328,42 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
 
   var spawns = [];
-  grunt.registerTask('start-local-servers', function () {
+  grunt.registerTask('start-local-servers', function() {
     var done = this.async();
     var spawn = require('child_process').spawn;
 
-    var spawnTestCloudServer = function (port, script, cb) {
-      grunt.log.writeln('Spawning server on port ' + port + ' in cwd ' + __dirname + ' using file ' + __dirname + '/' + script);
+    var spawnTestCloudServer = function(port, script, cb) {
+      grunt.log.writeln(`Spawning server on port ${port} in cwd ${__dirname} using file ${__dirname}/${script}`);
       var env = {};
       env.FH_PORT = port;
-      var server = spawn('node', [__dirname + './bin/' + script], {
+      var server = spawn('node', [`${__dirname}./bin/${script}`], {
         cwd: __dirname,
         env: env
-      }).on('exit', function (code) {
-        grunt.log.writeln('Exiting server on port ' + port + ' with exit code ' + code);
+      }).on('exit', function(code) {
+        grunt.log.writeln(`Exiting server on port ${port} with exit code ${code}`);
       });
-      server.stdout.on('data', function (data) {
-        grunt.log.writeln('Spawned Server port ' + port + ' stdout:' + data);
-        if(data.toString("utf8").indexOf("started") !== -1){
+      server.stdout.on('data', function(data) {
+        grunt.log.writeln(`Spawned Server port ${port} stdout:${data}`);
+        if (data.toString("utf8").indexOf("started") !== -1) {
           cb(null, null);
         }
       });
-      server.stderr.on('data', function (data) {
-        grunt.log.writeln('Spawned Server port ' + port + ' stderr:' + data);
-        if(data.toString("utf8").indexOf("Error:") !== -1){
+      server.stderr.on('data', function(data) {
+        grunt.log.writeln(`Spawned Server port ${port} stderr:${data}`);
+        if (data.toString("utf8").indexOf("Error:") !== -1) {
           cb(data.toString("utf8"), null);
         }
       });
-      grunt.log.writeln('Spawned server on port ' + port);
+      grunt.log.writeln(`Spawned server on port ${port}`);
       spawns.push(server);
     };
 
     var servers = [{port: 8100, file:"bin/appinit.js"}, {port: 8101, file:"bin/appcloud.js"}];
-    async.map(servers, function(conf, cb){
+    async.map(servers, function(conf, cb) {
       spawnTestCloudServer(conf.port, conf.file, cb);
-    }, function(err){
-      if(err) {
-        grunt.log.writeln("Failed to start server. Error: " + err);
+    }, function(err) {
+      if (err) {
+        grunt.log.writeln(`Failed to start server. Error: ${err}`);
         return done(false);
       }
       return done();
@@ -367,19 +371,19 @@ module.exports = function(grunt) {
 
   });
 
-  var stopLocalServers = function(){
-    spawns.forEach(function (server) {
-      grunt.log.writeln("Killing process " + server.pid);
+  var stopLocalServers = function() {
+    spawns.forEach(function(server) {
+      grunt.log.writeln(`Killing process ${server.pid}`);
       server.kill();
     });
-  }
+  };
 
   process.on('exit', function() {
     console.log('killing spawned servers if there are any');
     stopLocalServers();
   });
 
-  grunt.registerTask('stop-local-servers', function(){
+  grunt.registerTask('stop-local-servers', function() {
     stopLocalServers();
   });
 

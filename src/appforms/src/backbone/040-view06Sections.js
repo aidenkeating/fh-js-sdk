@@ -4,7 +4,7 @@ SectionView=BaseView.extend({
     this.options = options;
     _.bindAll(this, 'render');
   },
-  render: function(){
+  render: function() {
     this.options.parentEl.append(this.$el);
   }
 

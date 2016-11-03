@@ -1,4 +1,4 @@
-appForm.stores = function (module) {
+appForm.stores = function(module) {
   var Store = appForm.stores.Store;
   //DataAgent is read only store
   module.DataAgent = DataAgent;
@@ -16,10 +16,10 @@ appForm.stores = function (module) {
      * @param  {Function} cb    (err,res,isFromRemote)
      * @return {[type]}         [description]
      */
-  DataAgent.prototype.read = function (model, cb) {
+  DataAgent.prototype.read = function(model, cb) {
     $fh.forms.log.d("DataAgent read ", model);
     var that = this;
-    this.localStore.read(model, function (err, locRes) {
+    this.localStore.read(model, function(err, locRes) {
       if (err || !locRes) {
         //local loading failed
 
@@ -38,10 +38,10 @@ appForm.stores = function (module) {
      * @param  {Function} cb    [description]
      * @return {[type]}         [description]
      */
-  DataAgent.prototype.refreshRead = function (model, cb) {
+  DataAgent.prototype.refreshRead = function(model, cb) {
     $fh.forms.log.d("DataAgent refreshRead ", model);
     var that = this;
-    this.remoteStore.read(model, function (err, res) {
+    this.remoteStore.read(model, function(err, res) {
       if (err) {
         $fh.forms.log.e("Error reading model from remoteStore ", model, err);
         cb(err);
@@ -50,7 +50,7 @@ appForm.stores = function (module) {
         //update model from remote response
         model.fromJSON(res);
         //update local storage for the model
-        that.localStore.upsert(model, function () {
+        that.localStore.upsert(model, function() {
           var args = Array.prototype.slice.call(arguments, 0);
           args.push(true);
           cb.apply({}, args);
@@ -65,17 +65,17 @@ appForm.stores = function (module) {
    * @param  {Function} cb    [description]
    * @return {[type]}         [description]
    */
-  DataAgent.prototype.attemptRead=function(model,cb){
+  DataAgent.prototype.attemptRead=function(model,cb) {
     $fh.forms.log.d("DataAgent attemptRead ", model);
     var self=this;
 
 
-    self.checkOnlineStatus(function(online){
-      if($fh.forms.config.isOnline()){
-        self.refreshRead(model,function(err){
-          if (err){
+    self.checkOnlineStatus(function(online) {
+      if ($fh.forms.config.isOnline()) {
+        self.refreshRead(model,function(err) {
+          if (err) {
             self.read(model,cb);
-          }else{
+          } else {
             cb.apply({},arguments);
           }
         });
@@ -90,13 +90,13 @@ appForm.stores = function (module) {
    * @param  {Function} cb    [description]
    * @return {[type]}         [description]
    */
-  DataAgent.prototype.checkOnlineStatus=function(cb){
+  DataAgent.prototype.checkOnlineStatus=function(cb) {
     $fh.forms.log.d("DataAgent check online status ");
     var self=this;
 
-    if(appForm.utils.isPhoneGap()){
-      if(navigator.connection){
-        if(navigator.connection.type && navigator.connection.type === Connection.NONE){
+    if (appForm.utils.isPhoneGap()) {
+      if (navigator.connection) {
+        if (navigator.connection.type && navigator.connection.type === Connection.NONE) {
           //No connection availabile, no need to ping.
           $fh.forms.config.offline();
           return cb(false);
@@ -105,8 +105,8 @@ appForm.stores = function (module) {
     }
 
 
-    self.remoteStore.isOnline(function(online){
-      if(online === false){
+    self.remoteStore.isOnline(function(online) {
+      if (online === false) {
         $fh.forms.config.offline();
       } else {
         $fh.forms.config.online();

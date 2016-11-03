@@ -12,29 +12,31 @@
  * http://opensource.org/licenses/MIT
  * ---------------------------------- */
 
-!function () {
+!function() {
 
   var popover;
 
-  var findPopovers = function (target) {
+  var findPopovers = function(target) {
     var i, popovers = document.querySelectorAll('a');
     for (; target && target !== document; target = target.parentNode) {
-      for (i = popovers.length; i--;) { if (popovers[i] === target) return target; }
+      for (i = popovers.length; i--;) {
+        if (popovers[i] === target) return target;
+      }
     }
   };
 
-  var onPopoverHidden = function () {
+  var onPopoverHidden = function() {
     document.body.removeChild(backdrop);
     popover.style.display = 'none';
     popover.removeEventListener('webkitTransitionEnd', onPopoverHidden);
-  }
+  };
 
-  var backdrop = function () {
+  var backdrop = function() {
     var element = document.createElement('div');
 
     element.classList.add('backdrop');
 
-    element.addEventListener('touchend', function () {
+    element.addEventListener('touchend', function() {
       popover.addEventListener('webkitTransitionEnd', onPopoverHidden);
       popover.classList.remove('visible');
     });
@@ -42,7 +44,7 @@
     return element;
   }();
 
-  var getPopover = function (e) {
+  var getPopover = function(e) {
     var anchor = findPopovers(e.target);
 
     if (!anchor || !anchor.hash) return;
@@ -52,9 +54,9 @@
     if (!popover || !popover.classList.contains('popover')) return;
 
     return popover;
-  }
+  };
 
-  window.addEventListener('touchend', function (e) {
+  window.addEventListener('touchend', function(e) {
     var popover = getPopover(e);
 
     if (!popover) return;
@@ -66,7 +68,9 @@
     popover.parentNode.appendChild(backdrop);
   });
 
-  window.addEventListener('click', function (e) { if (getPopover(e)) e.preventDefault(); });
+  window.addEventListener('click', function(e) {
+    if (getPopover(e)) e.preventDefault();
+  });
 
 }();
 /* ----------------------------------
@@ -76,9 +80,9 @@
  * http://opensource.org/licenses/MIT
  * ---------------------------------- */
 
-!function () {
+!function() {
 
-  var noop = function () {};
+  var noop = function() {};
 
 
   // Pushstate cacheing
@@ -98,9 +102,9 @@
     bartitle           : '.bar-title',
     barfooter          : '.bar-footer',
     barheadersecondary : '.bar-header-secondary'
-  }
+  };
 
-  var cacheReplace = function (data, updates) {
+  var cacheReplace = function(data, updates) {
     PUSH.id = data.id;
     if (updates) data = getCached(data.id);
     cacheMapping[data.id] = JSON.stringify(data);
@@ -108,7 +112,7 @@
     domCache[data.id] = document.body.cloneNode(true);
   };
 
-  var cachePush = function () {
+  var cachePush = function() {
     var id = PUSH.id;
 
     var cacheForwardStack = JSON.parse(cacheMapping.cacheForwardStack || '[]');
@@ -125,7 +129,7 @@
     cacheMapping.cacheBackStack    = JSON.stringify(cacheBackStack);
   };
 
-  var cachePop = function (id, direction) {
+  var cachePop = function(id, direction) {
     var forward           = direction == 'forward';
     var cacheForwardStack = JSON.parse(cacheMapping.cacheForwardStack || '[]');
     var cacheBackStack    = JSON.parse(cacheMapping.cacheBackStack    || '[]');
@@ -139,11 +143,11 @@
     cacheMapping.cacheBackStack    = JSON.stringify(cacheBackStack);
   };
 
-  var getCached = function (id) {
+  var getCached = function(id) {
     return JSON.parse(cacheMapping[id] || null) || {};
   };
 
-  var getTarget = function (e) {
+  var getTarget = function(e) {
     var target = findTarget(e.target);
 
     if (
@@ -166,7 +170,7 @@
   // Main event handlers (touchend, popstate)
   // ==========================================
 
-  var touchend = function (e) {
+  var touchend = function(e) {
     var target = getTarget(e);
 
     if (!target) return;
@@ -181,7 +185,7 @@
     });
   };
 
-  var popstate = function (e) {
+  var popstate = function(e) {
     var key;
     var barElement;
     var activeObj;
@@ -228,7 +232,7 @@
     if (transitionFromObj.transition) {
       activeObj = extendWithDom(activeObj, '.content', activeDom.cloneNode(true));
       for (key in bars) {
-        barElement = document.querySelector(bars[key])
+        barElement = document.querySelector(bars[key]);
         if (activeObj[key]) swapContent(activeObj[key], barElement);
         else if (barElement) barElement.parentNode.removeChild(barElement);
       }
@@ -249,7 +253,7 @@
   // Core PUSH functionality
   // =======================
 
-  var PUSH = function (options) {
+  var PUSH = function(options) {
     var key;
     var data = {};
     var xhr  = PUSH.xhr;
@@ -262,14 +266,14 @@
 
     if (xhr && xhr.readyState < 4) {
       xhr.onreadystatechange = noop;
-      xhr.abort()
+      xhr.abort();
     }
 
     xhr = new XMLHttpRequest();
     xhr.open('GET', options.url, true);
     xhr.setRequestHeader('X-PUSH', 'true');
 
-    xhr.onreadystatechange = function () {
+    xhr.onreadystatechange = function() {
       if (options._timeout) clearTimeout(options._timeout);
       if (xhr.readyState == 4) xhr.status == 200 ? success(xhr, options) : failure(options.url);
     };
@@ -285,7 +289,9 @@
     }
 
     if (options.timeout) {
-      options._timeout = setTimeout(function () {  xhr.abort('timeout'); }, options.timeout);
+      options._timeout = setTimeout(function() {
+        xhr.abort('timeout');
+      }, options.timeout);
     }
 
     xhr.send();
@@ -297,7 +303,7 @@
   // Main XHR handlers
   // =================
 
-  var success = function (xhr, options) {
+  var success = function(xhr, options) {
     var key;
     var barElement;
     var data = parseXHR(xhr, options);
@@ -308,13 +314,13 @@
 
     if (options.transition) {
       for (key in bars) {
-        barElement = document.querySelector(bars[key])
+        barElement = document.querySelector(bars[key]);
         if (data[key]) swapContent(data[key], barElement);
         else if (barElement) barElement.parentNode.removeChild(barElement);
       }
     }
 
-    swapContent(data.contents, options.container, options.transition, function () {
+    swapContent(data.contents, options.container, options.transition, function() {
       cacheReplace({
         id         : options.id || +new Date,
         url        : data.url,
@@ -325,19 +331,19 @@
       triggerStateChange();
     });
 
-    if (!options.ignorePush && window._gaq) _gaq.push(['_trackPageview']) // google analytics
+    if (!options.ignorePush && window._gaq) _gaq.push(['_trackPageview']); // google analytics
     if (!options.hash) return;
   };
 
-  var failure = function (url) {
-    throw new Error('Could not get: ' + url)
+  var failure = function(url) {
+    throw new Error(`Could not get: ${url}`);
   };
 
 
   // PUSH helpers
   // ============
 
-  var swapContent = function (swap, container, transition, complete) {
+  var swapContent = function(swap, container, transition, complete) {
     var enter;
     var containerDirection;
     var swapDirection;
@@ -376,7 +382,7 @@
         swap.classList.add('in');
         swap.addEventListener('webkitTransitionEnd', fadeSwapEnd);
       }
-      function fadeSwapEnd () {
+      function fadeSwapEnd() {
         swap.removeEventListener('webkitTransitionEnd', fadeSwapEnd);
         container.parentNode.removeChild(container);
         swap.classList.remove('fade');
@@ -387,8 +393,8 @@
 
     if (/slide/.test(transition)) {
       container.offsetWidth; // force reflow
-      swapDirection      = enter ? 'right' : 'left'
-      containerDirection = enter ? 'left' : 'right'
+      swapDirection      = enter ? 'right' : 'left';
+      containerDirection = enter ? 'left' : 'right';
       container.classList.add(containerDirection);
       swap.classList.remove(swapDirection);
       swap.addEventListener('webkitTransitionEnd', slideEnd);
@@ -403,7 +409,7 @@
     }
   };
 
-  var triggerStateChange = function () {
+  var triggerStateChange = function() {
     var e = new CustomEvent('push', {
       detail: { state: getCached(PUSH.id) },
       bubbles: true,
@@ -413,29 +419,31 @@
     window.dispatchEvent(e);
   };
 
-  var findTarget = function (target) {
+  var findTarget = function(target) {
     var i, toggles = document.querySelectorAll('a');
     for (; target && target !== document; target = target.parentNode) {
-      for (i = toggles.length; i--;) { if (toggles[i] === target) return target; }
+      for (i = toggles.length; i--;) {
+        if (toggles[i] === target) return target;
+      }
     }
   };
 
-  var locationReplace = function (url) {
+  var locationReplace = function(url) {
     window.history.replaceState(null, '', '#');
     window.location.replace(url);
   };
 
-  var parseURL = function (url) {
+  var parseURL = function(url) {
     var a = document.createElement('a'); a.href = url; return a;
   };
 
-  var extendWithDom = function (obj, fragment, dom) {
+  var extendWithDom = function(obj, fragment, dom) {
     var i;
     var result    = {};
 
     for (i in obj) result[i] = obj[i];
 
-    Object.keys(bars).forEach(function (key) {
+    Object.keys(bars).forEach(function(key) {
       var el = dom.querySelector(bars[key]);
       if (el) el.parentNode.removeChild(el);
       result[key] = el;
@@ -446,7 +454,7 @@
     return result;
   };
 
-  var parseXHR = function (xhr, options) {
+  var parseXHR = function(xhr, options) {
     var head;
     var body;
     var data = {};
@@ -459,8 +467,8 @@
     if (/<html/i.test(responseText)) {
       head           = document.createElement('div');
       body           = document.createElement('div');
-      head.innerHTML = responseText.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0]
-      body.innerHTML = responseText.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0]
+      head.innerHTML = responseText.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0];
+      body.innerHTML = responseText.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0];
     } else {
       head           = body = document.createElement('div');
       head.innerHTML = responseText;
@@ -479,10 +487,16 @@
   // Attach PUSH event handlers
   // ==========================
 
-  window.addEventListener('touchstart', function () { isScrolling = false; });
-  window.addEventListener('touchmove', function () { isScrolling = true; })
+  window.addEventListener('touchstart', function() {
+    isScrolling = false;
+  });
+  window.addEventListener('touchmove', function() {
+    isScrolling = true;
+  });
   window.addEventListener('touchend', touchend);
-  window.addEventListener('click', function (e) { if (getTarget(e)) e.preventDefault(); });
+  window.addEventListener('click', function(e) {
+    if (getTarget(e)) e.preventDefault();
+  });
   window.addEventListener('popstate', popstate);
 
 }();/* ----------------------------------
@@ -491,21 +505,23 @@
  * http://opensource.org/licenses/MIT
  * ---------------------------------- */
 
-!function () {
-  var getTarget = function (target) {
+!function() {
+  var getTarget = function(target) {
     var i, popovers = document.querySelectorAll('.segmented-controller li a');
     for (; target && target !== document; target = target.parentNode) {
-      for (i = popovers.length; i--;) { if (popovers[i] === target) return target; }
+      for (i = popovers.length; i--;) {
+        if (popovers[i] === target) return target;
+      }
     }
   };
 
-  window.addEventListener("touchend", function (e) {
+  window.addEventListener("touchend", function(e) {
     var activeTab;
     var activeBody;
     var targetBody;
     var targetTab;
     var className     = 'active';
-    var classSelector = '.' + className;
+    var classSelector = `.${className}`;
     var targetAnchor  = getTarget(e.target);
 
     if (!targetAnchor) return;
@@ -527,10 +543,12 @@
 
     if (activeBody) activeBody.classList.remove(className);
 
-    targetBody.classList.add(className)
+    targetBody.classList.add(className);
   });
 
-  window.addEventListener('click', function (e) { if (getTarget(e.target)) e.preventDefault(); });
+  window.addEventListener('click', function(e) {
+    if (getTarget(e.target)) e.preventDefault();
+  });
 }();/* ----------------------------------
  * SLIDER v1.0.0
  * Licensed under The MIT License
@@ -538,7 +556,7 @@
  * http://opensource.org/licenses/MIT
  * ---------------------------------- */
 
-!function () {
+!function() {
 
   var pageX;
   var pageY;
@@ -554,27 +572,29 @@
   var isScrolling;
   var scrollableArea;
 
-  var getSlider = function (target) {
+  var getSlider = function(target) {
     var i, sliders = document.querySelectorAll('.slider ul');
     for (; target && target !== document; target = target.parentNode) {
-      for (i = sliders.length; i--;) { if (sliders[i] === target) return target; }
+      for (i = sliders.length; i--;) {
+        if (sliders[i] === target) return target;
+      }
     }
-  }
-
-  var getScroll = function () {
-    var translate3d = slider.style.webkitTransform.match(/translate3d\(([^,]*)/);
-    return parseInt(translate3d ? translate3d[1] : 0)
   };
 
-  var setSlideNumber = function (offset) {
+  var getScroll = function() {
+    var translate3d = slider.style.webkitTransform.match(/translate3d\(([^,]*)/);
+    return parseInt(translate3d ? translate3d[1] : 0);
+  };
+
+  var setSlideNumber = function(offset) {
     var round = offset ? (deltaX < 0 ? 'ceil' : 'floor') : 'round';
     slideNumber = Math[round](getScroll() / ( scrollableArea / slider.children.length) );
     slideNumber += offset;
     slideNumber = Math.min(slideNumber, 0);
     slideNumber = Math.max(-(slider.children.length - 1), slideNumber);
-  }
+  };
 
-  var onTouchStart = function (e) {
+  var onTouchStart = function(e) {
     slider = getSlider(e.target);
 
     if (!slider) return;
@@ -595,7 +615,7 @@
     slider.style['-webkit-transition-duration'] = 0;
   };
 
-  var onTouchMove = function (e) {
+  var onTouchMove = function(e) {
     if (e.touches.length > 1 || !slider) return; // Exit if a pinch || no slider
 
     deltaX = e.touches[0].pageX - pageX;
@@ -616,10 +636,10 @@
     resistance = slideNumber == 0         && deltaX > 0 ? (pageX / sliderWidth) + 1.25 :
                  slideNumber == lastSlide && deltaX < 0 ? (Math.abs(pageX) / sliderWidth) + 1.25 : 1;
 
-    slider.style.webkitTransform = 'translate3d(' + offsetX + 'px,0,0)';
+    slider.style.webkitTransform = `translate3d(${offsetX}px,0,0)`;
   };
 
-  var onTouchEnd = function (e) {
+  var onTouchEnd = function(e) {
     if (!slider || isScrolling) return;
 
     setSlideNumber(
@@ -629,7 +649,7 @@
     offsetX = slideNumber * sliderWidth;
 
     slider.style['-webkit-transition-duration'] = '.2s';
-    slider.style.webkitTransform = 'translate3d(' + offsetX + 'px,0,0)';
+    slider.style.webkitTransform = `translate3d(${offsetX}px,0,0)`;
 
     e = new CustomEvent('slide', {
       detail: { slideNumber: Math.abs(slideNumber) },
@@ -651,21 +671,23 @@
  * http://opensource.org/licenses/MIT
  * ---------------------------------- */
 
-!function () {
+!function() {
 
   var start     = {};
   var touchMove = false;
   var distanceX = false;
   var toggle    = false;
 
-  var findToggle = function (target) {
+  var findToggle = function(target) {
     var i, toggles = document.querySelectorAll('.toggle');
     for (; target && target !== document; target = target.parentNode) {
-      for (i = toggles.length; i--;) { if (toggles[i] === target) return target; }
+      for (i = toggles.length; i--;) {
+        if (toggles[i] === target) return target;
+      }
     }
-  }
+  };
 
-  window.addEventListener('touchstart', function (e) {
+  window.addEventListener('touchstart', function(e) {
     e = e.originalEvent || e;
 
     toggle = findToggle(e.target);
@@ -684,7 +706,7 @@
     toggle.style['-webkit-transition-duration'] = 0;
   });
 
-  window.addEventListener('touchmove', function (e) {
+  window.addEventListener('touchmove', function(e) {
     e = e.originalEvent || e;
 
     if (e.touches.length > 1) return; // Exit if a pinch
@@ -705,14 +727,14 @@
     e.preventDefault();
 
     if (distanceX < 0)      return handle.style.webkitTransform = 'translate3d(0,0,0)';
-    if (distanceX > offset) return handle.style.webkitTransform = 'translate3d(' + offset + 'px,0,0)';
+    if (distanceX > offset) return handle.style.webkitTransform = `translate3d(${offset}px,0,0)`;
 
-    handle.style.webkitTransform = 'translate3d(' + distanceX + 'px,0,0)';
+    handle.style.webkitTransform = `translate3d(${distanceX}px,0,0)`;
 
     toggle.classList[(distanceX > (toggleWidth/2 - handleWidth/2)) ? 'add' : 'remove']('active');
   });
 
-  window.addEventListener('touchend', function (e) {
+  window.addEventListener('touchend', function(e) {
     if (!toggle) return;
 
     var handle      = toggle.querySelector('.toggle-handle');
@@ -721,7 +743,7 @@
     var offset      = toggleWidth - handleWidth;
     var slideOn     = (!touchMove && !toggle.classList.contains('active')) || (touchMove && (distanceX > (toggleWidth/2 - handleWidth/2)));
 
-    if (slideOn) handle.style.webkitTransform = 'translate3d(' + offset + 'px,0,0)';
+    if (slideOn) handle.style.webkitTransform = `translate3d(${offset}px,0,0)`;
     else handle.style.webkitTransform = 'translate3d(0,0,0)';
 
     toggle.classList[slideOn ? 'add' : 'remove']('active');

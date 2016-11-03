@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function (Math) {
+(function(Math) {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -21,7 +21,7 @@
   var ROUND_CONSTANTS = [];
 
   // Compute Constants
-  (function () {
+  (function() {
     // Compute rho offset constants
     var x = 1, y = 0;
     for (var t = 0; t < 24; t++) {
@@ -71,7 +71,7 @@
 
   // Reusable objects for temporary values
   var T = [];
-  (function () {
+  (function() {
     for (var i = 0; i < 25; i++) {
       T[i] = X64Word.create();
     }
@@ -93,8 +93,8 @@
       outputLength: 512
     }),
 
-    _doReset: function () {
-      var state = this._state = []
+    _doReset: function() {
+      var state = this._state = [];
       for (var i = 0; i < 25; i++) {
         state[i] = new X64Word.init();
       }
@@ -102,7 +102,7 @@
       this.blockSize = (1600 - 2 * this.cfg.outputLength) / 32;
     },
 
-    _doProcessBlock: function (M, offset) {
+    _doProcessBlock: function(M, offset) {
       // Shortcuts
       var state = this._state;
       var nBlockSizeLanes = this.blockSize / 2;
@@ -212,11 +212,11 @@
         var lane = state[0];
         var roundConstant = ROUND_CONSTANTS[round];
         lane.high ^= roundConstant.high;
-        lane.low  ^= roundConstant.low;;
+        lane.low  ^= roundConstant.low;
       }
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcuts
       var data = this._data;
       var dataWords = data.words;
@@ -264,7 +264,7 @@
       return new WordArray.init(hashWords, outputLengthBytes);
     },
 
-    clone: function () {
+    clone: function() {
       var clone = Hasher.clone.call(this);
 
       var state = clone._state = this._state.slice(0);

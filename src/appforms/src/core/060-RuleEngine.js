@@ -1,7 +1,16 @@
 /*! fh-forms - v1.6.0 -  */
 /*! async - v0.2.9 -  */
 /*! 2016-05-13 */
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r) {
+  function s(o,u) {
+    if (!n[o]) {
+      if (!t[o]) {
+        var a=typeof require=="function"&&require;if (!u&&a) return a(o,!0);if (i) return i(o,!0);var f=new Error(`Cannot find module '${o}'`);throw f.code="MODULE_NOT_FOUND",f;
+      } var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e) {
+        var n=t[o][1][e];return s(n?n:e);
+      },l,l.exports,e,t,n,r);} return n[o].exports;
+  } var i=typeof require=="function"&&require;for (var o=0;o<r.length;o++)s(r[o]);return s;
+})({1:[function(require,module,exports) {
   (function() {
 
     var async = require('async');
@@ -194,36 +203,36 @@
           var testNumVal = null;
 
           switch (fieldOptions.definition.datetimeUnit) {
-            case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
-              try {
-                dateNumVal = new Date(new Date(fieldValue).toDateString()).getTime();
-                testNumVal = new Date(new Date(testValue).toDateString()).getTime();
-                valid = true;
-              } catch (e) {
-                dateNumVal = null;
-                testNumVal = null;
-                valid = false;
-              }
-              break;
-            case FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY:
-              var cvtTime = this.cvtTimeToSeconds(fieldValue);
-              var cvtTestVal = this.cvtTimeToSeconds(testValue);
-              dateNumVal = cvtTime.seconds;
-              testNumVal = cvtTestVal.seconds;
-              valid = cvtTime.valid && cvtTestVal.valid;
-              break;
-            case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME:
-              try {
-                dateNumVal = (new Date(fieldValue).getTime());
-                testNumVal = (new Date(testValue).getTime());
-                valid = true;
-              } catch (e) {
-                valid = false;
-              }
-              break;
-            default:
+          case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
+            try {
+              dateNumVal = new Date(new Date(fieldValue).toDateString()).getTime();
+              testNumVal = new Date(new Date(testValue).toDateString()).getTime();
+              valid = true;
+            } catch (e) {
+              dateNumVal = null;
+              testNumVal = null;
               valid = false;
-              break;
+            }
+            break;
+          case FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY:
+            var cvtTime = this.cvtTimeToSeconds(fieldValue);
+            var cvtTestVal = this.cvtTimeToSeconds(testValue);
+            dateNumVal = cvtTime.seconds;
+            testNumVal = cvtTestVal.seconds;
+            valid = cvtTime.valid && cvtTestVal.valid;
+            break;
+          case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME:
+            try {
+              dateNumVal = (new Date(fieldValue).getTime());
+              testNumVal = (new Date(testValue).getTime());
+              valid = true;
+            } catch (e) {
+              valid = false;
+            }
+            break;
+          default:
+            valid = false;
+            break;
           }
 
           //The value is not valid, no point in comparing.
@@ -422,7 +431,7 @@
         // iterate over all the fields in the submissions and build a map for easier lookup
         _.each(submission.formFields, function(formField) {
           if (!formField.fieldId) {
-            error = new Error("No fieldId in this submission entry: " + JSON.stringify(formField));
+            error = new Error(`No fieldId in this submission entry: ${JSON.stringify(formField)}`);
             return;
           }
 
@@ -430,7 +439,7 @@
            * If the field passed in a submission is an admin field, then return an error.
            */
           if (adminFieldMap[formField.fieldId]) {
-            error = "Submission " + formField.fieldId + " is an admin field. Admin fields cannot be passed to the rules engine.";
+            error = `Submission ${formField.fieldId} is an admin field. Admin fields cannot be passed to the rules engine.`;
             return;
           }
 
@@ -729,7 +738,7 @@
       function getMapFunction(key, map, cb) {
         var validator = map[key];
         if (!validator) {
-          return cb(new Error("Invalid Field Type " + key));
+          return cb(new Error(`Invalid Field Type ${key}`));
         }
 
         return cb(undefined, validator);
@@ -792,7 +801,7 @@
           var valueRequired = requiredFieldMap[fieldDefinition._id] && requiredFieldMap[fieldDefinition._id].valueRequired;
 
           if (!valueSubmitted && visible && valueRequired) {
-            return cb(undefined, "No value submitted for field " + fieldDefinition.name);
+            return cb(undefined, `No value submitted for field ${fieldDefinition.name}`);
           }
           return cb(undefined, null);
 
@@ -819,19 +828,17 @@
           if (fieldDefinition.repeating && fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.definition) {
             if (fieldDefinition.fieldOptions.definition.minRepeat) {
               if (numSubmittedValues < fieldDefinition.fieldOptions.definition.minRepeat) {
-                return cb(undefined, "Expected min of " + fieldDefinition.fieldOptions.definition.minRepeat + " values for field " + fieldDefinition.name + " but got " + numSubmittedValues);
+                return cb(undefined, `Expected min of ${fieldDefinition.fieldOptions.definition.minRepeat} values for field ${fieldDefinition.name} but got ${numSubmittedValues}`);
               }
             }
 
             if (fieldDefinition.fieldOptions.definition.maxRepeat) {
               if (numSubmittedValues > fieldDefinition.fieldOptions.definition.maxRepeat) {
-                return cb(undefined, "Expected max of " + fieldDefinition.fieldOptions.definition.maxRepeat + " values for field " + fieldDefinition.name + " but got " + numSubmittedValues);
+                return cb(undefined, `Expected max of ${fieldDefinition.fieldOptions.definition.maxRepeat} values for field ${fieldDefinition.name} but got ${numSubmittedValues}`);
               }
             }
-          } else {
-            if (numSubmittedValues > 1) {
-              return cb(undefined, "Should not have multiple values for non-repeating field");
-            }
+          } else if (numSubmittedValues > 1) {
+            return cb(undefined, "Should not have multiple values for non-repeating field");
           }
 
           return cb(undefined, null);
@@ -884,20 +891,20 @@
         for (i = 0; i < len; i += 1) {
           ch = field_format_string.charCodeAt(i);
           switch (ch) {
-            case C:
-              match = "[a-zA-Z0-9]";
-              break;
-            case N:
-              match = "[0-9]";
-              break;
-            default:
-              var num = ch.toString(16).toUpperCase();
-              match = "\\u" + ("0000" + num).substr(-4);
-              break;
+          case C:
+            match = "[a-zA-Z0-9]";
+            break;
+          case N:
+            match = "[0-9]";
+            break;
+          default:
+            var num = ch.toString(16).toUpperCase();
+            match = `\\u${(`0000${num}`).substr(-4)}`;
+            break;
           }
           regex += match;
         }
-        return regex + "$";
+        return `${regex}$`;
       }
 
       function validFormatRegex(fieldValue, field_format_string) {
@@ -920,7 +927,7 @@
 
       function validatorString(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof fieldValue !== "string") {
-          return cb(new Error("Expected string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected string but got ${typeof(fieldValue)}`));
         }
 
         var validation = {};
@@ -935,19 +942,19 @@
 
         if (field_format_string && (field_format_string.length > 0) && field_format_mode && (field_format_mode.length > 0)) {
           if (!validFormat(fieldValue, field_format_mode, field_format_string)) {
-            return cb(new Error("field value in incorrect format, expected format: " + field_format_string + " but submission value is: " + fieldValue));
+            return cb(new Error(`field value in incorrect format, expected format: ${field_format_string} but submission value is: ${fieldValue}`));
           }
         }
 
         if (fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.validation && fieldDefinition.fieldOptions.validation.min) {
           if (fieldValue.length < fieldDefinition.fieldOptions.validation.min) {
-            return cb(new Error("Expected minimum string length of " + fieldDefinition.fieldOptions.validation.min + " but submission is " + fieldValue.length + ". Submitted val: " + fieldValue));
+            return cb(new Error(`Expected minimum string length of ${fieldDefinition.fieldOptions.validation.min} but submission is ${fieldValue.length}. Submitted val: ${fieldValue}`));
           }
         }
 
         if (fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.validation && fieldDefinition.fieldOptions.validation.max) {
           if (fieldValue.length > fieldDefinition.fieldOptions.validation.max) {
-            return cb(new Error("Expected maximum string length of " + fieldDefinition.fieldOptions.validation.max + " but submission is " + fieldValue.length + ". Submitted val: " + fieldValue));
+            return cb(new Error(`Expected maximum string length of ${fieldDefinition.fieldOptions.validation.max} but submission is ${fieldValue.length}. Submitted val: ${fieldValue}`));
           }
         }
 
@@ -960,7 +967,7 @@
         var numeric = (testVal == fieldValue); // testVal co-erced to numeric above, so numeric comparison and NaN != NaN
 
         if (!numeric) {
-          return cb(new Error("Expected numeric but got: " + fieldValue));
+          return cb(new Error(`Expected numeric but got: ${fieldValue}`));
         }
 
         return validatorNumber(testVal, fieldDefinition, previousFieldValues, cb);
@@ -968,18 +975,18 @@
 
       function validatorNumber(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof fieldValue !== "number") {
-          return cb(new Error("Expected number but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected number but got ${typeof(fieldValue)}`));
         }
 
         if (fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.validation && fieldDefinition.fieldOptions.validation.min) {
           if (fieldValue < fieldDefinition.fieldOptions.validation.min) {
-            return cb(new Error("Expected minimum Number " + fieldDefinition.fieldOptions.validation.min + " but submission is " + fieldValue + ". Submitted number: " + fieldValue));
+            return cb(new Error(`Expected minimum Number ${fieldDefinition.fieldOptions.validation.min} but submission is ${fieldValue}. Submitted number: ${fieldValue}`));
           }
         }
 
         if (fieldDefinition.fieldOptions.validation.max) {
           if (fieldValue > fieldDefinition.fieldOptions.validation.max) {
-            return cb(new Error("Expected maximum Number " + fieldDefinition.fieldOptions.validation.max + " but submission is " + fieldValue + ". Submitted number: " + fieldValue));
+            return cb(new Error(`Expected maximum Number ${fieldDefinition.fieldOptions.validation.max} but submission is ${fieldValue}. Submitted number: ${fieldValue}`));
           }
         }
 
@@ -988,11 +995,11 @@
 
       function validatorEmail(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof(fieldValue) !== "string") {
-          return cb(new Error("Expected string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected string but got ${typeof(fieldValue)}`));
         }
 
         if (fieldValue.match(/[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}/g) === null) {
-          return cb(new Error("Invalid email address format: " + fieldValue));
+          return cb(new Error(`Invalid email address format: ${fieldValue}`));
         } else {
           return cb();
         }
@@ -1009,7 +1016,7 @@
        */
       function validatorDropDown(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof(fieldValue) !== "string") {
-          return cb(new Error("Expected submission to be string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected submission to be string but got ${typeof(fieldValue)}`));
         }
 
         fieldDefinition.fieldOptions = fieldDefinition.fieldOptions || {};
@@ -1017,7 +1024,7 @@
 
         //Check values exists in the field definition
         if (!fieldDefinition.fieldOptions.definition.options) {
-          return cb(new Error("No options exist for field " + fieldDefinition.name));
+          return cb(new Error(`No options exist for field ${fieldDefinition.name}`));
         }
 
         //Finding the selected option
@@ -1035,7 +1042,7 @@
           return cb();
         } else {
           //Otherwise, it is an invalid option
-          return cb(new Error("Invalid option specified: " + fieldValue));
+          return cb(new Error(`Invalid option specified: ${fieldValue}`));
         }
       }
 
@@ -1049,19 +1056,19 @@
        */
       function validatorRadio(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof(fieldValue) !== "string") {
-          return cb(new Error("Expected submission to be string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected submission to be string but got ${typeof(fieldValue)}`));
         }
 
         //Check value exists in the field definition
         if (!fieldDefinition.fieldOptions.definition.options) {
-          return cb(new Error("No options exist for field " + fieldDefinition.name));
+          return cb(new Error(`No options exist for field ${fieldDefinition.name}`));
         }
 
         async.some(fieldDefinition.fieldOptions.definition.options, function(dropdownOption, cb) {
           return cb(dropdownOption.label === fieldValue);
         }, function(found) {
           if (!found) {
-            return cb(new Error("Invalid option specified: " + fieldValue));
+            return cb(new Error(`Invalid option specified: ${fieldValue}`));
           } else {
             return cb();
           }
@@ -1085,14 +1092,14 @@
             if (fieldValue.selections) {
               len = fieldValue.selections.length;
             }
-            return cb(new Error("Expected a minimum number of selections " + minVal + " but got " + len));
+            return cb(new Error(`Expected a minimum number of selections ${minVal} but got ${len}`));
           }
         }
 
         if (maxVal) {
           if (fieldValue.selections) {
             if (fieldValue.selections.length > maxVal) {
-              return cb(new Error("Expected a maximum number of selections " + maxVal + " but got " + fieldValue.selections.length));
+              return cb(new Error(`Expected a maximum number of selections ${maxVal} but got ${fieldValue.selections.length}`));
             }
           }
         }
@@ -1107,11 +1114,11 @@
         }, function() {
           async.eachSeries(fieldValue.selections, function(selection, cb) {
             if (typeof(selection) !== "string") {
-              return cb(new Error("Expected checkbox submission to be string but got " + typeof(selection)));
+              return cb(new Error(`Expected checkbox submission to be string but got ${typeof(selection)}`));
             }
 
             if (optionsInCheckbox.indexOf(selection) === -1) {
-              return cb(new Error("Checkbox Option " + selection + " does not exist in the field."));
+              return cb(new Error(`Checkbox Option ${selection} does not exist in the field.`));
             }
 
             return cb();
@@ -1143,28 +1150,26 @@
           } else {
             return cb(new Error("Invalid object for latitude longitude submission"));
           }
-        } else {
-          if (fieldValue.zone && fieldValue.eastings && fieldValue.northings) {
+        } else if (fieldValue.zone && fieldValue.eastings && fieldValue.northings) {
             //Zone must be 3 characters, eastings 6 and northings 9
-            return validateNorthingsEastings(fieldValue, cb);
-          } else {
-            return cb(new Error("Invalid object for northings easting submission. Zone, Eastings and Northings elemets are required"));
-          }
+          return validateNorthingsEastings(fieldValue, cb);
+        } else {
+          return cb(new Error("Invalid object for northings easting submission. Zone, Eastings and Northings elemets are required"));
         }
 
         function validateNorthingsEastings(fieldValue, cb) {
           if (typeof(fieldValue.zone) !== "string" || fieldValue.zone.length === 0) {
-            return cb(new Error("Invalid zone definition for northings and eastings location. " + fieldValue.zone));
+            return cb(new Error(`Invalid zone definition for northings and eastings location. ${fieldValue.zone}`));
           }
 
           var east = parseInt(fieldValue.eastings, 10);
           if (isNaN(east)) {
-            return cb(new Error("Invalid eastings definition for northings and eastings location. " + fieldValue.eastings));
+            return cb(new Error(`Invalid eastings definition for northings and eastings location. ${fieldValue.eastings}`));
           }
 
           var north = parseInt(fieldValue.northings, 10);
           if (isNaN(north)) {
-            return cb(new Error("Invalid northings definition for northings and eastings location. " + fieldValue.northings));
+            return cb(new Error(`Invalid northings definition for northings and eastings location. ${fieldValue.northings}`));
           }
 
           return cb();
@@ -1208,7 +1213,7 @@
        */
       function validatorBarcode(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof(fieldValue) !== "object" || fieldValue === null) {
-          return cb(new Error("Expected object but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected object but got ${typeof(fieldValue)}`));
         }
 
         if (typeof(fieldValue.text) !== "string" || fieldValue.text.length === 0) {
@@ -1235,7 +1240,7 @@
             fieldValueSizeKB = fieldValueSize / 1000;
           }
           if (fieldValueSize > (fileSizeMax * 1000)) {
-            return cb(new Error("File size is too large. File can be a maximum of " + fileSizeMax + "KB. Size of file selected: " + fieldValueSizeKB + "KB"));
+            return cb(new Error(`File size is too large. File can be a maximum of ${fileSizeMax}KB. Size of file selected: ${fieldValueSizeKB}KB`));
           } else {
             return cb();
           }
@@ -1246,7 +1251,7 @@
 
       function validatorFile(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof fieldValue !== "object") {
-          return cb(new Error("Expected object but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected object but got ${typeof(fieldValue)}`));
         }
 
         var keyTypes = [
@@ -1275,10 +1280,10 @@
         async.each(keyTypes, function(keyType, cb) {
           var actualType = typeof fieldValue[keyType.keyName];
           if (actualType !== keyType.valueType) {
-            return cb(new Error("Expected " + keyType.valueType + " but got " + actualType));
+            return cb(new Error(`Expected ${keyType.valueType} but got ${actualType}`));
           }
           if (keyType.keyName === "fileName" && fieldValue[keyType.keyName].length <= 0) {
-            return cb(new Error("Expected value for " + keyType.keyName));
+            return cb(new Error(`Expected value for ${keyType.keyName}`));
           }
 
           return cb();
@@ -1297,7 +1302,7 @@
             } else if (previousFieldValues && previousFieldValues.hashName && previousFieldValues.hashName.indexOf(fieldValue.hashName) > -1) {
               return cb();
             } else {
-              return cb(new Error("Invalid file placeholder text" + fieldValue.hashName));
+              return cb(new Error(`Invalid file placeholder text${fieldValue.hashName}`));
             }
           });
         });
@@ -1305,7 +1310,7 @@
 
       function validatorFileObj(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if ((typeof File !== "function")) {
-          return cb(new Error("Expected File object but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected File object but got ${typeof(fieldValue)}`));
         }
 
         var keyTypes = [
@@ -1322,13 +1327,13 @@
         async.each(keyTypes, function(keyType, cb) {
           var actualType = typeof fieldValue[keyType.keyName];
           if (actualType !== keyType.valueType) {
-            return cb(new Error("Expected " + keyType.valueType + " but got " + actualType));
+            return cb(new Error(`Expected ${keyType.valueType} but got ${actualType}`));
           }
           if (actualType === "string" && fieldValue[keyType.keyName].length <= 0) {
-            return cb(new Error("Expected value for " + keyType.keyName));
+            return cb(new Error(`Expected value for ${keyType.keyName}`));
           }
           if (actualType === "number" && fieldValue[keyType.keyName] <= 0) {
-            return cb(new Error("Expected > 0 value for " + keyType.keyName));
+            return cb(new Error(`Expected > 0 value for ${keyType.keyName}`));
           }
 
           return cb();
@@ -1349,7 +1354,7 @@
 
       function validatorBase64(fieldValue, fieldDefinition, previousFieldValues, cb) {
         if (typeof fieldValue !== "string") {
-          return cb(new Error("Expected base64 string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected base64 string but got ${typeof(fieldValue)}`));
         }
 
         if (fieldValue.length <= 0) {
@@ -1363,52 +1368,52 @@
         var valid = false;
 
         if (typeof(fieldValue) !== "string") {
-          return cb(new Error("Expected string but got " + typeof(fieldValue)));
+          return cb(new Error(`Expected string but got ${typeof(fieldValue)}`));
         }
 
         switch (fieldDefinition.fieldOptions.definition.datetimeUnit) {
-          case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
+        case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
 
-            var validDateFormats = ["YYYY/MM/DD", "YYYY/MM/DD", "YYYY-MM-DD", "YYYY-MM-DD"];
+          var validDateFormats = ["YYYY/MM/DD", "YYYY/MM/DD", "YYYY-MM-DD", "YYYY-MM-DD"];
 
-            valid = _.find(validDateFormats, function(expectedFormat) {
-              return moment(fieldValue, expectedFormat, true).isValid();
-            });
+          valid = _.find(validDateFormats, function(expectedFormat) {
+            return moment(fieldValue, expectedFormat, true).isValid();
+          });
 
-            if (valid) {
-              return cb();
-            } else {
-              return cb(new Error("Invalid date value " + fieldValue + ". Date format is YYYY/MM/DD"));
-            }
-            break; // eslint-disable-line no-unreachable
-          case FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY:
-            valid = moment(fieldValue, "HH:mm:ss", true).isValid() || moment(fieldValue, "HH:mm", true).isValid();
-            if (valid) {
-              return cb();
-            } else {
-              return cb(new Error("Invalid time value " + fieldValue + ". Time format is HH:mm:ss or HH:mm"));
-            }
-            break; // eslint-disable-line no-unreachable
-          case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME:
-            var validDateTimeFormats = fieldDefinition.fieldOptions.definition.dateTimeFormat ? [fieldDefinition.fieldOptions.definition.dateTimeFormat] : ["YYYY/MM/DD HH:mm:ss", "YYYY/MM/DD HH:mm", "YYYY-MM-DD HH:mm:ss", "YYYY-MM-DD HH:mm"];
+          if (valid) {
+            return cb();
+          } else {
+            return cb(new Error(`Invalid date value ${fieldValue}. Date format is YYYY/MM/DD`));
+          }
+          break; // eslint-disable-line no-unreachable
+        case FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY:
+          valid = moment(fieldValue, "HH:mm:ss", true).isValid() || moment(fieldValue, "HH:mm", true).isValid();
+          if (valid) {
+            return cb();
+          } else {
+            return cb(new Error(`Invalid time value ${fieldValue}. Time format is HH:mm:ss or HH:mm`));
+          }
+          break; // eslint-disable-line no-unreachable
+        case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME:
+          var validDateTimeFormats = fieldDefinition.fieldOptions.definition.dateTimeFormat ? [fieldDefinition.fieldOptions.definition.dateTimeFormat] : ["YYYY/MM/DD HH:mm:ss", "YYYY/MM/DD HH:mm", "YYYY-MM-DD HH:mm:ss", "YYYY-MM-DD HH:mm"];
 
-            valid = _.find(validDateTimeFormats, function(expectedFormat) {
-              return moment(fieldValue, expectedFormat, true).isValid();
-            });
+          valid = _.find(validDateTimeFormats, function(expectedFormat) {
+            return moment(fieldValue, expectedFormat, true).isValid();
+          });
 
-            if (valid) {
-              return cb();
-            } else {
-              return cb(new Error("Invalid dateTime string " + fieldValue + ". dateTime format is " + validDateTimeFormats.join(" or ")));
-            }
-            break; // eslint-disable-line no-unreachable
-          default:
-            return cb(new Error("Invalid dateTime fieldtype " + fieldDefinition.fieldOptions.definition.datetimeUnit));
+          if (valid) {
+            return cb();
+          } else {
+            return cb(new Error(`Invalid dateTime string ${fieldValue}. dateTime format is ${validDateTimeFormats.join(" or ")}`));
+          }
+          break; // eslint-disable-line no-unreachable
+        default:
+          return cb(new Error(`Invalid dateTime fieldtype ${fieldDefinition.fieldOptions.definition.datetimeUnit}`));
         }
       }
 
       function validatorSection(value, fieldDefinition, previousFieldValues, cb) {
-        return cb(new Error("Should not submit section field: " + fieldDefinition.name));
+        return cb(new Error(`Should not submit section field: ${fieldDefinition.name}`));
       }
 
       function rulesResult(rules, cb) {
@@ -1499,7 +1504,7 @@
          * If the field is an admin field, the rules engine returns an error, as admin fields cannot be the subject of rules engine actions.
          */
         if (adminFieldMap[fieldId]) {
-          return cb(new Error("Submission " + fieldId + " is an admin field. Admin fields cannot be passed to the rules engine."));
+          return cb(new Error(`Submission ${fieldId} is an admin field. Admin fields cannot be passed to the rules engine.`));
         } else if (!field) {
           return cb(new Error("Field does not exist in form"));
         }
@@ -1640,10 +1645,10 @@
     }
   }());
 
-},{"async":2,"moment":4,"underscore":5}],2:[function(require,module,exports){
-  (function (process){
+},{"async":2,"moment":4,"underscore":5}],2:[function(require,module,exports) {
+  (function(process) {
     /*global setImmediate: false, setTimeout: false, console: false */
-    (function () {
+    (function() {
 
       var async = {};
 
@@ -1655,7 +1660,7 @@
         previous_async = root.async;
       }
 
-      async.noConflict = function () {
+      async.noConflict = function() {
         root.async = previous_async;
         return async;
       };
@@ -1666,12 +1671,12 @@
           if (called) throw new Error("Callback was already called.");
           called = true;
           fn.apply(root, arguments);
-        }
+        };
       }
 
       //// cross-browser compatiblity functions ////
 
-      var _each = function (arr, iterator) {
+      var _each = function(arr, iterator) {
         if (arr.forEach) {
           return arr.forEach(iterator);
         }
@@ -1680,28 +1685,28 @@
         }
       };
 
-      var _map = function (arr, iterator) {
+      var _map = function(arr, iterator) {
         if (arr.map) {
           return arr.map(iterator);
         }
         var results = [];
-        _each(arr, function (x, i, a) {
+        _each(arr, function(x, i, a) {
           results.push(iterator(x, i, a));
         });
         return results;
       };
 
-      var _reduce = function (arr, iterator, memo) {
+      var _reduce = function(arr, iterator, memo) {
         if (arr.reduce) {
           return arr.reduce(iterator, memo);
         }
-        _each(arr, function (x, i, a) {
+        _each(arr, function(x, i, a) {
           memo = iterator(memo, x, i, a);
         });
         return memo;
       };
 
-      var _keys = function (obj) {
+      var _keys = function(obj) {
         if (Object.keys) {
           return Object.keys(obj);
         }
@@ -1719,42 +1724,38 @@
       //// nextTick implementation with browser-compatible fallback ////
       if (typeof process === 'undefined' || !(process.nextTick)) {
         if (typeof setImmediate === 'function') {
-          async.nextTick = function (fn) {
+          async.nextTick = function(fn) {
             // not a direct alias for IE10 compatibility
             setImmediate(fn);
           };
           async.setImmediate = async.nextTick;
-        }
-        else {
-          async.nextTick = function (fn) {
+        }        else {
+          async.nextTick = function(fn) {
             setTimeout(fn, 0);
           };
           async.setImmediate = async.nextTick;
         }
-      }
-      else {
+      }      else {
         async.nextTick = process.nextTick;
         if (typeof setImmediate !== 'undefined') {
           async.setImmediate = setImmediate;
-        }
-        else {
+        }        else {
           async.setImmediate = async.nextTick;
         }
       }
 
-      async.each = function (arr, iterator, callback) {
-        callback = callback || function () {};
+      async.each = function(arr, iterator, callback) {
+        callback = callback || function() {};
         if (!arr.length) {
           return callback();
         }
         var completed = 0;
-        _each(arr, function (x) {
-          iterator(x, only_once(function (err) {
+        _each(arr, function(x) {
+          iterator(x, only_once(function(err) {
             if (err) {
               callback(err);
-              callback = function () {};
-            }
-            else {
+              callback = function() {};
+            }            else {
               completed += 1;
               if (completed >= arr.length) {
                 callback(null);
@@ -1765,24 +1766,22 @@
       };
       async.forEach = async.each;
 
-      async.eachSeries = function (arr, iterator, callback) {
-        callback = callback || function () {};
+      async.eachSeries = function(arr, iterator, callback) {
+        callback = callback || function() {};
         if (!arr.length) {
           return callback();
         }
         var completed = 0;
-        var iterate = function () {
-          iterator(arr[completed], function (err) {
+        var iterate = function() {
+          iterator(arr[completed], function(err) {
             if (err) {
               callback(err);
-              callback = function () {};
-            }
-            else {
+              callback = function() {};
+            }            else {
               completed += 1;
               if (completed >= arr.length) {
                 callback(null);
-              }
-              else {
+              }              else {
                 iterate();
               }
             }
@@ -1792,16 +1791,16 @@
       };
       async.forEachSeries = async.eachSeries;
 
-      async.eachLimit = function (arr, limit, iterator, callback) {
+      async.eachLimit = function(arr, limit, iterator, callback) {
         var fn = _eachLimit(limit);
         fn.apply(null, [arr, iterator, callback]);
       };
       async.forEachLimit = async.eachLimit;
 
-      var _eachLimit = function (limit) {
+      var _eachLimit = function(limit) {
 
-        return function (arr, iterator, callback) {
-          callback = callback || function () {};
+        return function(arr, iterator, callback) {
+          callback = callback || function() {};
           if (!arr.length || limit <= 0) {
             return callback();
           }
@@ -1809,7 +1808,7 @@
           var started = 0;
           var running = 0;
 
-          (function replenish () {
+          (function replenish() {
             if (completed >= arr.length) {
               return callback();
             }
@@ -1817,18 +1816,16 @@
             while (running < limit && started < arr.length) {
               started += 1;
               running += 1;
-              iterator(arr[started - 1], function (err) {
+              iterator(arr[started - 1], function(err) {
                 if (err) {
                   callback(err);
-                  callback = function () {};
-                }
-                else {
+                  callback = function() {};
+                }                else {
                   completed += 1;
                   running -= 1;
                   if (completed >= arr.length) {
                     callback();
-                  }
-                  else {
+                  }                  else {
                     replenish();
                   }
                 }
@@ -1839,43 +1836,43 @@
       };
 
 
-      var doParallel = function (fn) {
-        return function () {
+      var doParallel = function(fn) {
+        return function() {
           var args = Array.prototype.slice.call(arguments);
           return fn.apply(null, [async.each].concat(args));
         };
       };
       var doParallelLimit = function(limit, fn) {
-        return function () {
+        return function() {
           var args = Array.prototype.slice.call(arguments);
           return fn.apply(null, [_eachLimit(limit)].concat(args));
         };
       };
-      var doSeries = function (fn) {
-        return function () {
+      var doSeries = function(fn) {
+        return function() {
           var args = Array.prototype.slice.call(arguments);
           return fn.apply(null, [async.eachSeries].concat(args));
         };
       };
 
 
-      var _asyncMap = function (eachfn, arr, iterator, callback) {
+      var _asyncMap = function(eachfn, arr, iterator, callback) {
         var results = [];
-        arr = _map(arr, function (x, i) {
+        arr = _map(arr, function(x, i) {
           return {index: i, value: x};
         });
-        eachfn(arr, function (x, callback) {
-          iterator(x.value, function (err, v) {
+        eachfn(arr, function(x, callback) {
+          iterator(x.value, function(err, v) {
             results[x.index] = v;
             callback(err);
           });
-        }, function (err) {
+        }, function(err) {
           callback(err, results);
         });
       };
       async.map = doParallel(_asyncMap);
       async.mapSeries = doSeries(_asyncMap);
-      async.mapLimit = function (arr, limit, iterator, callback) {
+      async.mapLimit = function(arr, limit, iterator, callback) {
         return _mapLimit(limit)(arr, iterator, callback);
       };
 
@@ -1885,13 +1882,13 @@
 
       // reduce only has a series version, as doing reduce in parallel won't
       // work in many situations.
-      async.reduce = function (arr, memo, iterator, callback) {
-        async.eachSeries(arr, function (x, callback) {
-          iterator(memo, x, function (err, v) {
+      async.reduce = function(arr, memo, iterator, callback) {
+        async.eachSeries(arr, function(x, callback) {
+          iterator(memo, x, function(err, v) {
             memo = v;
             callback(err);
           });
-        }, function (err) {
+        }, function(err) {
           callback(err, memo);
         });
       };
@@ -1900,8 +1897,8 @@
       // foldl alias
       async.foldl = async.reduce;
 
-      async.reduceRight = function (arr, memo, iterator, callback) {
-        var reversed = _map(arr, function (x) {
+      async.reduceRight = function(arr, memo, iterator, callback) {
+        var reversed = _map(arr, function(x) {
           return x;
         }).reverse();
         async.reduce(reversed, memo, iterator, callback);
@@ -1909,22 +1906,22 @@
       // foldr alias
       async.foldr = async.reduceRight;
 
-      var _filter = function (eachfn, arr, iterator, callback) {
+      var _filter = function(eachfn, arr, iterator, callback) {
         var results = [];
-        arr = _map(arr, function (x, i) {
+        arr = _map(arr, function(x, i) {
           return {index: i, value: x};
         });
-        eachfn(arr, function (x, callback) {
-          iterator(x.value, function (v) {
+        eachfn(arr, function(x, callback) {
+          iterator(x.value, function(v) {
             if (v) {
               results.push(x);
             }
             callback();
           });
-        }, function (err) {
-          callback(_map(results.sort(function (a, b) {
+        }, function(err) {
+          callback(_map(results.sort(function(a, b) {
             return a.index - b.index;
-          }), function (x) {
+          }), function(x) {
             return x.value;
           }));
         });
@@ -1935,22 +1932,22 @@
       async.select = async.filter;
       async.selectSeries = async.filterSeries;
 
-      var _reject = function (eachfn, arr, iterator, callback) {
+      var _reject = function(eachfn, arr, iterator, callback) {
         var results = [];
-        arr = _map(arr, function (x, i) {
+        arr = _map(arr, function(x, i) {
           return {index: i, value: x};
         });
-        eachfn(arr, function (x, callback) {
-          iterator(x.value, function (v) {
+        eachfn(arr, function(x, callback) {
+          iterator(x.value, function(v) {
             if (!v) {
               results.push(x);
             }
             callback();
           });
-        }, function (err) {
-          callback(_map(results.sort(function (a, b) {
+        }, function(err) {
+          callback(_map(results.sort(function(a, b) {
             return a.index - b.index;
-          }), function (x) {
+          }), function(x) {
             return x.value;
           }));
         });
@@ -1958,84 +1955,81 @@
       async.reject = doParallel(_reject);
       async.rejectSeries = doSeries(_reject);
 
-      var _detect = function (eachfn, arr, iterator, main_callback) {
-        eachfn(arr, function (x, callback) {
-          iterator(x, function (result) {
+      var _detect = function(eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function(x, callback) {
+          iterator(x, function(result) {
             if (result) {
               main_callback(x);
-              main_callback = function () {};
-            }
-            else {
+              main_callback = function() {};
+            }            else {
               callback();
             }
           });
-        }, function (err) {
+        }, function(err) {
           main_callback();
         });
       };
       async.detect = doParallel(_detect);
       async.detectSeries = doSeries(_detect);
 
-      async.some = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-          iterator(x, function (v) {
+      async.some = function(arr, iterator, main_callback) {
+        async.each(arr, function(x, callback) {
+          iterator(x, function(v) {
             if (v) {
               main_callback(true);
-              main_callback = function () {};
+              main_callback = function() {};
             }
             callback();
           });
-        }, function (err) {
+        }, function(err) {
           main_callback(false);
         });
       };
       // any alias
       async.any = async.some;
 
-      async.every = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-          iterator(x, function (v) {
+      async.every = function(arr, iterator, main_callback) {
+        async.each(arr, function(x, callback) {
+          iterator(x, function(v) {
             if (!v) {
               main_callback(false);
-              main_callback = function () {};
+              main_callback = function() {};
             }
             callback();
           });
-        }, function (err) {
+        }, function(err) {
           main_callback(true);
         });
       };
       // all alias
       async.all = async.every;
 
-      async.sortBy = function (arr, iterator, callback) {
-        async.map(arr, function (x, callback) {
-          iterator(x, function (err, criteria) {
+      async.sortBy = function(arr, iterator, callback) {
+        async.map(arr, function(x, callback) {
+          iterator(x, function(err, criteria) {
             if (err) {
               callback(err);
-            }
-            else {
+            }            else {
               callback(null, {value: x, criteria: criteria});
             }
           });
-        }, function (err, results) {
+        }, function(err, results) {
           if (err) {
             return callback(err);
-          }
-          else {
-            var fn = function (left, right) {
+          }          else {
+            var fn = function(left, right) {
               var a = left.criteria, b = right.criteria;
               return a < b ? -1 : a > b ? 1 : 0;
             };
-            callback(null, _map(results.sort(fn), function (x) {
+            callback(null, _map(results.sort(fn), function(x) {
               return x.value;
             }));
           }
         });
       };
 
-      async.auto = function (tasks, callback) {
-        callback = callback || function () {};
+      async.auto = function(tasks, callback) {
+        callback = callback || function() {};
         var keys = _keys(tasks);
         if (!keys.length) {
           return callback(null);
@@ -2044,10 +2038,10 @@
         var results = {};
 
         var listeners = [];
-        var addListener = function (fn) {
+        var addListener = function(fn) {
           listeners.unshift(fn);
         };
-        var removeListener = function (fn) {
+        var removeListener = function(fn) {
           for (var i = 0; i < listeners.length; i += 1) {
             if (listeners[i] === fn) {
               listeners.splice(i, 1);
@@ -2055,22 +2049,22 @@
             }
           }
         };
-        var taskComplete = function () {
-          _each(listeners.slice(0), function (fn) {
+        var taskComplete = function() {
+          _each(listeners.slice(0), function(fn) {
             fn();
           });
         };
 
-        addListener(function () {
+        addListener(function() {
           if (_keys(results).length === keys.length) {
             callback(null, results);
-            callback = function () {};
+            callback = function() {};
           }
         });
 
-        _each(keys, function (k) {
+        _each(keys, function(k) {
           var task = (tasks[k] instanceof Function) ? [tasks[k]]: tasks[k];
-          var taskCallback = function (err) {
+          var taskCallback = function(err) {
             var args = Array.prototype.slice.call(arguments, 1);
             if (args.length <= 1) {
               args = args[0];
@@ -2083,24 +2077,22 @@
               safeResults[k] = args;
               callback(err, safeResults);
               // stop subsequent errors hitting callback multiple times
-              callback = function () {};
-            }
-            else {
+              callback = function() {};
+            }            else {
               results[k] = args;
               async.setImmediate(taskComplete);
             }
           };
           var requires = task.slice(0, Math.abs(task.length - 1)) || [];
-          var ready = function () {
-            return _reduce(requires, function (a, x) {
-                return (a && results.hasOwnProperty(x));
-              }, true) && !results.hasOwnProperty(k);
+          var ready = function() {
+            return _reduce(requires, function(a, x) {
+              return (a && results.hasOwnProperty(x));
+            }, true) && !results.hasOwnProperty(k);
           };
           if (ready()) {
             task[task.length - 1](taskCallback, results);
-          }
-          else {
-            var listener = function () {
+          }          else {
+            var listener = function() {
               if (ready()) {
                 removeListener(listener);
                 task[task.length - 1](taskCallback, results);
@@ -2111,8 +2103,8 @@
         });
       };
 
-      async.waterfall = function (tasks, callback) {
-        callback = callback || function () {};
+      async.waterfall = function(tasks, callback) {
+        callback = callback || function() {};
         if (tasks.constructor !== Array) {
           var err = new Error('First argument to waterfall must be an array of functions');
           return callback(err);
@@ -2120,22 +2112,20 @@
         if (!tasks.length) {
           return callback();
         }
-        var wrapIterator = function (iterator) {
-          return function (err) {
+        var wrapIterator = function(iterator) {
+          return function(err) {
             if (err) {
               callback.apply(null, arguments);
-              callback = function () {};
-            }
-            else {
+              callback = function() {};
+            }            else {
               var args = Array.prototype.slice.call(arguments, 1);
               var next = iterator.next();
               if (next) {
                 args.push(wrapIterator(next));
-              }
-              else {
+              }              else {
                 args.push(callback);
               }
-              async.setImmediate(function () {
+              async.setImmediate(function() {
                 iterator.apply(null, args);
               });
             }
@@ -2145,11 +2135,11 @@
       };
 
       var _parallel = function(eachfn, tasks, callback) {
-        callback = callback || function () {};
+        callback = callback || function() {};
         if (tasks.constructor === Array) {
-          eachfn.map(tasks, function (fn, callback) {
+          eachfn.map(tasks, function(fn, callback) {
             if (fn) {
-              fn(function (err) {
+              fn(function(err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {
                   args = args[0];
@@ -2158,11 +2148,10 @@
               });
             }
           }, callback);
-        }
-        else {
+        }        else {
           var results = {};
-          eachfn.each(_keys(tasks), function (k, callback) {
-            tasks[k](function (err) {
+          eachfn.each(_keys(tasks), function(k, callback) {
+            tasks[k](function(err) {
               var args = Array.prototype.slice.call(arguments, 1);
               if (args.length <= 1) {
                 args = args[0];
@@ -2170,13 +2159,13 @@
               results[k] = args;
               callback(err);
             });
-          }, function (err) {
+          }, function(err) {
             callback(err, results);
           });
         }
       };
 
-      async.parallel = function (tasks, callback) {
+      async.parallel = function(tasks, callback) {
         _parallel({ map: async.map, each: async.each }, tasks, callback);
       };
 
@@ -2184,12 +2173,12 @@
         _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
       };
 
-      async.series = function (tasks, callback) {
-        callback = callback || function () {};
+      async.series = function(tasks, callback) {
+        callback = callback || function() {};
         if (tasks.constructor === Array) {
-          async.mapSeries(tasks, function (fn, callback) {
+          async.mapSeries(tasks, function(fn, callback) {
             if (fn) {
-              fn(function (err) {
+              fn(function(err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {
                   args = args[0];
@@ -2198,11 +2187,10 @@
               });
             }
           }, callback);
-        }
-        else {
+        }        else {
           var results = {};
-          async.eachSeries(_keys(tasks), function (k, callback) {
-            tasks[k](function (err) {
+          async.eachSeries(_keys(tasks), function(k, callback) {
+            tasks[k](function(err) {
               var args = Array.prototype.slice.call(arguments, 1);
               if (args.length <= 1) {
                 args = args[0];
@@ -2210,21 +2198,21 @@
               results[k] = args;
               callback(err);
             });
-          }, function (err) {
+          }, function(err) {
             callback(err, results);
           });
         }
       };
 
-      async.iterator = function (tasks) {
-        var makeCallback = function (index) {
-          var fn = function () {
+      async.iterator = function(tasks) {
+        var makeCallback = function(index) {
+          var fn = function() {
             if (tasks.length) {
               tasks[index].apply(null, arguments);
             }
             return fn.next();
           };
-          fn.next = function () {
+          fn.next = function() {
             return (index < tasks.length - 1) ? makeCallback(index + 1): null;
           };
           return fn;
@@ -2232,91 +2220,87 @@
         return makeCallback(0);
       };
 
-      async.apply = function (fn) {
+      async.apply = function(fn) {
         var args = Array.prototype.slice.call(arguments, 1);
-        return function () {
+        return function() {
           return fn.apply(
             null, args.concat(Array.prototype.slice.call(arguments))
           );
         };
       };
 
-      var _concat = function (eachfn, arr, fn, callback) {
+      var _concat = function(eachfn, arr, fn, callback) {
         var r = [];
-        eachfn(arr, function (x, cb) {
-          fn(x, function (err, y) {
+        eachfn(arr, function(x, cb) {
+          fn(x, function(err, y) {
             r = r.concat(y || []);
             cb(err);
           });
-        }, function (err) {
+        }, function(err) {
           callback(err, r);
         });
       };
       async.concat = doParallel(_concat);
       async.concatSeries = doSeries(_concat);
 
-      async.whilst = function (test, iterator, callback) {
+      async.whilst = function(test, iterator, callback) {
         if (test()) {
-          iterator(function (err) {
+          iterator(function(err) {
             if (err) {
               return callback(err);
             }
             async.whilst(test, iterator, callback);
           });
-        }
-        else {
+        }        else {
           callback();
         }
       };
 
-      async.doWhilst = function (iterator, test, callback) {
-        iterator(function (err) {
+      async.doWhilst = function(iterator, test, callback) {
+        iterator(function(err) {
           if (err) {
             return callback(err);
           }
           if (test()) {
             async.doWhilst(iterator, test, callback);
-          }
-          else {
+          }          else {
             callback();
           }
         });
       };
 
-      async.until = function (test, iterator, callback) {
+      async.until = function(test, iterator, callback) {
         if (!test()) {
-          iterator(function (err) {
+          iterator(function(err) {
             if (err) {
               return callback(err);
             }
             async.until(test, iterator, callback);
           });
-        }
-        else {
+        }        else {
           callback();
         }
       };
 
-      async.doUntil = function (iterator, test, callback) {
-        iterator(function (err) {
+      async.doUntil = function(iterator, test, callback) {
+        iterator(function(err) {
           if (err) {
             return callback(err);
           }
           if (!test()) {
             async.doUntil(iterator, test, callback);
-          }
-          else {
+          }          else {
             callback();
           }
         });
       };
 
-      async.queue = function (worker, concurrency) {
+      async.queue = function(worker, concurrency) {
         if (concurrency === undefined) {
           concurrency = 1;
         }
         function _insert(q, data, pos, callback) {
-          if(data.constructor !== Array) {
+          if (data.constructor !== Array) {
             data = [data];
           }
           _each(data, function(task) {
@@ -2345,20 +2329,20 @@
           saturated: null,
           empty: null,
           drain: null,
-          push: function (data, callback) {
+          push: function(data, callback) {
             _insert(q, data, false, callback);
           },
-          unshift: function (data, callback) {
+          unshift: function(data, callback) {
             _insert(q, data, true, callback);
           },
-          process: function () {
+          process: function() {
             if (workers < q.concurrency && q.tasks.length) {
               var task = q.tasks.shift();
               if (q.empty && q.tasks.length === 0) {
                 q.empty();
               }
               workers += 1;
-              var next = function () {
+              var next = function() {
                 workers -= 1;
                 if (task.callback) {
                   task.callback.apply(task, arguments);
@@ -2372,17 +2356,17 @@
               worker(task.data, cb);
             }
           },
-          length: function () {
+          length: function() {
             return q.tasks.length;
           },
-          running: function () {
+          running: function() {
             return workers;
           }
         };
         return q;
       };
 
-      async.cargo = function (worker, payload) {
+      async.cargo = function(worker, payload) {
         var working     = false,
           tasks       = [];
 
@@ -2392,8 +2376,8 @@
           saturated: null,
           empty: null,
           drain: null,
-          push: function (data, callback) {
-            if(data.constructor !== Array) {
+          push: function(data, callback) {
+            if (data.constructor !== Array) {
               data = [data];
             }
             _each(data, function(task) {
@@ -2410,7 +2394,7 @@
           process: function process() {
             if (working) return;
             if (tasks.length === 0) {
-              if(cargo.drain) cargo.drain();
+              if (cargo.drain) cargo.drain();
               return;
             }
 
@@ -2418,17 +2402,17 @@
               ? tasks.splice(0, payload)
               : tasks.splice(0);
 
-            var ds = _map(ts, function (task) {
+            var ds = _map(ts, function(task) {
               return task.data;
             });
 
-            if(cargo.empty) cargo.empty();
+            if (cargo.empty) cargo.empty();
             working = true;
-            worker(ds, function () {
+            worker(ds, function() {
               working = false;
 
               var args = arguments;
-              _each(ts, function (data) {
+              _each(ts, function(data) {
                 if (data.callback) {
                   data.callback.apply(null, args);
                 }
@@ -2437,29 +2421,28 @@
               process();
             });
           },
-          length: function () {
+          length: function() {
             return tasks.length;
           },
-          running: function () {
+          running: function() {
             return working;
           }
         };
         return cargo;
       };
 
-      var _console_fn = function (name) {
-        return function (fn) {
+      var _console_fn = function(name) {
+        return function(fn) {
           var args = Array.prototype.slice.call(arguments, 1);
-          fn.apply(null, args.concat([function (err) {
+          fn.apply(null, args.concat([function(err) {
             var args = Array.prototype.slice.call(arguments, 1);
             if (typeof console !== 'undefined') {
               if (err) {
                 if (console.error) {
                   console.error(err);
                 }
-              }
-              else if (console[name]) {
-                _each(args, function (x) {
+              }              else if (console[name]) {
+                _each(args, function(x) {
                   console[name](x);
                 });
               }
@@ -2473,25 +2456,23 @@
        async.warn = _console_fn('warn');
        async.error = _console_fn('error');*/
 
-      async.memoize = function (fn, hasher) {
+      async.memoize = function(fn, hasher) {
         var memo = {};
         var queues = {};
-        hasher = hasher || function (x) {
-            return x;
-          };
-        var memoized = function () {
+        hasher = hasher || function(x) {
+          return x;
+        };
+        var memoized = function() {
           var args = Array.prototype.slice.call(arguments);
           var callback = args.pop();
           var key = hasher.apply(null, args);
           if (key in memo) {
             callback.apply(null, memo[key]);
-          }
-          else if (key in queues) {
+          }          else if (key in queues) {
             queues[key].push(callback);
-          }
-          else {
+          }          else {
             queues[key] = [callback];
-            fn.apply(null, args.concat([function () {
+            fn.apply(null, args.concat([function() {
               memo[key] = arguments;
               var q = queues[key];
               delete queues[key];
@@ -2506,13 +2487,13 @@
         return memoized;
       };
 
-      async.unmemoize = function (fn) {
-        return function () {
+      async.unmemoize = function(fn) {
+        return function() {
           return (fn.unmemoized || fn).apply(null, arguments);
         };
       };
 
-      async.times = function (count, iterator, callback) {
+      async.times = function(count, iterator, callback) {
         var counter = [];
         for (var i = 0; i < count; i++) {
           counter.push(i);
@@ -2520,7 +2501,7 @@
         return async.map(counter, iterator, callback);
       };
 
-      async.timesSeries = function (count, iterator, callback) {
+      async.timesSeries = function(count, iterator, callback) {
         var counter = [];
         for (var i = 0; i < count; i++) {
           counter.push(i);
@@ -2528,47 +2509,46 @@
         return async.mapSeries(counter, iterator, callback);
       };
 
-      async.compose = function (/* functions... */) {
+      async.compose = function(/* functions... */) {
         var fns = Array.prototype.reverse.call(arguments);
-        return function () {
+        return function() {
           var that = this;
           var args = Array.prototype.slice.call(arguments);
           var callback = args.pop();
-          async.reduce(fns, args, function (newargs, fn, cb) {
-              fn.apply(that, newargs.concat([function () {
-                var err = arguments[0];
-                var nextargs = Array.prototype.slice.call(arguments, 1);
-                cb(err, nextargs);
-              }]))
-            },
-            function (err, results) {
+          async.reduce(fns, args, function(newargs, fn, cb) {
+            fn.apply(that, newargs.concat([function() {
+              var err = arguments[0];
+              var nextargs = Array.prototype.slice.call(arguments, 1);
+              cb(err, nextargs);
+            }]));
+          },
+            function(err, results) {
               callback.apply(that, [err].concat(results));
             });
         };
       };
 
-      var _applyEach = function (eachfn, fns /*args...*/) {
-        var go = function () {
+      var _applyEach = function(eachfn, fns /*args...*/) {
+        var go = function() {
           var that = this;
           var args = Array.prototype.slice.call(arguments);
           var callback = args.pop();
-          return eachfn(fns, function (fn, cb) {
-              fn.apply(that, args.concat([cb]));
-            },
+          return eachfn(fns, function(fn, cb) {
+            fn.apply(that, args.concat([cb]));
+          },
             callback);
         };
         if (arguments.length > 2) {
           var args = Array.prototype.slice.call(arguments, 2);
           return go.apply(this, args);
-        }
-        else {
+        }        else {
           return go;
         }
       };
       async.applyEach = doParallel(_applyEach);
       async.applyEachSeries = doSeries(_applyEach);
 
-      async.forever = function (fn, callback) {
+      async.forever = function(fn, callback) {
         function next(err) {
           if (err) {
             if (callback) {
@@ -2583,7 +2563,7 @@
 
       // AMD / RequireJS
       if (typeof define !== 'undefined' && define.amd) {
-        define([], function () {
+        define([], function() {
           return async;
         });
       }
@@ -2598,8 +2578,8 @@
 
     }());
 
-  }).call(this,require('_process'))
-},{"_process":3}],3:[function(require,module,exports){
+  }).call(this,require('_process'));
+},{"_process":3}],3:[function(require,module,exports) {
 // shim for using process in browser
 
   var process = module.exports = {};
@@ -2628,7 +2608,7 @@
     draining = true;
 
     var len = queue.length;
-    while(len) {
+    while (len) {
       currentQueue = queue;
       queue = [];
       while (++queueIndex < len) {
@@ -2644,7 +2624,7 @@
     clearTimeout(timeout);
   }
 
-  process.nextTick = function (fun) {
+  process.nextTick = function(fun) {
     var args = new Array(arguments.length - 1);
     if (arguments.length > 1) {
       for (var i = 1; i < arguments.length; i++) {
@@ -2662,7 +2642,7 @@
     this.fun = fun;
     this.array = array;
   }
-  Item.prototype.run = function () {
+  Item.prototype.run = function() {
     this.fun.apply(null, this.array);
   };
   process.title = 'browser';
@@ -2682,25 +2662,29 @@
   process.removeAllListeners = noop;
   process.emit = noop;
 
-  process.binding = function (name) {
+  process.binding = function(name) {
     throw new Error('process.binding is not supported');
   };
 
-  process.cwd = function () { return '/' };
-  process.chdir = function (dir) {
+  process.cwd = function() {
+    return '/';
+  };
+  process.chdir = function(dir) {
     throw new Error('process.chdir is not supported');
   };
-  process.umask = function() { return 0; };
+  process.umask = function() {
+    return 0;
+  };
 
-},{}],4:[function(require,module,exports){
-  (function (global){
+},{}],4:[function(require,module,exports) {
+  (function(global) {
 //! moment.js
 //! version : 2.6.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
 
-    (function (undefined) {
+    (function(undefined) {
 
       /************************************
        Constants
@@ -2845,116 +2829,116 @@
         paddedTokens = 'M D H h m s w W'.split(' '),
 
         formatTokenFunctions = {
-          M    : function () {
+          M    : function() {
             return this.month() + 1;
           },
-          MMM  : function (format) {
+          MMM  : function(format) {
             return this.lang().monthsShort(this, format);
           },
-          MMMM : function (format) {
+          MMMM : function(format) {
             return this.lang().months(this, format);
           },
-          D    : function () {
+          D    : function() {
             return this.date();
           },
-          DDD  : function () {
+          DDD  : function() {
             return this.dayOfYear();
           },
-          d    : function () {
+          d    : function() {
             return this.day();
           },
-          dd   : function (format) {
+          dd   : function(format) {
             return this.lang().weekdaysMin(this, format);
           },
-          ddd  : function (format) {
+          ddd  : function(format) {
             return this.lang().weekdaysShort(this, format);
           },
-          dddd : function (format) {
+          dddd : function(format) {
             return this.lang().weekdays(this, format);
           },
-          w    : function () {
+          w    : function() {
             return this.week();
           },
-          W    : function () {
+          W    : function() {
             return this.isoWeek();
           },
-          YY   : function () {
+          YY   : function() {
             return leftZeroFill(this.year() % 100, 2);
           },
-          YYYY : function () {
+          YYYY : function() {
             return leftZeroFill(this.year(), 4);
           },
-          YYYYY : function () {
+          YYYYY : function() {
             return leftZeroFill(this.year(), 5);
           },
-          YYYYYY : function () {
+          YYYYYY : function() {
             var y = this.year(), sign = y >= 0 ? '+' : '-';
             return sign + leftZeroFill(Math.abs(y), 6);
           },
-          gg   : function () {
+          gg   : function() {
             return leftZeroFill(this.weekYear() % 100, 2);
           },
-          gggg : function () {
+          gggg : function() {
             return leftZeroFill(this.weekYear(), 4);
           },
-          ggggg : function () {
+          ggggg : function() {
             return leftZeroFill(this.weekYear(), 5);
           },
-          GG   : function () {
+          GG   : function() {
             return leftZeroFill(this.isoWeekYear() % 100, 2);
           },
-          GGGG : function () {
+          GGGG : function() {
             return leftZeroFill(this.isoWeekYear(), 4);
           },
-          GGGGG : function () {
+          GGGGG : function() {
             return leftZeroFill(this.isoWeekYear(), 5);
           },
-          e : function () {
+          e : function() {
             return this.weekday();
           },
-          E : function () {
+          E : function() {
             return this.isoWeekday();
           },
-          a    : function () {
+          a    : function() {
             return this.lang().meridiem(this.hours(), this.minutes(), true);
           },
-          A    : function () {
+          A    : function() {
             return this.lang().meridiem(this.hours(), this.minutes(), false);
           },
-          H    : function () {
+          H    : function() {
             return this.hours();
           },
-          h    : function () {
+          h    : function() {
             return this.hours() % 12 || 12;
           },
-          m    : function () {
+          m    : function() {
             return this.minutes();
           },
-          s    : function () {
+          s    : function() {
             return this.seconds();
           },
-          S    : function () {
+          S    : function() {
             return toInt(this.milliseconds() / 100);
           },
-          SS   : function () {
+          SS   : function() {
             return leftZeroFill(toInt(this.milliseconds() / 10), 2);
           },
-          SSS  : function () {
+          SSS  : function() {
             return leftZeroFill(this.milliseconds(), 3);
           },
-          SSSS : function () {
+          SSSS : function() {
             return leftZeroFill(this.milliseconds(), 3);
           },
-          Z    : function () {
+          Z    : function() {
             var a = -this.zone(),
               b = "+";
             if (a < 0) {
               a = -a;
               b = "-";
             }
-            return b + leftZeroFill(toInt(a / 60), 2) + ":" + leftZeroFill(toInt(a) % 60, 2);
+            return `${b + leftZeroFill(toInt(a / 60), 2)}:${leftZeroFill(toInt(a) % 60, 2)}`;
           },
-          ZZ   : function () {
+          ZZ   : function() {
             var a = -this.zone(),
               b = "+";
             if (a < 0) {
@@ -2963,16 +2947,16 @@
             }
             return b + leftZeroFill(toInt(a / 60), 2) + leftZeroFill(toInt(a) % 60, 2);
           },
-          z : function () {
+          z : function() {
             return this.zoneAbbr();
           },
-          zz : function () {
+          zz : function() {
             return this.zoneName();
           },
-          X    : function () {
+          X    : function() {
             return this.unix();
           },
-          Q : function () {
+          Q : function() {
             return this.quarter();
           }
         },
@@ -3001,10 +2985,10 @@
         function printMsg() {
           if (moment.suppressDeprecationWarnings === false &&
             typeof console !== 'undefined' && console.warn) {
-            console.warn("Deprecation warning: " + msg);
+            console.warn(`Deprecation warning: ${msg}`);
           }
         }
-        return extend(function () {
+        return extend(function() {
           if (firstTime) {
             printMsg();
             firstTime = false;
@@ -3014,19 +2998,19 @@
       }
 
       function padToken(func, count) {
-        return function (a) {
+        return function(a) {
           return leftZeroFill(func.call(this, a), count);
         };
       }
       function ordinalizeToken(func, period) {
-        return function (a) {
+        return function(a) {
           return this.lang().ordinal(func.call(this, a), period);
         };
       }
 
       while (ordinalizeTokens.length) {
         i = ordinalizeTokens.pop();
-        formatTokenFunctions[i + 'o'] = ordinalizeToken(formatTokenFunctions[i], i);
+        formatTokenFunctions[`${i}o`] = ordinalizeToken(formatTokenFunctions[i], i);
       }
       while (paddedTokens.length) {
         i = paddedTokens.pop();
@@ -3128,11 +3112,11 @@
       // left zero fill a number
       // see http://jsperf.com/left-zero-filling for performance comparison
       function leftZeroFill(number, targetLength, forceSign) {
-        var output = '' + Math.abs(number),
+        var output = `${Math.abs(number)}`,
           sign = number >= 0;
 
         while (output.length < targetLength) {
-          output = '0' + output;
+          output = `0${output}`;
         }
         return (sign ? (forceSign ? '+' : '') : '-') + output;
       }
@@ -3214,16 +3198,14 @@
         if (field.indexOf('week') === 0) {
           count = 7;
           setter = 'day';
-        }
-        else if (field.indexOf('month') === 0) {
+        }        else if (field.indexOf('month') === 0) {
           count = 12;
           setter = 'month';
-        }
-        else {
+        }        else {
           return;
         }
 
-        moment[field] = function (format, index) {
+        moment[field] = function(format, index) {
           var i, getter,
             method = moment.fn._lang[field],
             results = [];
@@ -3233,15 +3215,14 @@
             format = undefined;
           }
 
-          getter = function (i) {
+          getter = function(i) {
             var m = moment().utc().set(setter, i);
             return method.call(moment.fn._lang, m, format || '');
           };
 
           if (index != null) {
             return getter(index);
-          }
-          else {
+          }          else {
             for (i = 0; i < count; i++) {
               results.push(getter(i));
             }
@@ -3337,29 +3318,29 @@
 
       extend(Language.prototype, {
 
-        set : function (config) {
+        set : function(config) {
           var prop, i;
           for (i in config) {
             prop = config[i];
             if (typeof prop === 'function') {
               this[i] = prop;
             } else {
-              this['_' + i] = prop;
+              this[`_${i}`] = prop;
             }
           }
         },
 
         _months : "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
-        months : function (m) {
+        months : function(m) {
           return this._months[m.month()];
         },
 
         _monthsShort : "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
-        monthsShort : function (m) {
+        monthsShort : function(m) {
           return this._monthsShort[m.month()];
         },
 
-        monthsParse : function (monthName) {
+        monthsParse : function(monthName) {
           var i, mom, regex;
 
           if (!this._monthsParse) {
@@ -3370,7 +3351,7 @@
             // make the regex if we don't have it already
             if (!this._monthsParse[i]) {
               mom = moment.utc([2000, i]);
-              regex = '^' + this.months(mom, '') + '|^' + this.monthsShort(mom, '');
+              regex = `^${this.months(mom, '')}|^${this.monthsShort(mom, '')}`;
               this._monthsParse[i] = new RegExp(regex.replace('.', ''), 'i');
             }
             // test the regex
@@ -3381,21 +3362,21 @@
         },
 
         _weekdays : "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
-        weekdays : function (m) {
+        weekdays : function(m) {
           return this._weekdays[m.day()];
         },
 
         _weekdaysShort : "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),
-        weekdaysShort : function (m) {
+        weekdaysShort : function(m) {
           return this._weekdaysShort[m.day()];
         },
 
         _weekdaysMin : "Su_Mo_Tu_We_Th_Fr_Sa".split("_"),
-        weekdaysMin : function (m) {
+        weekdaysMin : function(m) {
           return this._weekdaysMin[m.day()];
         },
 
-        weekdaysParse : function (weekdayName) {
+        weekdaysParse : function(weekdayName) {
           var i, mom, regex;
 
           if (!this._weekdaysParse) {
@@ -3406,7 +3387,7 @@
             // make the regex if we don't have it already
             if (!this._weekdaysParse[i]) {
               mom = moment([2000, 1]).day(i);
-              regex = '^' + this.weekdays(mom, '') + '|^' + this.weekdaysShort(mom, '') + '|^' + this.weekdaysMin(mom, '');
+              regex = `^${this.weekdays(mom, '')}|^${this.weekdaysShort(mom, '')}|^${this.weekdaysMin(mom, '')}`;
               this._weekdaysParse[i] = new RegExp(regex.replace('.', ''), 'i');
             }
             // test the regex
@@ -3423,10 +3404,10 @@
           LLL : "MMMM D YYYY LT",
           LLLL : "dddd, MMMM D YYYY LT"
         },
-        longDateFormat : function (key) {
+        longDateFormat : function(key) {
           var output = this._longDateFormat[key];
           if (!output && this._longDateFormat[key.toUpperCase()]) {
-            output = this._longDateFormat[key.toUpperCase()].replace(/MMMM|MM|DD|dddd/g, function (val) {
+            output = this._longDateFormat[key.toUpperCase()].replace(/MMMM|MM|DD|dddd/g, function(val) {
               return val.slice(1);
             });
             this._longDateFormat[key] = output;
@@ -3434,14 +3415,14 @@
           return output;
         },
 
-        isPM : function (input) {
+        isPM : function(input) {
           // IE8 Quirks Mode & IE7 Standards Mode do not allow accessing strings like arrays
           // Using charAt should be more compatible.
-          return ((input + '').toLowerCase().charAt(0) === 'p');
+          return ((`${input}`).toLowerCase().charAt(0) === 'p');
         },
 
         _meridiemParse : /[ap]\.?m?\.?/i,
-        meridiem : function (hours, minutes, isLower) {
+        meridiem : function(hours, minutes, isLower) {
           if (hours > 11) {
             return isLower ? 'pm' : 'PM';
           } else {
@@ -3457,7 +3438,7 @@
           lastWeek : '[Last] dddd [at] LT',
           sameElse : 'L'
         },
-        calendar : function (key, mom) {
+        calendar : function(key, mom) {
           var output = this._calendar[key];
           return typeof output === 'function' ? output.apply(mom) : output;
         },
@@ -3477,31 +3458,31 @@
           y : "a year",
           yy : "%d years"
         },
-        relativeTime : function (number, withoutSuffix, string, isFuture) {
+        relativeTime : function(number, withoutSuffix, string, isFuture) {
           var output = this._relativeTime[string];
           return (typeof output === 'function') ?
             output(number, withoutSuffix, string, isFuture) :
             output.replace(/%d/i, number);
         },
-        pastFuture : function (diff, output) {
+        pastFuture : function(diff, output) {
           var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
           return typeof format === 'function' ? format(output) : format.replace(/%s/i, output);
         },
 
-        ordinal : function (number) {
+        ordinal : function(number) {
           return this._ordinal.replace("%d", number);
         },
         _ordinal : "%d",
 
-        preparse : function (string) {
+        preparse : function(string) {
           return string;
         },
 
-        postformat : function (string) {
+        postformat : function(string) {
           return string;
         },
 
-        week : function (mom) {
+        week : function(mom) {
           return weekOfYear(mom, this._week.dow, this._week.doy).week;
         },
 
@@ -3511,7 +3492,7 @@
         },
 
         _invalidDate: 'Invalid date',
-        invalidDate: function () {
+        invalidDate: function() {
           return this._invalidDate;
         }
       });
@@ -3542,10 +3523,10 @@
       // moment.lang.
       function getLangDefinition(key) {
         var i = 0, j, lang, next, split,
-          get = function (k) {
+          get = function(k) {
             if (!languages[k] && hasModule) {
               try {
-                require('./lang/' + k);
+                require(`./lang/${k}`);
               } catch (e) { }
             }
             return languages[k];
@@ -3611,7 +3592,7 @@
           }
         }
 
-        return function (mom) {
+        return function(mom) {
           var output = "";
           for (i = 0; i < length; i++) {
             output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
@@ -3663,81 +3644,87 @@
       function getParseRegexForToken(token, config) {
         var a, strict = config._strict;
         switch (token) {
-          case 'Q':
+        case 'Q':
+          return parseTokenOneDigit;
+        case 'DDDD':
+          return parseTokenThreeDigits;
+        case 'YYYY':
+        case 'GGGG':
+        case 'gggg':
+          return strict ? parseTokenFourDigits : parseTokenOneToFourDigits;
+        case 'Y':
+        case 'G':
+        case 'g':
+          return parseTokenSignedNumber;
+        case 'YYYYYY':
+        case 'YYYYY':
+        case 'GGGGG':
+        case 'ggggg':
+          return strict ? parseTokenSixDigits : parseTokenOneToSixDigits;
+        case 'S':
+          if (strict) {
             return parseTokenOneDigit;
-          case 'DDDD':
+          }
+          /* falls through */
+        case 'SS':
+          if (strict) {
+            return parseTokenTwoDigits;
+          }
+          /* falls through */
+        case 'SSS':
+          if (strict) {
             return parseTokenThreeDigits;
-          case 'YYYY':
-          case 'GGGG':
-          case 'gggg':
-            return strict ? parseTokenFourDigits : parseTokenOneToFourDigits;
-          case 'Y':
-          case 'G':
-          case 'g':
-            return parseTokenSignedNumber;
-          case 'YYYYYY':
-          case 'YYYYY':
-          case 'GGGGG':
-          case 'ggggg':
-            return strict ? parseTokenSixDigits : parseTokenOneToSixDigits;
-          case 'S':
-            if (strict) { return parseTokenOneDigit; }
+          }
           /* falls through */
-          case 'SS':
-            if (strict) { return parseTokenTwoDigits; }
-          /* falls through */
-          case 'SSS':
-            if (strict) { return parseTokenThreeDigits; }
-          /* falls through */
-          case 'DDD':
-            return parseTokenOneToThreeDigits;
-          case 'MMM':
-          case 'MMMM':
-          case 'dd':
-          case 'ddd':
-          case 'dddd':
-            return parseTokenWord;
-          case 'a':
-          case 'A':
-            return getLangDefinition(config._l)._meridiemParse;
-          case 'X':
-            return parseTokenTimestampMs;
-          case 'Z':
-          case 'ZZ':
-            return parseTokenTimezone;
-          case 'T':
-            return parseTokenT;
-          case 'SSSS':
-            return parseTokenDigits;
-          case 'MM':
-          case 'DD':
-          case 'YY':
-          case 'GG':
-          case 'gg':
-          case 'HH':
-          case 'hh':
-          case 'mm':
-          case 'ss':
-          case 'ww':
-          case 'WW':
-            return strict ? parseTokenTwoDigits : parseTokenOneOrTwoDigits;
-          case 'M':
-          case 'D':
-          case 'd':
-          case 'H':
-          case 'h':
-          case 'm':
-          case 's':
-          case 'w':
-          case 'W':
-          case 'e':
-          case 'E':
-            return parseTokenOneOrTwoDigits;
-          case 'Do':
-            return parseTokenOrdinal;
-          default :
-            a = new RegExp(regexpEscape(unescapeFormat(token.replace('\\', '')), "i"));
-            return a;
+        case 'DDD':
+          return parseTokenOneToThreeDigits;
+        case 'MMM':
+        case 'MMMM':
+        case 'dd':
+        case 'ddd':
+        case 'dddd':
+          return parseTokenWord;
+        case 'a':
+        case 'A':
+          return getLangDefinition(config._l)._meridiemParse;
+        case 'X':
+          return parseTokenTimestampMs;
+        case 'Z':
+        case 'ZZ':
+          return parseTokenTimezone;
+        case 'T':
+          return parseTokenT;
+        case 'SSSS':
+          return parseTokenDigits;
+        case 'MM':
+        case 'DD':
+        case 'YY':
+        case 'GG':
+        case 'gg':
+        case 'HH':
+        case 'hh':
+        case 'mm':
+        case 'ss':
+        case 'ww':
+        case 'WW':
+          return strict ? parseTokenTwoDigits : parseTokenOneOrTwoDigits;
+        case 'M':
+        case 'D':
+        case 'd':
+        case 'H':
+        case 'h':
+        case 'm':
+        case 's':
+        case 'w':
+        case 'W':
+        case 'e':
+        case 'E':
+          return parseTokenOneOrTwoDigits;
+        case 'Do':
+          return parseTokenOrdinal;
+        default :
+          a = new RegExp(regexpEscape(unescapeFormat(token.replace('\\', '')), "i"));
+          return a;
         }
       }
 
@@ -3745,7 +3732,7 @@
         string = string || "";
         var possibleTzMatches = (string.match(parseTokenTimezone) || []),
           tzChunk = possibleTzMatches[possibleTzMatches.length - 1] || [],
-          parts = (tzChunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
+          parts = (`${tzChunk}`).match(parseTimezoneChunker) || ['-', 0, 0],
           minutes = +(parts[1] * 60) + toInt(parts[2]);
 
         return parts[0] === '+' ? -minutes : minutes;
@@ -3757,119 +3744,119 @@
 
         switch (token) {
           // QUARTER
-          case 'Q':
-            if (input != null) {
-              datePartArray[MONTH] = (toInt(input) - 1) * 3;
-            }
-            break;
+        case 'Q':
+          if (input != null) {
+            datePartArray[MONTH] = (toInt(input) - 1) * 3;
+          }
+          break;
           // MONTH
-          case 'M' : // fall through to MM
-          case 'MM' :
-            if (input != null) {
-              datePartArray[MONTH] = toInt(input) - 1;
-            }
-            break;
-          case 'MMM' : // fall through to MMMM
-          case 'MMMM' :
-            a = getLangDefinition(config._l).monthsParse(input);
+        case 'M' : // fall through to MM
+        case 'MM' :
+          if (input != null) {
+            datePartArray[MONTH] = toInt(input) - 1;
+          }
+          break;
+        case 'MMM' : // fall through to MMMM
+        case 'MMMM' :
+          a = getLangDefinition(config._l).monthsParse(input);
             // if we didn't find a month name, mark the date as invalid.
-            if (a != null) {
-              datePartArray[MONTH] = a;
-            } else {
-              config._pf.invalidMonth = input;
-            }
-            break;
+          if (a != null) {
+            datePartArray[MONTH] = a;
+          } else {
+            config._pf.invalidMonth = input;
+          }
+          break;
           // DAY OF MONTH
-          case 'D' : // fall through to DD
-          case 'DD' :
-            if (input != null) {
-              datePartArray[DATE] = toInt(input);
-            }
-            break;
-          case 'Do' :
-            if (input != null) {
-              datePartArray[DATE] = toInt(parseInt(input, 10));
-            }
-            break;
+        case 'D' : // fall through to DD
+        case 'DD' :
+          if (input != null) {
+            datePartArray[DATE] = toInt(input);
+          }
+          break;
+        case 'Do' :
+          if (input != null) {
+            datePartArray[DATE] = toInt(parseInt(input, 10));
+          }
+          break;
           // DAY OF YEAR
-          case 'DDD' : // fall through to DDDD
-          case 'DDDD' :
-            if (input != null) {
-              config._dayOfYear = toInt(input);
-            }
+        case 'DDD' : // fall through to DDDD
+        case 'DDDD' :
+          if (input != null) {
+            config._dayOfYear = toInt(input);
+          }
 
-            break;
+          break;
           // YEAR
-          case 'YY' :
-            datePartArray[YEAR] = moment.parseTwoDigitYear(input);
-            break;
-          case 'YYYY' :
-          case 'YYYYY' :
-          case 'YYYYYY' :
-            datePartArray[YEAR] = toInt(input);
-            break;
+        case 'YY' :
+          datePartArray[YEAR] = moment.parseTwoDigitYear(input);
+          break;
+        case 'YYYY' :
+        case 'YYYYY' :
+        case 'YYYYYY' :
+          datePartArray[YEAR] = toInt(input);
+          break;
           // AM / PM
-          case 'a' : // fall through to A
-          case 'A' :
-            config._isPm = getLangDefinition(config._l).isPM(input);
-            break;
+        case 'a' : // fall through to A
+        case 'A' :
+          config._isPm = getLangDefinition(config._l).isPM(input);
+          break;
           // 24 HOUR
-          case 'H' : // fall through to hh
-          case 'HH' : // fall through to hh
-          case 'h' : // fall through to hh
-          case 'hh' :
-            datePartArray[HOUR] = toInt(input);
-            break;
+        case 'H' : // fall through to hh
+        case 'HH' : // fall through to hh
+        case 'h' : // fall through to hh
+        case 'hh' :
+          datePartArray[HOUR] = toInt(input);
+          break;
           // MINUTE
-          case 'm' : // fall through to mm
-          case 'mm' :
-            datePartArray[MINUTE] = toInt(input);
-            break;
+        case 'm' : // fall through to mm
+        case 'mm' :
+          datePartArray[MINUTE] = toInt(input);
+          break;
           // SECOND
-          case 's' : // fall through to ss
-          case 'ss' :
-            datePartArray[SECOND] = toInt(input);
-            break;
+        case 's' : // fall through to ss
+        case 'ss' :
+          datePartArray[SECOND] = toInt(input);
+          break;
           // MILLISECOND
-          case 'S' :
-          case 'SS' :
-          case 'SSS' :
-          case 'SSSS' :
-            datePartArray[MILLISECOND] = toInt(('0.' + input) * 1000);
-            break;
+        case 'S' :
+        case 'SS' :
+        case 'SSS' :
+        case 'SSSS' :
+          datePartArray[MILLISECOND] = toInt((`0.${input}`) * 1000);
+          break;
           // UNIX TIMESTAMP WITH MS
-          case 'X':
-            config._d = new Date(parseFloat(input) * 1000);
-            break;
+        case 'X':
+          config._d = new Date(parseFloat(input) * 1000);
+          break;
           // TIMEZONE
-          case 'Z' : // fall through to ZZ
-          case 'ZZ' :
-            config._useUTC = true;
-            config._tzm = timezoneMinutesFromString(input);
-            break;
-          case 'w':
-          case 'ww':
-          case 'W':
-          case 'WW':
-          case 'd':
-          case 'dd':
-          case 'ddd':
-          case 'dddd':
-          case 'e':
-          case 'E':
-            token = token.substr(0, 1);
+        case 'Z' : // fall through to ZZ
+        case 'ZZ' :
+          config._useUTC = true;
+          config._tzm = timezoneMinutesFromString(input);
+          break;
+        case 'w':
+        case 'ww':
+        case 'W':
+        case 'WW':
+        case 'd':
+        case 'dd':
+        case 'ddd':
+        case 'dddd':
+        case 'e':
+        case 'E':
+          token = token.substr(0, 1);
           /* falls through */
-          case 'gg':
-          case 'gggg':
-          case 'GG':
-          case 'GGGG':
-          case 'GGGGG':
-            token = token.substr(0, 2);
-            if (input) {
-              config._w = config._w || {};
-              config._w[token] = input;
-            }
-            break;
+        case 'gg':
+        case 'gggg':
+        case 'GG':
+        case 'GGGG':
+        case 'GGGGG':
+          token = token.substr(0, 2);
+          if (input) {
+            config._w = config._w || {};
+            config._w[token] = input;
+          }
+          break;
         }
       }
 
@@ -3889,7 +3876,7 @@
 
         //compute day of the year from weeks and weekdays
         if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-          fixYear = function (val) {
+          fixYear = function(val) {
             var intVal = parseInt(val, 10);
             return val ?
               (val.length < 3 ? (intVal > 68 ? 1900 + intVal : 2000 + intVal) : intVal) :
@@ -3899,8 +3886,7 @@
           w = config._w;
           if (w.GG != null || w.W != null || w.E != null) {
             temp = dayOfYearFromWeeks(fixYear(w.GG), w.W || 1, w.E, 4, 1);
-          }
-          else {
+          }          else {
             lang = getLangDefinition(config._l);
             weekday = w.d != null ?  parseWeekday(w.d, lang) :
               (w.e != null ?  parseInt(w.e, 10) + lang._week.dow : 0);
@@ -3995,7 +3981,7 @@
 
         // This array is used to make a Date, either with `new Date` or `Date.UTC`
         var lang = getLangDefinition(config._l),
-          string = '' + config._i,
+          string = `${config._i}`,
           i, parsedInput, tokens, token, skipped,
           stringLength = string.length,
           totalParsedInputLength = 0;
@@ -4017,13 +4003,11 @@
           if (formatTokenFunctions[token]) {
             if (parsedInput) {
               config._pf.empty = false;
-            }
-            else {
+            }            else {
               config._pf.unusedTokens.push(token);
             }
             addTimeToArrayFromToken(token, parsedInput, config);
-          }
-          else if (config._strict && !parsedInput) {
+          }          else if (config._strict && !parsedInput) {
             config._pf.unusedTokens.push(token);
           }
         }
@@ -4048,7 +4032,7 @@
       }
 
       function unescapeFormat(s) {
-        return s.replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function (matched, p1, p2, p3, p4) {
+        return s.replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g, function(matched, p1, p2, p3, p4) {
           return p1 || p2 || p3 || p4;
         });
       }
@@ -4126,8 +4110,7 @@
             config._f += "Z";
           }
           makeDateFromStringAndFormat(config);
-        }
-        else {
+        }        else {
           moment.createFromInputFallback(config);
         }
       }
@@ -4181,8 +4164,7 @@
         if (typeof input === 'string') {
           if (!isNaN(input)) {
             input = parseInt(input, 10);
-          }
-          else {
+          }          else {
             input = language.weekdaysParse(input);
             if (typeof input !== 'number') {
               return null;
@@ -4305,7 +4287,7 @@
         return new Moment(config);
       }
 
-      moment = function (input, format, lang, strict) {
+      moment = function(input, format, lang, strict) {
         var c;
 
         if (typeof(lang) === "boolean") {
@@ -4333,12 +4315,12 @@
         "discouraged and will be removed in upcoming major " +
         "release. Please refer to " +
         "https://github.com/moment/moment/issues/1407 for more info.",
-        function (config) {
+        function(config) {
           config._d = new Date(config._i);
         });
 
       // creating with utc
-      moment.utc = function (input, format, lang, strict) {
+      moment.utc = function(input, format, lang, strict) {
         var c;
 
         if (typeof(lang) === "boolean") {
@@ -4361,12 +4343,12 @@
       };
 
       // creating with unix timestamp (in seconds)
-      moment.unix = function (input) {
+      moment.unix = function(input) {
         return moment(input * 1000);
       };
 
       // duration
-      moment.duration = function (input, key) {
+      moment.duration = function(input, key) {
         var duration = input,
         // matching against regexp is expensive, do it on demand
           match = null,
@@ -4399,7 +4381,7 @@
           };
         } else if (!!(match = isoDurationRegex.exec(input))) {
           sign = (match[1] === "-") ? -1 : 1;
-          parseIso = function (inp) {
+          parseIso = function(inp) {
             // We'd normally use ~~inp for this, but unfortunately it also
             // converts floats to ints.
             // inp may be undefined, so careful calling replace on it.
@@ -4439,12 +4421,12 @@
 
       // This function will be called whenever a moment is mutated.
       // It is intended to keep the offset in sync with the timezone.
-      moment.updateOffset = function () {};
+      moment.updateOffset = function() {};
 
       // This function will load languages and then set the global language.  If
       // no arguments are passed in, it will simply return the current global
       // language key.
-      moment.lang = function (key, values) {
+      moment.lang = function(key, values) {
         var r;
         if (!key) {
           return moment.fn._lang._abbr;
@@ -4462,7 +4444,7 @@
       };
 
       // returns language data
-      moment.langData = function (key) {
+      moment.langData = function(key) {
         if (key && key._lang && key._lang._abbr) {
           key = key._lang._abbr;
         }
@@ -4470,13 +4452,13 @@
       };
 
       // compare moment object
-      moment.isMoment = function (obj) {
+      moment.isMoment = function(obj) {
         return obj instanceof Moment ||
           (obj != null &&  obj.hasOwnProperty('_isAMomentObject'));
       };
 
       // for typechecking Duration objects
-      moment.isDuration = function (obj) {
+      moment.isDuration = function(obj) {
         return obj instanceof Duration;
       };
 
@@ -4484,27 +4466,26 @@
         makeList(lists[i]);
       }
 
-      moment.normalizeUnits = function (units) {
+      moment.normalizeUnits = function(units) {
         return normalizeUnits(units);
       };
 
-      moment.invalid = function (flags) {
+      moment.invalid = function(flags) {
         var m = moment.utc(NaN);
         if (flags != null) {
           extend(m._pf, flags);
-        }
-        else {
+        }        else {
           m._pf.userInvalidated = true;
         }
 
         return m;
       };
 
-      moment.parseZone = function () {
+      moment.parseZone = function() {
         return moment.apply(null, arguments).parseZone();
       };
 
-      moment.parseTwoDigitYear = function (input) {
+      moment.parseTwoDigitYear = function(input) {
         return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
       };
 
@@ -4515,27 +4496,27 @@
 
       extend(moment.fn = Moment.prototype, {
 
-        clone : function () {
+        clone : function() {
           return moment(this);
         },
 
-        valueOf : function () {
+        valueOf : function() {
           return +this._d + ((this._offset || 0) * 60000);
         },
 
-        unix : function () {
+        unix : function() {
           return Math.floor(+this / 1000);
         },
 
-        toString : function () {
+        toString : function() {
           return this.clone().lang('en').format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
         },
 
-        toDate : function () {
+        toDate : function() {
           return this._offset ? new Date(+this) : this._d;
         },
 
-        toISOString : function () {
+        toISOString : function() {
           var m = moment(this).utc();
           if (0 < m.year() && m.year() <= 9999) {
             return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
@@ -4544,7 +4525,7 @@
           }
         },
 
-        toArray : function () {
+        toArray : function() {
           var m = this;
           return [
             m.year(),
@@ -4557,11 +4538,11 @@
           ];
         },
 
-        isValid : function () {
+        isValid : function() {
           return isValid(this);
         },
 
-        isDSTShifted : function () {
+        isDSTShifted : function() {
 
           if (this._a) {
             return this.isValid() && compareArrays(this._a, (this._isUTC ? moment.utc(this._a) : moment(this._a)).toArray()) > 0;
@@ -4570,30 +4551,30 @@
           return false;
         },
 
-        parsingFlags : function () {
+        parsingFlags : function() {
           return extend({}, this._pf);
         },
 
-        invalidAt: function () {
+        invalidAt: function() {
           return this._pf.overflow;
         },
 
-        utc : function () {
+        utc : function() {
           return this.zone(0);
         },
 
-        local : function () {
+        local : function() {
           this.zone(0);
           this._isUTC = false;
           return this;
         },
 
-        format : function (inputString) {
+        format : function(inputString) {
           var output = formatMoment(this, inputString || moment.defaultFormat);
           return this.lang().postformat(output);
         },
 
-        add : function (input, val) {
+        add : function(input, val) {
           var dur;
           // switch args to support add('s', 1) and add(1, 's')
           if (typeof input === 'string') {
@@ -4605,7 +4586,7 @@
           return this;
         },
 
-        subtract : function (input, val) {
+        subtract : function(input, val) {
           var dur;
           // switch args to support subtract('s', 1) and subtract(1, 's')
           if (typeof input === 'string') {
@@ -4617,7 +4598,7 @@
           return this;
         },
 
-        diff : function (input, units, asFloat) {
+        diff : function(input, units, asFloat) {
           var that = makeAs(input, this),
             zoneDiff = (this.zone() - that.zone()) * 6e4,
             diff, output;
@@ -4651,15 +4632,15 @@
           return asFloat ? output : absRound(output);
         },
 
-        from : function (time, withoutSuffix) {
+        from : function(time, withoutSuffix) {
           return moment.duration(this.diff(time)).lang(this.lang()._abbr).humanize(!withoutSuffix);
         },
 
-        fromNow : function (withoutSuffix) {
+        fromNow : function(withoutSuffix) {
           return this.from(moment(), withoutSuffix);
         },
 
-        calendar : function () {
+        calendar : function() {
           // We want to compare the start of today, vs this.
           // Getting start-of-today depends on whether we're zone'd or not.
           var sod = makeAs(moment(), this).startOf('day'),
@@ -4673,16 +4654,16 @@
           return this.format(this.lang().calendar(format, this));
         },
 
-        isLeapYear : function () {
+        isLeapYear : function() {
           return isLeapYear(this.year());
         },
 
-        isDST : function () {
+        isDST : function() {
           return (this.zone() < this.clone().month(0).zone() ||
           this.zone() < this.clone().month(5).zone());
         },
 
-        day : function (input) {
+        day : function(input) {
           var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
           if (input != null) {
             input = parseWeekday(input, this.lang());
@@ -4694,31 +4675,31 @@
 
         month : makeAccessor('Month', true),
 
-        startOf: function (units) {
+        startOf: function(units) {
           units = normalizeUnits(units);
           // the following switch intentionally omits break keywords
           // to utilize falling through the cases.
           switch (units) {
-            case 'year':
-              this.month(0);
+          case 'year':
+            this.month(0);
             /* falls through */
-            case 'quarter':
-            case 'month':
-              this.date(1);
+          case 'quarter':
+          case 'month':
+            this.date(1);
             /* falls through */
-            case 'week':
-            case 'isoWeek':
-            case 'day':
-              this.hours(0);
+          case 'week':
+          case 'isoWeek':
+          case 'day':
+            this.hours(0);
             /* falls through */
-            case 'hour':
-              this.minutes(0);
+          case 'hour':
+            this.minutes(0);
             /* falls through */
-            case 'minute':
-              this.seconds(0);
+          case 'minute':
+            this.seconds(0);
             /* falls through */
-            case 'second':
-              this.milliseconds(0);
+          case 'second':
+            this.milliseconds(0);
             /* falls through */
           }
 
@@ -4737,32 +4718,32 @@
           return this;
         },
 
-        endOf: function (units) {
+        endOf: function(units) {
           units = normalizeUnits(units);
           return this.startOf(units).add((units === 'isoWeek' ? 'week' : units), 1).subtract('ms', 1);
         },
 
-        isAfter: function (input, units) {
+        isAfter: function(input, units) {
           units = typeof units !== 'undefined' ? units : 'millisecond';
           return +this.clone().startOf(units) > +moment(input).startOf(units);
         },
 
-        isBefore: function (input, units) {
+        isBefore: function(input, units) {
           units = typeof units !== 'undefined' ? units : 'millisecond';
           return +this.clone().startOf(units) < +moment(input).startOf(units);
         },
 
-        isSame: function (input, units) {
+        isSame: function(input, units) {
           units = units || 'ms';
           return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
         },
 
-        min: function (other) {
+        min: function(other) {
           other = moment.apply(null, arguments);
           return other < this ? this : other;
         },
 
-        max: function (other) {
+        max: function(other) {
           other = moment.apply(null, arguments);
           return other > this ? this : other;
         },
@@ -4777,7 +4758,7 @@
         // a second time. In case it wants us to change the offset again
         // _changeInProgress == true case, then we have to adjust, because
         // there is no such time in the given timezone.
-        zone : function (input, keepTime) {
+        zone : function(input, keepTime) {
           var offset = this._offset || 0;
           if (input != null) {
             if (typeof input === "string") {
@@ -4804,15 +4785,15 @@
           return this;
         },
 
-        zoneAbbr : function () {
+        zoneAbbr : function() {
           return this._isUTC ? "UTC" : "";
         },
 
-        zoneName : function () {
+        zoneName : function() {
           return this._isUTC ? "Coordinated Universal Time" : "";
         },
 
-        parseZone : function () {
+        parseZone : function() {
           if (this._tzm) {
             this.zone(this._tzm);
           } else if (typeof this._i === 'string') {
@@ -4821,77 +4802,76 @@
           return this;
         },
 
-        hasAlignedHourOffset : function (input) {
+        hasAlignedHourOffset : function(input) {
           if (!input) {
             input = 0;
-          }
-          else {
+          }          else {
             input = moment(input).zone();
           }
 
           return (this.zone() - input) % 60 === 0;
         },
 
-        daysInMonth : function () {
+        daysInMonth : function() {
           return daysInMonth(this.year(), this.month());
         },
 
-        dayOfYear : function (input) {
+        dayOfYear : function(input) {
           var dayOfYear = round((moment(this).startOf('day') - moment(this).startOf('year')) / 864e5) + 1;
           return input == null ? dayOfYear : this.add("d", (input - dayOfYear));
         },
 
-        quarter : function (input) {
+        quarter : function(input) {
           return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
         },
 
-        weekYear : function (input) {
+        weekYear : function(input) {
           var year = weekOfYear(this, this.lang()._week.dow, this.lang()._week.doy).year;
           return input == null ? year : this.add("y", (input - year));
         },
 
-        isoWeekYear : function (input) {
+        isoWeekYear : function(input) {
           var year = weekOfYear(this, 1, 4).year;
           return input == null ? year : this.add("y", (input - year));
         },
 
-        week : function (input) {
+        week : function(input) {
           var week = this.lang().week(this);
           return input == null ? week : this.add("d", (input - week) * 7);
         },
 
-        isoWeek : function (input) {
+        isoWeek : function(input) {
           var week = weekOfYear(this, 1, 4).week;
           return input == null ? week : this.add("d", (input - week) * 7);
         },
 
-        weekday : function (input) {
+        weekday : function(input) {
           var weekday = (this.day() + 7 - this.lang()._week.dow) % 7;
           return input == null ? weekday : this.add("d", input - weekday);
         },
 
-        isoWeekday : function (input) {
+        isoWeekday : function(input) {
           // behaves the same as moment#day except
           // as a getter, returns 7 instead of 0 (1-7 range instead of 0-6)
           // as a setter, sunday should belong to the previous week.
           return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
         },
 
-        isoWeeksInYear : function () {
+        isoWeeksInYear : function() {
           return weeksInYear(this.year(), 1, 4);
         },
 
-        weeksInYear : function () {
+        weeksInYear : function() {
           var weekInfo = this._lang._week;
           return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
         },
 
-        get : function (units) {
+        get : function(units) {
           units = normalizeUnits(units);
           return this[units]();
         },
 
-        set : function (units, value) {
+        set : function(units, value) {
           units = normalizeUnits(units);
           if (typeof this[units] === 'function') {
             this[units](value);
@@ -4902,7 +4882,7 @@
         // If passed a language key, it will set the language for this
         // instance.  Otherwise, it will return the language configuration
         // variables for this instance.
-        lang : function (key) {
+        lang : function(key) {
           if (key === undefined) {
             return this._lang;
           } else {
@@ -4926,24 +4906,24 @@
 
         dayOfMonth = Math.min(mom.date(),
           daysInMonth(mom.year(), value));
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + 'Month'](value, dayOfMonth);
+        mom._d[`set${mom._isUTC ? 'UTC' : ''}Month`](value, dayOfMonth);
         return mom;
       }
 
       function rawGetter(mom, unit) {
-        return mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]();
+        return mom._d[`get${mom._isUTC ? 'UTC' : ''}${unit}`]();
       }
 
       function rawSetter(mom, unit, value) {
         if (unit === 'Month') {
           return rawMonthSetter(mom, value);
         } else {
-          return mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+          return mom._d[`set${mom._isUTC ? 'UTC' : ''}${unit}`](value);
         }
       }
 
       function makeAccessor(unit, keepTime) {
-        return function (value) {
+        return function(value) {
           if (value != null) {
             rawSetter(this, unit, value);
             moment.updateOffset(this, keepTime);
@@ -4985,7 +4965,7 @@
 
       extend(moment.duration.fn = Duration.prototype, {
 
-        _bubble : function () {
+        _bubble : function() {
           var milliseconds = this._milliseconds,
             days = this._days,
             months = this._months,
@@ -5015,18 +4995,18 @@
           data.years = years;
         },
 
-        weeks : function () {
+        weeks : function() {
           return absRound(this.days() / 7);
         },
 
-        valueOf : function () {
+        valueOf : function() {
           return this._milliseconds +
             this._days * 864e5 +
             (this._months % 12) * 2592e6 +
             toInt(this._months / 12) * 31536e6;
         },
 
-        humanize : function (withSuffix) {
+        humanize : function(withSuffix) {
           var difference = +this,
             output = relativeTime(difference, !withSuffix, this.lang());
 
@@ -5037,7 +5017,7 @@
           return this.lang().postformat(output);
         },
 
-        add : function (input, val) {
+        add : function(input, val) {
           // supports only 2.0-style add(1, 's') or add(moment)
           var dur = moment.duration(input, val);
 
@@ -5050,7 +5030,7 @@
           return this;
         },
 
-        subtract : function (input, val) {
+        subtract : function(input, val) {
           var dur = moment.duration(input, val);
 
           this._milliseconds -= dur._milliseconds;
@@ -5062,19 +5042,19 @@
           return this;
         },
 
-        get : function (units) {
+        get : function(units) {
           units = normalizeUnits(units);
-          return this[units.toLowerCase() + 's']();
+          return this[`${units.toLowerCase()}s`]();
         },
 
-        as : function (units) {
+        as : function(units) {
           units = normalizeUnits(units);
-          return this['as' + units.charAt(0).toUpperCase() + units.slice(1) + 's']();
+          return this[`as${units.charAt(0).toUpperCase()}${units.slice(1)}s`]();
         },
 
         lang : moment.fn.lang,
 
-        toIsoString : function () {
+        toIsoString : function() {
           // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
           var years = Math.abs(this.years()),
             months = Math.abs(this.months()),
@@ -5089,26 +5069,26 @@
             return 'P0D';
           }
 
-          return (this.asSeconds() < 0 ? '-' : '') +
-            'P' +
-            (years ? years + 'Y' : '') +
-            (months ? months + 'M' : '') +
-            (days ? days + 'D' : '') +
-            ((hours || minutes || seconds) ? 'T' : '') +
-            (hours ? hours + 'H' : '') +
-            (minutes ? minutes + 'M' : '') +
-            (seconds ? seconds + 'S' : '');
+          return `${this.asSeconds() < 0 ? '-' : ''
+            }P${
+            years ? `${years}Y` : ''
+            }${months ? `${months}M` : ''
+            }${days ? `${days}D` : ''
+            }${(hours || minutes || seconds) ? 'T' : ''
+            }${hours ? `${hours}H` : ''
+            }${minutes ? `${minutes}M` : ''
+            }${seconds ? `${seconds}S` : ''}`;
         }
       });
 
       function makeDurationGetter(name) {
-        moment.duration.fn[name] = function () {
+        moment.duration.fn[name] = function() {
           return this._data[name];
         };
       }
 
       function makeDurationAsGetter(name, factor) {
-        moment.duration.fn['as' + name] = function () {
+        moment.duration.fn[`as${name}`] = function() {
           return +this / factor;
         };
       }
@@ -5121,7 +5101,7 @@
       }
 
       makeDurationAsGetter('Weeks', 6048e5);
-      moment.duration.fn.asMonths = function () {
+      moment.duration.fn.asMonths = function() {
         return (+this - this.years() * 31536e6) / 2592e6 + this.years() * 12;
       };
 
@@ -5133,7 +5113,7 @@
 
         // Set default language, other languages will inherit from English.
       moment.lang('en', {
-        ordinal : function (number) {
+        ordinal : function(number) {
           var b = number % 10,
             output = (toInt(number % 100 / 10) === 1) ? 'th' :
               (b === 1) ? 'st' :
@@ -5170,7 +5150,7 @@
       if (hasModule) {
         module.exports = moment;
       } else if (typeof define === "function" && define.amd) {
-        define("moment", function (require, exports, module) {
+        define("moment", function(require, exports, module) {
           if (module.config && module.config() && module.config().noGlobal === true) {
             // release the global variable
             globalScope.moment = oldGlobalMoment;
@@ -5184,8 +5164,8 @@
       }
     }).call(this);
 
-  }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],5:[function(require,module,exports){
+  }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+},{}],5:[function(require,module,exports) {
 //     Underscore.js 1.8.0
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -5221,7 +5201,7 @@
       nativeCreate       = Object.create;
 
     // Reusable constructor function for prototype setting.
-    var Ctor = function(){};
+    var Ctor = function() {};
 
     // Create a safe reference to the Underscore object for use below.
     var _ = function(obj) {
@@ -5251,18 +5231,18 @@
     var optimizeCb = function(func, context, argCount) {
       if (context === void 0) return func;
       switch (argCount == null ? 3 : argCount) {
-        case 1: return function(value) {
-          return func.call(context, value);
-        };
-        case 2: return function(value, other) {
-          return func.call(context, value, other);
-        };
-        case 3: return function(value, index, collection) {
-          return func.call(context, value, index, collection);
-        };
-        case 4: return function(accumulator, value, index, collection) {
-          return func.call(context, accumulator, value, index, collection);
-        };
+      case 1: return function(value) {
+        return func.call(context, value);
+      };
+      case 2: return function(value, other) {
+        return func.call(context, value, other);
+      };
+      case 3: return function(value, index, collection) {
+        return func.call(context, value, index, collection);
+      };
+      case 4: return function(accumulator, value, index, collection) {
+        return func.call(context, accumulator, value, index, collection);
+      };
       }
       return function() {
         return func.apply(context, arguments);
@@ -5753,7 +5733,7 @@
     // Only the elements present in just the first array will remain.
     _.difference = function(array) {
       var rest = flatten(arguments, true, true, 1);
-      return _.filter(array, function(value){
+      return _.filter(array, function(value) {
         return !_.contains(rest, value);
       });
     };
@@ -5931,7 +5911,7 @@
     _.memoize = function(func, hasher) {
       var memoize = function(key) {
         var cache = memoize.cache;
-        var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+        var address = `${hasher ? hasher.apply(this, arguments) : key}`;
         if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
         return cache[address];
       };
@@ -5943,7 +5923,7 @@
     // it with the arguments supplied.
     _.delay = function(func, wait) {
       var args = slice.call(arguments, 2);
-      return setTimeout(function(){
+      return setTimeout(function() {
         return func.apply(null, args);
       }, wait);
     };
@@ -6273,24 +6253,24 @@
       if (className !== toString.call(b)) return false;
       switch (className) {
         // Strings, numbers, regular expressions, dates, and booleans are compared by value.
-        case '[object RegExp]':
+      case '[object RegExp]':
         // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
-        case '[object String]':
+      case '[object String]':
           // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
           // equivalent to `new String("5")`.
-          return '' + a === '' + b;
-        case '[object Number]':
+        return `${a}` === `${b}`;
+      case '[object Number]':
           // `NaN`s are equivalent, but non-reflexive.
           // Object(NaN) is equivalent to NaN
-          if (+a !== +a) return +b !== +b;
+        if (+a !== +a) return +b !== +b;
           // An `egal` comparison is performed for other numeric values.
-          return +a === 0 ? 1 / +a === 1 / b : +a === +b;
-        case '[object Date]':
-        case '[object Boolean]':
+        return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+      case '[object Date]':
+      case '[object Boolean]':
           // Coerce dates and booleans to numeric primitive values. Dates are compared by their
           // millisecond representations. Note that invalid dates with millisecond representations
           // of `NaN` are not equivalent.
-          return +a === +b;
+        return +a === +b;
       }
 
       var areArrays = className === '[object Array]';
@@ -6372,8 +6352,8 @@
     // Is a given value an array?
     // Delegates to ECMA5's native Array.isArray
     _.isArray = nativeIsArray || function(obj) {
-        return toString.call(obj) === '[object Array]';
-      };
+      return toString.call(obj) === '[object Array]';
+    };
 
     // Is a given variable an object?
     _.isObject = function(obj) {
@@ -6383,8 +6363,8 @@
 
     // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
     _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function(name) {
-      _['is' + name] = function(obj) {
-        return toString.call(obj) === '[object ' + name + ']';
+      _[`is${name}`] = function(obj) {
+        return toString.call(obj) === `[object ${name}]`;
       };
     });
 
@@ -6457,7 +6437,7 @@
       };
     };
 
-    _.noop = function(){};
+    _.noop = function() {};
 
     _.property = function(key) {
       return function(obj) {
@@ -6467,7 +6447,7 @@
 
     // Generates a function for a given object that returns a given property.
     _.propertyOf = function(obj) {
-      return obj == null ? function(){} : function(key) {
+      return obj == null ? function() {} : function(key) {
         return obj[key];
       };
     };
@@ -6500,8 +6480,8 @@
 
     // A (possibly faster) way to get the current timestamp as an integer.
     _.now = Date.now || function() {
-        return new Date().getTime();
-      };
+      return new Date().getTime();
+    };
 
     // List of HTML entities for escaping.
     var escapeMap = {
@@ -6520,11 +6500,11 @@
         return map[match];
       };
       // Regexes for identifying a key that needs to be escaped
-      var source = '(?:' + _.keys(map).join('|') + ')';
+      var source = `(?:${_.keys(map).join('|')})`;
       var testRegexp = RegExp(source);
       var replaceRegexp = RegExp(source, 'g');
       return function(string) {
-        string = string == null ? '' : '' + string;
+        string = string == null ? '' : `${string}`;
         return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
       };
     };
@@ -6545,7 +6525,7 @@
     // Useful for temporary DOM ids.
     var idCounter = 0;
     _.uniqueId = function(prefix) {
-      var id = ++idCounter + '';
+      var id = `${++idCounter}`;
       return prefix ? prefix + id : id;
     };
 
@@ -6576,7 +6556,7 @@
     var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
 
     var escapeChar = function(match) {
-      return '\\' + escapes[match];
+      return `\\${escapes[match]}`;
     };
 
     // JavaScript micro-templating, similar to John Resig's implementation.
@@ -6588,11 +6568,11 @@
       settings = _.defaults({}, settings, _.templateSettings);
 
       // Combine delimiters into one regular expression via alternation.
-      var matcher = RegExp([
-          (settings.escape || noMatch).source,
-          (settings.interpolate || noMatch).source,
-          (settings.evaluate || noMatch).source
-        ].join('|') + '|$', 'g');
+      var matcher = RegExp(`${[
+        (settings.escape || noMatch).source,
+        (settings.interpolate || noMatch).source,
+        (settings.evaluate || noMatch).source
+      ].join('|')}|$`, 'g');
 
       // Compile the template source, escaping string literals appropriately.
       var index = 0;
@@ -6602,11 +6582,11 @@
         index = offset + match.length;
 
         if (escape) {
-          source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+          source += `'+\n((__t=(${escape}))==null?'':_.escape(__t))+\n'`;
         } else if (interpolate) {
-          source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+          source += `'+\n((__t=(${interpolate}))==null?'':__t)+\n'`;
         } else if (evaluate) {
-          source += "';\n" + evaluate + "\n__p+='";
+          source += `';\n${evaluate}\n__p+='`;
         }
 
         // Adobe VMs need the match returned to produce the correct offest.
@@ -6615,11 +6595,11 @@
       source += "';\n";
 
       // If a variable is not specified, place data values in local scope.
-      if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+      if (!settings.variable) source = `with(obj||{}){\n${source}}\n`;
 
-      source = "var __t,__p='',__j=Array.prototype.join," +
-        "print=function(){__p+=__j.call(arguments,'');};\n" +
-        source + 'return __p;\n';
+      source = `${"var __t,__p='',__j=Array.prototype.join," +
+        "print=function(){__p+=__j.call(arguments,'');};\n"}${
+        source}return __p;\n`;
 
       try {
         var render = new Function(settings.variable || 'obj', '_', source);
@@ -6634,7 +6614,7 @@
 
       // Provide the compiled source as a convenience for precompilation.
       var argument = settings.variable || 'obj';
-      template.source = 'function(' + argument + '){\n' + source + '}';
+      template.source = `function(${argument}){\n${source}}`;
 
       return template;
     };
@@ -6701,7 +6681,7 @@
     _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
 
     _.prototype.toString = function() {
-      return '' + this._wrapped;
+      return `${this._wrapped}`;
     };
 
     // AMD registration happens at the end for compatibility with AMD loaders

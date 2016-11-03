@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function (Math) {
+(function(Math) {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -18,7 +18,7 @@
   var K = [];
 
   // Compute constants
-  (function () {
+  (function() {
     function isPrime(n) {
       var sqrtN = Math.sqrt(n);
       for (var factor = 2; factor <= sqrtN; factor++) {
@@ -57,11 +57,11 @@
    * SHA-256 hash algorithm.
    */
   var SHA256 = C_algo.SHA256 = Hasher.extend({
-    _doReset: function () {
+    _doReset: function() {
       this._hash = new WordArray.init(H.slice(0));
     },
 
-    _doProcessBlock: function (M, offset) {
+    _doProcessBlock: function(M, offset) {
       // Shortcut
       var H = this._hash.words;
 
@@ -123,7 +123,7 @@
       H[7] = (H[7] + h) | 0;
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcuts
       var data = this._data;
       var dataWords = data.words;
@@ -144,7 +144,7 @@
       return this._hash;
     },
 
-    clone: function () {
+    clone: function() {
       var clone = Hasher.clone.call(this);
       clone._hash = this._hash.clone();
 

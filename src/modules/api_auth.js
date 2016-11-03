@@ -9,12 +9,12 @@ var checkAuth = require("./checkAuth");
 var appProps = require("./appProps");
 var data = require('./data');
 
-function callAuthEndpoint(endpoint, data, opts, success, fail){
+function callAuthEndpoint(endpoint, data, opts, success, fail) {
   var app_props = appProps.getAppProps();
-  var path = app_props.host + constants.boxprefix + "admin/authpolicy/" + endpoint;
+  var path = `${app_props.host + constants.boxprefix}admin/authpolicy/${endpoint}`;
 
   if (app_props.local) {
-    path = cloud.getCloudHostUrl() + constants.boxprefix + "admin/authpolicy/" + endpoint;
+    path = `${cloud.getCloudHostUrl() + constants.boxprefix}admin/authpolicy/${endpoint}`;
   }
 
   ajax({
@@ -26,14 +26,14 @@ function callAuthEndpoint(endpoint, data, opts, success, fail){
     "contentType": "application/json",
     "timeout": opts.timeout || app_props.timeout,
     "headers": fhparams.getFHHeaders(),
-    success: function(res){
-      if(success){
+    success: function(res) {
+      if (success) {
         return success(res);
       }
     },
-    error: function(req, statusText, error){
-      logger.error('got error when calling ' + endpoint, req.responseText || req, error);
-      if(fail){
+    error: function(req, statusText, error) {
+      logger.error(`got error when calling ${endpoint}`, req.responseText || req, error);
+      if (fail) {
         fail(req, statusText, error);
       }
     }
@@ -43,7 +43,7 @@ function callAuthEndpoint(endpoint, data, opts, success, fail){
 var auth = function(opts, success, fail) {
   if (!fail) {
     fail = function(msg, error) {
-      logger.debug(msg + ":" + JSON.stringify(error));
+      logger.debug(`${msg}:${JSON.stringify(error)}`);
     };
   }
   if (!opts.policyId) {
@@ -61,13 +61,13 @@ var auth = function(opts, success, fail) {
       req.policyId = opts.policyId;
       req.clientToken = opts.clientToken;
       var cloudHost = cloud.getCloudHost();
-      if(cloudHost.getEnv()){
-        req.environment = cloudHost.getEnv(); 
+      if (cloudHost.getEnv()) {
+        req.environment = cloudHost.getEnv();
       }
       if (opts.endRedirectUrl) {
         req.endRedirectUrl = opts.endRedirectUrl;
         if (opts.authCallback) {
-          req.endRedirectUrl += (/\?/.test(req.endRedirectUrl) ? "&" : "?") + "_fhAuthCallback=" + opts.authCallback;
+          req.endRedirectUrl += `${/\?/.test(req.endRedirectUrl) ? "&" : "?"}_fhAuthCallback=${opts.authCallback}`;
         }
       }
       req.params = {};
@@ -77,25 +77,25 @@ var auth = function(opts, success, fail) {
       var endurl = opts.endRedirectUrl || "status=complete";
       req.device = device.getDeviceId();
       req = fhparams.addFHParams(req);
-      callAuthEndpoint('auth', req, opts, function(res){
+      callAuthEndpoint('auth', req, opts, function(res) {
         auth.authenticateHandler(endurl, res, success, fail);
-      }, function(req, statusText, error){
+      }, function(req, statusText, error) {
         handleError(fail, req, statusText, error);
       });
     }
   });
 };
 
-auth.hasSession = function(cb){
+auth.hasSession = function(cb) {
   data.sessionManager.exists(cb);
 };
 
-auth.clearSession = function(cb){
-  data.sessionManager.read(function(err, session){
-    if(err){
+auth.clearSession = function(cb) {
+  data.sessionManager.read(function(err, session) {
+    if (err) {
       return cb(err);
     }
-    if(session){
+    if (session) {
       //try the best to delete the remote session
       callAuthEndpoint('revokesession', session, {});
     }
@@ -106,16 +106,16 @@ auth.clearSession = function(cb){
 
 auth.authenticateHandler = checkAuth.handleAuthResponse;
 
-auth.verify = function(cb){
-  data.sessionManager.read(function(err, session){
-    if(err){
+auth.verify = function(cb) {
+  data.sessionManager.read(function(err, session) {
+    if (err) {
       return cb(err);
     }
-    if(session){
+    if (session) {
       //try the best to delete the session in remote
-      callAuthEndpoint('verifysession', session, {}, function(res){
+      callAuthEndpoint('verifysession', session, {}, function(res) {
         return cb(null, res.isValid);
-      }, function(req, statusText, error){
+      }, function(req, statusText, error) {
         return cb('network_error');
       });
     } else {

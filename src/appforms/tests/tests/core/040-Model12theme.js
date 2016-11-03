@@ -8,8 +8,8 @@ describe("Theme model", function(done) {
   it("how to refresh a theme", function(done) {
     var theme = appForm.models.theme;
 
-    theme.refresh(true, function(err, theme){
-      assert(!err, "Expected no error: " + err);
+    theme.refresh(true, function(err, theme) {
+      assert(!err, `Expected no error: ${err}`);
       assert(theme.get("name") === testData.themeName);
       done();
     });

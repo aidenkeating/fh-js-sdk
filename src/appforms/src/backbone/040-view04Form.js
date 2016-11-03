@@ -54,14 +54,14 @@ var FormView = BaseView.extend({
     this.$el.find("button.fh_appform_button_saveDraft").hide();
     this.$el.find(" button.fh_appform_button_submit").hide();
   },
-  markFormEdited: function(){
+  markFormEdited: function() {
     this.formEdited = true;
   },
-  isFormEdited: function(){
+  isFormEdited: function() {
     return this.formEdited;
   },
   //Function to disable drafts in the form view.
-  disableDrafts: function(){
+  disableDrafts: function() {
     this.$el.find("button.fh_appform_button_saveDraft").prop("disabled", true);
   },
   onValidateError: function(res) {
@@ -73,44 +73,44 @@ var FormView = BaseView.extend({
     //Clear validate errors
 
     self.fieldViews.forEach(function(v) {
-        var fieldId = v.model.getFieldId();
-        if(res.hasOwnProperty(fieldId)){
-          var result = res[fieldId];
-          result.errorMessages = result.errorMessages || [];
-          result.fieldErrorMessage = result.fieldErrorMessage || [];
-          if (!result.valid) {
-            if(invalidFieldId === null){
-              invalidFieldId = fieldId;
-              invalidPageNum = self.form.getPageNumberByFieldId(invalidFieldId);
+      var fieldId = v.model.getFieldId();
+      if (res.hasOwnProperty(fieldId)) {
+        var result = res[fieldId];
+        result.errorMessages = result.errorMessages || [];
+        result.fieldErrorMessage = result.fieldErrorMessage || [];
+        if (!result.valid) {
+          if (invalidFieldId === null) {
+            invalidFieldId = fieldId;
+            invalidPageNum = self.form.getPageNumberByFieldId(invalidFieldId);
+          }
+          for (var i = 0; i < result.errorMessages.length; i++) {
+            if (result.errorMessages[i]) {
+              v.setErrorText(i, result.errorMessages[i]);
             }
-            for (var i = 0; i < result.errorMessages.length; i++) {
-              if (result.errorMessages[i]) {
-                v.setErrorText(i, result.errorMessages[i]);
-              }
-            }
+          }
 
-            for (i = 0; i < result.fieldErrorMessage.length; i++) {
-              if (result.fieldErrorMessage[i]) {
-                v.setErrorText(i, result.fieldErrorMessage[i]);
-              }
+          for (i = 0; i < result.fieldErrorMessage.length; i++) {
+            if (result.fieldErrorMessage[i]) {
+              v.setErrorText(i, result.fieldErrorMessage[i]);
             }
           }
         }
+      }
     });
 
-    if(invalidFieldId !== null && invalidPageNum !== null){
+    if (invalidFieldId !== null && invalidPageNum !== null) {
       var displayedIndex = this.getDisplayIndex(invalidPageNum) + 1;
       self.goToPage(invalidPageNum, false);
 
       self.pageViews[invalidPageNum].expandSection(invalidFieldId);
 
       $('html, body').animate({
-          scrollTop: $("[data-field='" + invalidFieldId + "']").offset().top - 100
+        scrollTop: $(`[data-field='${invalidFieldId}']`).offset().top - 100
       }, 1000);
 
 
 
-      this.$el.find("#fh_appform_page_error").html("Unable to submit form. Validation error on page " + displayedIndex);
+      this.$el.find("#fh_appform_page_error").html(`Unable to submit form. Validation error on page ${displayedIndex}`);
       this.$el.find("#fh_appform_page_error").show();
     }
   },
@@ -120,7 +120,7 @@ var FormView = BaseView.extend({
     self.formId = form.getFormId();
 
     self.$el.empty();
-    self.$el.append("<div id='fh_appform_templates' style='display:none;'>" + FormTemplates + "</div>");
+    self.$el.append(`<div id='fh_appform_templates' style='display:none;'>${FormTemplates}</div>`);
     self.model = form;
 
     //Page views are always added before anything else happens, need to render the form title first
@@ -216,18 +216,18 @@ var FormView = BaseView.extend({
       target = this.getFieldViewById(targetId);
     }
     if (target === null) {
-      console.error("cannot find target with id:" + targetId);
+      console.error(`cannot find target with id:${targetId}`);
       return;
     }
     switch (action) {
-      case "show":
-        target.$el.show();
-        break;
-      case "hide":
-        target.$el.hide();
-        break;
-      default:
-        console.error("action not defined:" + action);
+    case "show":
+      target.$el.show();
+      break;
+    case "hide":
+      target.$el.hide();
+      break;
+    default:
+      console.error(`action not defined:${action}`);
     }
   },
   rebindButtons: function() {
@@ -241,14 +241,14 @@ var FormView = BaseView.extend({
     });
 
     this.$el.find("button.fh_appform_button_saveDraft").unbind().bind("click", function() {
-      if($fh.forms.config.isStudioMode()){//Studio mode does not submit.
+      if ($fh.forms.config.isStudioMode()) {//Studio mode does not submit.
         $fh.forms.backbone.alert("Please create a project and interact with the form there.");
       } else {
         self.saveToDraft();
       }
     });
     this.$el.find("button.fh_appform_button_submit").unbind().bind("click", function() {
-      if($fh.forms.config.isStudioMode()){//Studio mode does not submit.
+      if ($fh.forms.config.isStudioMode()) {//Studio mode does not submit.
         $fh.forms.backbone.alert("Please create a project and interact with the form there.");
       } else {
         self.submit();
@@ -261,7 +261,7 @@ var FormView = BaseView.extend({
   getSubmission: function() {
     return this.submission;
   },
-  getPageIndexById: function(pageId){
+  getPageIndexById: function(pageId) {
     for (var i = 0; i < this.pageViews.length; i++) {
       var pageView = this.pageViews[i];
       var pId = pageView.model.getPageId();
@@ -303,34 +303,34 @@ var FormView = BaseView.extend({
 
 
     if (displayedIndex === 0 && displayedIndex === displayedPages - 1) {
-        prevButton.hide();
-        nextButton.hide();
-        saveDraftButton.show();
-        submitButton.show();
-        if(this.readonly){
-          this.$el.find("#fh_appform_navigation_buttons").hide();
-        }
+      prevButton.hide();
+      nextButton.hide();
+      saveDraftButton.show();
+      submitButton.show();
+      if (this.readonly) {
+        this.$el.find("#fh_appform_navigation_buttons").hide();
+      }
 
     } else if (displayedIndex === 0) {
-        prevButton.hide();
-        nextButton.show();
-        saveDraftButton.show();
-        submitButton.hide();
+      prevButton.hide();
+      nextButton.show();
+      saveDraftButton.show();
+      submitButton.hide();
     } else if (displayedIndex === displayedPages - 1) {
-        prevButton.show();
-        nextButton.hide();
-        saveDraftButton.show();
-        submitButton.show();
+      prevButton.show();
+      nextButton.hide();
+      saveDraftButton.show();
+      submitButton.show();
     } else {
-        prevButton.show();
-        nextButton.show();
-        saveDraftButton.show();
-        submitButton.hide();
+      prevButton.show();
+      nextButton.show();
+      saveDraftButton.show();
+      submitButton.hide();
     }
 
     if (this.readonly) {
-        saveDraftButton.hide();
-        submitButton.hide();
+      saveDraftButton.hide();
+      submitButton.hide();
     }
   },
   render: function() {
@@ -347,7 +347,7 @@ var FormView = BaseView.extend({
   getNextPageIndex: function(currentPageIndex) {
     var self = this;
 
-    if(pageIndex >= this.pageViews.length){
+    if (pageIndex >= this.pageViews.length) {
       return this.pageViews.length -1;
     }
 
@@ -362,7 +362,7 @@ var FormView = BaseView.extend({
   },
   getPrevPageIndex: function(currentPageIndex) {
     var self = this;
-    if(currentPageIndex <= 0){//Can't display pages before 0.
+    if (currentPageIndex <= 0) {//Can't display pages before 0.
       return 0;
     }
 
@@ -407,17 +407,17 @@ var FormView = BaseView.extend({
 
     return displayedPages;
   },
-  displayCurrentPage: function(scroll){
+  displayCurrentPage: function(scroll) {
     this.hideAllPages();
     this.pageViews[this.pageNum].show();
     this.steps.activePageChange(this);
     this.checkPages();
-    if(scroll){
+    if (scroll) {
       this.scrollToTop();
     }
   },
-  goToPage: function(pageNum, scroll){
-    if(_.isFinite(pageNum)){
+  goToPage: function(pageNum, scroll) {
+    if (_.isFinite(pageNum)) {
       this.pageNum = parseInt(pageNum);
       this.displayCurrentPage(scroll);
     } else {
@@ -432,17 +432,17 @@ var FormView = BaseView.extend({
     this.pageNum = this.getPrevPageIndex(this.pageNum);
     this.displayCurrentPage(true);
   },
-  scrollToTop: function(){
+  scrollToTop: function() {
     //Positioning the window to the top of the form container
     $('html, body').animate({
-          scrollTop: 0
+      scrollTop: 0
     }, 500, function() {
-        window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
     });
   },
-  backEvent: function(){
+  backEvent: function() {
     var self = this;
-    if(this.pageNum <= 0){ // Already at the first page, exiting the form. Up to the client what to do with this result.
+    if (this.pageNum <= 0) { // Already at the first page, exiting the form. Up to the client what to do with this result.
       return false;
     }
     self.prevPage();
@@ -454,7 +454,7 @@ var FormView = BaseView.extend({
       view.hide();
     });
   },
-  validateForm: function(cb){
+  validateForm: function(cb) {
     var self = this;
     this.populateFieldViewsToSubmission(function() {
       self.submission.validateSubmission(cb);
@@ -466,7 +466,7 @@ var FormView = BaseView.extend({
       self.submission.submit(function(err, res) {
         if (err) {
           $fh.forms.log.e("Error Submitting Form:", err);
-          if(typeof(cb) === "function"){
+          if (typeof(cb) === "function") {
             cb(err);
           }
         } else {
@@ -475,7 +475,7 @@ var FormView = BaseView.extend({
               $fh.forms.log.e("Error Uploading Form:", err);
             }
 
-            if(typeof(cb) === "function"){
+            if (typeof(cb) === "function") {
               cb();
             }
 
@@ -495,7 +495,7 @@ var FormView = BaseView.extend({
           self.formEdited = false;
         }
 
-        if(typeof(cb) === "function"){
+        if (typeof(cb) === "function") {
           cb(err);
         }
       });
@@ -542,10 +542,10 @@ var FormView = BaseView.extend({
       var value = item.value;
       var index = item.index;
 
-      if(value === null || typeof(value) === 'undefined'){
+      if (value === null || typeof(value) === 'undefined') {
         //If the value is null, ensure that the value is removed from the submission.
         submission.removeFieldValue(fieldId, index);
-        $fh.forms.log.e("Input value for fieldId " + fieldId + " was not defined");
+        $fh.forms.log.e(`Input value for fieldId ${fieldId} was not defined`);
         count--;
         if (count === 0) {
           cb();

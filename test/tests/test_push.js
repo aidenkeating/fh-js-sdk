@@ -21,7 +21,7 @@ describe("test push wrapper", function() {
     window.push = {};
     window.push.register = function(onNotification, successHandler, errorHandler, pushConfig) {
       successHandler();
-    }
+    };
 
     //when
     $fh.push(function() {}, success, fail);

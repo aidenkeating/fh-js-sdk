@@ -22,13 +22,13 @@ appForm.models = function(module) {
       //load hard coded static config first
       this.staticConfig(config);
       //attempt to load config from mbaas then local storage.
-      this.refresh(true, cb); 
+      this.refresh(true, cb);
     }
   };
-  Config.prototype.isStudioMode = function(){
+  Config.prototype.isStudioMode = function() {
     return this.get("studioMode");
   };
-  Config.prototype.refresh = function (fromRemote, cb) {
+  Config.prototype.refresh = function(fromRemote, cb) {
     var dataAgent = this.getDataAgent();
     var self = this;
     if (typeof cb === 'undefined') {
@@ -40,10 +40,10 @@ appForm.models = function(module) {
       var configObj = {};
 
       if (!err && res) {
-        if(typeof(res) === "string"){
-          try{
+        if (typeof(res) === "string") {
+          try {
             configObj = JSON.parse(res);
-          } catch(error){
+          } catch (error) {
             $fh.forms.log.e("Invalid json config defintion from remote", error);
             configObj = {};
             return cb(error, null);
@@ -53,29 +53,29 @@ appForm.models = function(module) {
         }
 
         self.set("defaultConfigValues", configObj);
-        self.saveLocal(function(err, updatedConfigJSON){
+        self.saveLocal(function(err, updatedConfigJSON) {
           cb(err, self);
         });
       } else {
         cb(err, self);
       }
     }
-    self.loadLocal(function(err, localConfig){
-      if(err) {
+    self.loadLocal(function(err, localConfig) {
+      if (err) {
         $fh.forms.log.e("Config loadLocal ", err);
       }
 
       dataAgent.remoteStore.read(self, _handler);
     });
   };
-  Config.prototype.getCloudHost = function(){
-    return cloudHost;  
+  Config.prototype.getCloudHost = function() {
+    return cloudHost;
   };
   Config.prototype.staticConfig = function(config) {
     var self = this;
     var defaultConfig = {"defaultConfigValues": {}, "userConfigValues": {}};
     //If user already has set values, don't want to overwrite them
-    if(self.get("userConfigValues")){
+    if (self.get("userConfigValues")) {
       defaultConfig.userConfigValues = self.get("userConfigValues");
     }
     var appid = $fh && $fh.app_props ? $fh.app_props.appid : config.appid;
@@ -83,7 +83,7 @@ appForm.models = function(module) {
     self.set('appId', appid);
     self.set('env', mode);
 
-    if($fh && $fh._getDeviceId){
+    if ($fh && $fh._getDeviceId) {
       self.set('deviceId', $fh._getDeviceId());
     } else {
       self.set('deviceId', "notset");
@@ -97,7 +97,7 @@ appForm.models = function(module) {
     }
 
     //config_admin_user can not be set by the user.
-    if(config.config_admin_user){
+    if (config.config_admin_user) {
       delete config.config_admin_user;
     }
 
@@ -123,7 +123,7 @@ appForm.models = function(module) {
       "sent_items_to_keep_list": [5, 10, 20, 30, 40, 50, 100]
     };
 
-    for(var key in staticConfig){
+    for (var key in staticConfig) {
       defaultConfig.defaultConfigValues[key] = staticConfig[key];
     }
 
@@ -142,11 +142,11 @@ appForm.models = function(module) {
       cloudHost = cloud_props.hosts.url;
     }
 
-    if(typeof(config.cloudHost) === 'string'){
+    if (typeof(config.cloudHost) === 'string') {
       cloudHost = config.cloudHost;
     }
 
-    
+
     self.set('mbaasBaseUrl', '/mbaas');
     var appId = self.get('appId');
     self.set('formUrls', {
@@ -164,26 +164,26 @@ appForm.models = function(module) {
     });
     self.set('statusUrl', '/sys/info/ping');
   };
-  Config.prototype.setOnline = function(){
+  Config.prototype.setOnline = function() {
     var wasOnline = online;
     online = true;
 
-    if(!wasOnline){
+    if (!wasOnline) {
       this.emit('online');
     }
   };
-  Config.prototype.setOffline = function(){
+  Config.prototype.setOffline = function() {
     var wasOnline = online;
     online = false;
 
-    if(wasOnline){
-      this.emit('offline');  
+    if (wasOnline) {
+      this.emit('offline');
     }
   };
-  Config.prototype.isOnline = function(){
+  Config.prototype.isOnline = function() {
     var self = this;
-    if(appForm.utils.isPhoneGap()){
-      if(navigator.connection && navigator.connection.type){
+    if (appForm.utils.isPhoneGap()) {
+      if (navigator.connection && navigator.connection.type) {
         return online === true && navigator.connection.type !== Connection.NONE;
       } else {
         return online === true;
@@ -193,7 +193,7 @@ appForm.models = function(module) {
     }
 
   };
-  Config.prototype.isStudioMode = function(){
+  Config.prototype.isStudioMode = function() {
     return this.get("studioMode", false);
   };
 

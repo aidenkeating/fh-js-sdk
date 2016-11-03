@@ -58,7 +58,7 @@ function pages(p) {
     createOptions: function() {
       return createOptions(pages, displayIndex, modelName);
     }
-  }
+  };
 }
 
 function createOptions(pages, displayIndex, modelName) {

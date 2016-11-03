@@ -10,7 +10,7 @@
 var overridden = false;
 function overrideFHData() {
 
-  if(!overridden) {
+  if (!overridden) {
     overridden = true;
     /* Monkey Patch for $fh.data to use File backed storage
      *
@@ -40,42 +40,42 @@ function overrideFHData() {
       // Redefine $fh.data
       $fh.data = function(options, success, failure) {
         function fail(msg) {
-          console.log('fail: msg= ' + msg);
+          console.log(`fail: msg= ${msg}`);
           if (typeof failure !== 'undefined') {
             return failure(msg, {});
           } else {
-            console.log('failure: ' + msg);
+            console.log(`failure: ${msg}`);
           }
         }
 
         function filenameForKey(key, cb) {
           key = $fh.app_props.appid + key;
-          console.log('filenameForKey: ' + key);
+          console.log(`filenameForKey: ${key}`);
           $fh.hash({
             algorithm: "MD5",
             text: key
           }, function(result) {
-            var filename = result.hashvalue + '.txt';
+            var filename = `${result.hashvalue}.txt`;
             if (typeof navigator.externalstorage !== "undefined") {
-              navigator.externalstorage.enable(function handleSuccess(res){
+              navigator.externalstorage.enable(function handleSuccess(res) {
                 var path = filename;
-                if(res.path ) {
+                if (res.path ) {
                   path = res.path;
-                  if(!path.match(/\/$/)) {
+                  if (!path.match(/\/$/)) {
                     path += '/';
                   }
                   path += filename;
                 }
                 filename = path;
-                console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+                console.log(`filenameForKey key=${key} , Filename: ${filename}`);
                 return cb(filename);
-              },function handleError(err){
-                console.warn('filenameForKey ignoring error=' + JSON.stringify(err));
-                console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+              },function handleError(err) {
+                console.warn(`filenameForKey ignoring error=${JSON.stringify(err)}`);
+                console.log(`filenameForKey key=${key} , Filename: ${filename}`);
                 return cb(filename);
-              })
+              });
             } else {
-              console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+              console.log(`filenameForKey key=${key} , Filename: ${filename}`);
               return cb(filename);
             }
 
@@ -89,7 +89,7 @@ function overrideFHData() {
                 create: true
               }, function gotFileEntry(fileEntry) {
                 fileEntry.createWriter(function gotFileWriter(writer) {
-                  console.log('save: ' + key + ', ' + JSON.stringify(value).substring(0,50) + '. Filename: ' + hash);
+                  console.log(`save: ${key}, ${JSON.stringify(value).substring(0,50)}. Filename: ${hash}`);
                   writer.onwrite = function(evt) {
                     return success({
                       key: key,
@@ -111,11 +111,11 @@ function overrideFHData() {
 
         function remove(key) {
           filenameForKey(key, function(hash) {
-            console.log('remove: ' + key + '. Filename: ' + hash);
+            console.log(`remove: ${key}. Filename: ${hash}`);
 
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
               fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
-                console.log('remove: ' + key +  '. Filename: ' + hash);
+                console.log(`remove: ${key}. Filename: ${hash}`);
                 fileEntry.remove(function() {
                   return success({
                     key: key,
@@ -139,7 +139,7 @@ function overrideFHData() {
               fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
                 fileEntry.file(function gotFile(file) {
                   var reader = new FileReader();
-                  reader.onloadend = function (evt) {
+                  reader.onloadend = function(evt) {
                     var text = evt.target.result;
                     // Check for URLencoded
                     // PG 2.2 bug in readAsText()
@@ -149,7 +149,7 @@ function overrideFHData() {
                       // Swallow exception if not URLencoded
                       // Just use the result
                     }
-                    console.log('load: ' + key +  '. Filename: ' + hash + " value:" + evt.target.result);
+                    console.log(`load: ${key}. Filename: ${hash} value:${evt.target.result}`);
                     return success({
                       key: key,
                       val: text
@@ -179,10 +179,8 @@ function overrideFHData() {
           return remove(options.key);
         } else if (options.act === 'load') {
           return load(options.key);
-        } else {
-          if (typeof failure !== 'undefined') {
-            return failure("Action [" + options.act + "] is not defined", {});
-          }
+        } else if (typeof failure !== 'undefined') {
+          return failure(`Action [${options.act}] is not defined`, {});
         }
       };
     }
@@ -201,7 +199,7 @@ function S4() {
 // Generate a pseudo-GUID by concatenating random hexadecimal.
 
 function guid() {
-  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+  return (`${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`);
 }
 
 // Our Store is represented by a single JS object in FeedHenry's data store.
@@ -233,14 +231,14 @@ _.extend(FHBackboneDataActSync.prototype, {
     this.data = {};
 
     $fh.ready({},function() {
-      $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
+      $fh.logger.debug(`FHBackboneDataActSync  :: init data for:"${self.name}"`);
       $fh.data({
         key: self.key(self.name , self.localStoreVersion)
       }, function(res) {
         try {
           if (res.val && res.val !== '') {
             self.data = JSON.parse(res.val);
-            $fh.logger.info('FHBackboneDataActSync  :: found data in local storage for "' + self.name + '"');
+            $fh.logger.info(`FHBackboneDataActSync  :: found data in local storage for "${self.name}"`);
           }
         } catch (e) {
           // leave data as default
@@ -277,9 +275,9 @@ _.extend(FHBackboneDataActSync.prototype, {
                   // new res.config are the incoming defaults
                   var merged = _.extend({}, App.config.attributes);
 
-                  if(force === true || _.isArray(force) || _.isString(force) ) {
+                  if (force === true || _.isArray(force) || _.isString(force) ) {
                     // silent stops the events being fired
-                    if(force === true) {
+                    if (force === true) {
                       App.config.clear({silent:true});
                       merged = _.extend({}, defaults);
                     } else {
@@ -290,7 +288,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     }
                   }
                   merged.defaults = _.extend({}, defaults);
-                  $fh.logger.debug('FHBackboneDataActSync :: updating config merged =' + JSON.stringify(merged));
+                  $fh.logger.debug(`FHBackboneDataActSync :: updating config merged =${JSON.stringify(merged)}`);
                   App.config.set(merged);
                 }
                 // update data if there is any
@@ -317,18 +315,16 @@ _.extend(FHBackboneDataActSync.prototype, {
                     $fh.logger.debug('inited data for "', self.name, '" saved to local storage');
                   });
                   cb(null);
-                } else {
-                  if (dataUpdated) {
+                } else if (dataUpdated) {
                     // data already initialised from local storage, need to update the data and let subsequent events on models
                     // take care of updating views i.e. don't call cb
-                    self.save(function() {
-                      $fh.logger.debug('updated data for "', self.name, '" saved to local storage');
-                    });
-                  }
+                  self.save(function() {
+                    $fh.logger.debug('updated data for "', self.name, '" saved to local storage');
+                  });
                 }
               }, function(msg, err) {
                 if (dataEmpty) {
-                  cb(msg + '::' + err);
+                  cb(`${msg}::${err}`);
                 }
               });
             } else {
@@ -348,7 +344,7 @@ _.extend(FHBackboneDataActSync.prototype, {
         }
 
       }, function(msg, err) {
-        cb(msg + '::' + err);
+        cb(`${msg}::${err}`);
       });
     });
   },
@@ -363,7 +359,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     }, function() {
       cb(null);
     }, function(msg, err) {
-      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      var errMsg = `ERROR saving data :: msg:${msg} err:${err}`;
       self.trigger('error', errMsg);
       $fh.logger.error(errMsg);
       cb(err);
@@ -448,7 +444,7 @@ _.extend(FHBackboneDataActSync.prototype, {
               }
             }
           }, function(msg, err) {
-            var errMsg = 'msg:' + msg + ' err:' + err;
+            var errMsg = `msg:${msg} err:${err}`;
             if (!dataLoaded) {
               cb(errMsg);
             } else {
@@ -494,7 +490,7 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
   var store = model.store || model.collection.store;
 
-  if(store.name == "drafts") {
+  if (store.name == "drafts") {
     console.log("FHBackboneDataActSyncFn drafts");
   }
   function storeCb(err, resp) {
@@ -504,14 +500,14 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
   function routeMethod() {
     switch (method) {
-      case "read":
-        return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
-      case "create":
-        return store.create(model, storeCb);
-      case "update":
-        return store.update(model, storeCb);
-      case "delete":
-        return store.destroy(model, storeCb);
+    case "read":
+      return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
+    case "create":
+      return store.create(model, storeCb);
+    case "update":
+      return store.update(model, storeCb);
+    case "delete":
+      return store.destroy(model, storeCb);
     }
   }
 
@@ -531,7 +527,7 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
 
 var FHBackboneIndexedDataActSync = function(name, actList, actRead, idField, versionField) {
-  if(actList) {
+  if (actList) {
     throw "TODO FIXME";
   }
   FHBackboneDataActSync.call(this,name, actList, actRead, idField, versionField);
@@ -561,7 +557,7 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       }
       cb(null,data);
     }, function(msg, err) {
-      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      var errMsg = `ERROR saving data :: msg:${msg} err:${err}`;
       self.trigger('error', errMsg);
       $fh.logger.error(errMsg);
       cb(err);
@@ -576,7 +572,7 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     }, function() {
       cb(null);
     }, function(msg, err) {
-      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      var errMsg = `ERROR saving data :: msg:${msg} err:${err}`;
       self.trigger('error', errMsg);
       $fh.logger.error(errMsg);
       cb(err);
@@ -592,7 +588,7 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     }, function() {
       cb(null);
     }, function(msg, err) {
-      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      var errMsg = `ERROR saving data :: msg:${msg} err:${err}`;
       self.trigger('error', errMsg);
       $fh.logger.error(errMsg);
       cb(err);
@@ -615,8 +611,10 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     this.data[id] = cpy;
     var self = this;
 
-    this._write(self.key(this.name, this.localStoreVersion, id),model,function (err){
-      if(err) {return cb(err, model);}
+    this._write(self.key(this.name, this.localStoreVersion, id),model,function(err) {
+      if (err) {
+        return cb(err, model);
+      }
       self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
         return cb(err, model);
       });
@@ -643,8 +641,10 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     delete this.data[model.id];
 
     var self = this;
-    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
-      if(err) {return cb(err, model);}
+    this._delete(self.key(this.name, this.localStoreVersion, model.id),function(err) {
+      if (err) {
+        return cb(err, model);
+      }
       self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
         return cb(err, model);
       });

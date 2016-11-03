@@ -1,17 +1,17 @@
 //TODO: move this to somewhere else
-(function(root){
-  var generateRandomKey = function(keysize){
+(function(root) {
+  var generateRandomKey = function(keysize) {
     var r = new SecureRandom();
     var key = new Array(keysize);
     r.nextBytes(key);
     var result = "";
-    for(var i=0;i<key.length;i++){
+    for (var i=0;i<key.length;i++) {
       result += byte2Hex(key[i]);
     }
     return result;
   };
 
-  var aes_keygen = function(p, s, f){
+  var aes_keygen = function(p, s, f) {
     if (!p.params.keysize) {
       f('no_params_keysize', {}, p);
       return;
@@ -23,30 +23,30 @@
     var keysize = parseInt(p.params.keysize, 10);
     //keysize is in bit, need to convert to bytes to generate random key
     //but the legacy code has a bug, it doesn't do the convert, so if the keysize is less than 100, don't convert
-    if(keysize > 100){
+    if (keysize > 100) {
       keysize = keysize/8;
     }
-    if(typeof SecureRandom === "undefined"){
+    if (typeof SecureRandom === "undefined") {
       return f("security library is not loaded.");
     }
     return s({
       'algorithm':'AES',
       'secretkey': generateRandomKey(keysize)
-    }); 
+    });
   };
 
-  var rsa_encrypt = function(p, s, f){
+  var rsa_encrypt = function(p, s, f) {
     var fields = ['modulu', 'plaintext', 'keysize', 'key'];
-    if(p.params.algorithm.toLowerCase() !== "rsa"){
+    if (p.params.algorithm.toLowerCase() !== "rsa") {
       return f('encrypt_bad_algorithm', {}, p);
     }
     for (var i = 0; i < fields; i++) {
       var field = fields[i];
       if (!p.params[field]) {
-        return f('no_params_' + field, {}, p);
+        return f(`no_params_${field}`, {}, p);
       }
     }
-    if(typeof RSAKeyPair === "undefined"){
+    if (typeof RSAKeyPair === "undefined") {
       return f('legacy security library is missing. Error: can not find RSAKeyPair.');
     }
     var key_size = parseInt(p.params.keysize, 10);
@@ -63,19 +63,19 @@
   };
 
   var fh_cipher;
-  var aes_encrypt = function(p, s, f){
+  var aes_encrypt = function(p, s, f) {
     var fields = ['key', 'plaintext'];
-    if(p.params.algorithm.toLowerCase() !== "aes"){
+    if (p.params.algorithm.toLowerCase() !== "aes") {
       return f('encrypt_bad_algorithm', {}, p);
     }
     for (var i = 0; i < fields; i++) {
       var field = fields[i];
       if (!p.params[field]) {
-        return f('no_params_' + field, {}, p);
+        return f(`no_params_${field}`, {}, p);
       }
     }
 
-    if(typeof __Crypto === "undefined"){
+    if (typeof __Crypto === "undefined") {
       return f("legacy security library is missing. Error: can not find __Crypto.");
     }
     if (typeof fh_cipher === "undefined") {
@@ -88,18 +88,18 @@
     return s({ciphertext: cipher_text});
   };
 
-  var aes_decrypt = function(p, s, f){
+  var aes_decrypt = function(p, s, f) {
     var fields = ['key', 'ciphertext'];
-    if(p.params.algorithm.toLowerCase() !== "aes"){
+    if (p.params.algorithm.toLowerCase() !== "aes") {
       return f('decrypt_bad_algorithm', {}, p);
     }
     for (var i = 0; i < fields; i++) {
       var field = fields[i];
       if (!p.params[field]) {
-        return f('no_params_' + field, {}, p);
+        return f(`no_params_${field}`, {}, p);
       }
     }
-    if(typeof __Crypto === "undefined"){
+    if (typeof __Crypto === "undefined") {
       return f("legacy security library is missing. Error: can not find __Crypto.");
     }
     if (typeof fh_cipher === "undefined") {
@@ -116,7 +116,7 @@
   var $fh = root.$fh || {};
   var hash = $fh.hash;
 
-  $fh.sec = function(p, s, f){
+  $fh.sec = function(p, s, f) {
     if (!p.act) {
       f('bad_act', {}, p);
       return;
@@ -131,31 +131,31 @@
     }
     p.params.algorithm = p.params.algorithm.toLowerCase();
 
-    if(p.act === "hash"){
-      if(typeof hash === "function"){
+    if (p.act === "hash") {
+      if (typeof hash === "function") {
         return hash(p,s,f);
       } else {
         return f("hash_not_implemented");
       }
-    } else if(p.act === "encrypt"){
-      if(p.params.algorithm === "aes"){
+    } else if (p.act === "encrypt") {
+      if (p.params.algorithm === "aes") {
         return aes_encrypt(p, s, f);
-      } else if(p.params.algorithm === "rsa"){
+      } else if (p.params.algorithm === "rsa") {
         return rsa_encrypt(p, s, f);
       } else {
-        return f('encrypt_bad_algorithm:' + p.params.algorithm, {}, p);
+        return f(`encrypt_bad_algorithm:${p.params.algorithm}`, {}, p);
       }
-    } else if(p.act === "decrypt"){
-      if(p.params.algorithm === "aes"){
+    } else if (p.act === "decrypt") {
+      if (p.params.algorithm === "aes") {
         return aes_decrypt(p, s, f);
       } else {
-        return f('decrypt_bad_algorithm:' + p.params.algorithm, {}, p);
+        return f(`decrypt_bad_algorithm:${p.params.algorithm}`, {}, p);
       }
-    } else if(p.act === "keygen"){
-      if(p.params.algorithm === "aes"){
+    } else if (p.act === "keygen") {
+      if (p.params.algorithm === "aes") {
         return aes_keygen(p, s, f);
       } else {
-        return f('keygen_bad_algorithm:' + p.params.algorithm, {}, p);
+        return f(`keygen_bad_algorithm:${p.params.algorithm}`, {}, p);
       }
     }
   };

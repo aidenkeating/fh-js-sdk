@@ -1,14 +1,14 @@
-var fileStorageAdapter = function (app_props, hashFunc) {
+var fileStorageAdapter = function(app_props, hashFunc) {
   // private methods
 
-  function doLog(mess){
-    if(console){
+  function doLog(mess) {
+    if (console) {
       console.log(mess);
     }
   }
 
-  var fail = function (e, i) {
-    if(console) {
+  var fail = function(e, i) {
+    if (console) {
       console.log('error in file system adapter !', e, i);
     } else {
       throw e;
@@ -23,24 +23,24 @@ var fileStorageAdapter = function (app_props, hashFunc) {
       algorithm: "MD5",
       text: key
     }, function(result) {
-      var filename = result.hashvalue + '.txt';
+      var filename = `${result.hashvalue}.txt`;
       if (typeof navigator.externalstorage !== "undefined") {
-        navigator.externalstorage.enable(function handleSuccess(res){
+        navigator.externalstorage.enable(function handleSuccess(res) {
           var path = filename;
-          if(res.path ) {
+          if (res.path ) {
             path = res.path;
-            if(!path.match(/\/$/)) {
+            if (!path.match(/\/$/)) {
               path += '/';
             }
             path += filename;
           }
           filename = path;
           return cb(filename);
-        },function handleError(err){
+        },function handleError(err) {
           return cb(filename);
         });
       } else {
-        doLog('filenameForKey key=' + key+ ' , Filename: ' + filename);
+        doLog(`filenameForKey key=${key} , Filename: ${filename}`);
         return cb(filename);
       }
     });
@@ -48,11 +48,13 @@ var fileStorageAdapter = function (app_props, hashFunc) {
 
   return {
 
-    valid: function () { return !!(window.requestFileSystem); },
+    valid: function() {
+      return !!(window.requestFileSystem);
+    },
 
-    init : function (options, callback){
+    init : function(options, callback) {
       //calls the parent function fn and applies this scope
-      if(options && 'function' === typeof options.fail ) {
+      if (options && 'function' === typeof options.fail ) {
         fail = options.fail;
       }
       if (callback) {
@@ -60,11 +62,11 @@ var fileStorageAdapter = function (app_props, hashFunc) {
       }
     },
 
-    keys: function (callback){
+    keys: function(callback) {
       throw "Currently not supported";
     },
 
-    save : function (obj, callback){
+    save : function(obj, callback) {
       var key = obj.key;
       var value = obj.val||obj.value;
       filenameForKey(key, function(hash) {
@@ -93,17 +95,17 @@ var fileStorageAdapter = function (app_props, hashFunc) {
       });
     },
 
-    batch : function (records, callback){
+    batch : function(records, callback) {
       throw "Currently not supported";
     },
 
-    get : function (key, callback){
+    get : function(key, callback) {
       filenameForKey(key, function(hash) {
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
           fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
             fileEntry.file(function gotFile(file) {
               var reader = new FileReader();
-              reader.onloadend = function (evt) {
+              reader.onloadend = function(evt) {
                 var text = evt.target.result;
                 // Check for URLencoded
                 // PG 2.2 bug in readAsText()
@@ -135,24 +137,24 @@ var fileStorageAdapter = function (app_props, hashFunc) {
       });
     },
 
-    exists : function (key, callback){
-      filenameForKey(key,function (hash){
+    exists : function(key, callback) {
+      filenameForKey(key,function(hash) {
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
           fileSystem.root.getFile(hash, {},
             function gotFileEntry(fileEntry) {
               return callback(true);
-            }, function (err){
+            }, function(err) {
               return callback(false);
             });
         });
       });
     },
 
-    all : function (callback){
+    all : function(callback) {
       throw "Currently not supported";
     },
 
-    remove : function (key, callback){
+    remove : function(key, callback) {
       filenameForKey(key, function(hash) {
 
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
@@ -175,7 +177,7 @@ var fileStorageAdapter = function (app_props, hashFunc) {
       });
     },
 
-    nuke : function (callback){
+    nuke : function(callback) {
       throw "Currently not supported";
     }
 

@@ -1,4 +1,4 @@
-define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
+define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai) {
   var sinon = window.sinon;
   // Chai
   var expect = chai.expect;
@@ -10,7 +10,7 @@ define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
     "appkey" : "testappkey",
     "projectid" : "testprojectid",
     "connectiontag" : "testconnectiontag"
-  }
+  };
 
   var apphost = {
     domain: "testing",
@@ -21,33 +21,37 @@ define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
     init: {
       "trackId": "testtrackid"
     }
-  }
+  };
 
-  var buildFakeRes = function(data){
+  var buildFakeRes = function(data) {
     return [200, {"Content-Type": "application/json"}, JSON.stringify(data)];
-  }
+  };
 
-  var initFakeServer = function(server){
-     server.respondWith('GET', /fhconfig.json/, buildFakeRes(fhconfig));
+  var initFakeServer = function(server) {
+    server.respondWith('GET', /fhconfig.json/, buildFakeRes(fhconfig));
 
-     server.respondWith('POST', /init/, buildFakeRes(apphost));
-  }
+    server.respondWith('POST', /init/, buildFakeRes(apphost));
+  };
 
-  describe("test all cloud related", function(done){
+  describe("test all cloud related", function(done) {
 
     var server;
 
-    beforeEach(function () { server = sinon.fakeServer.create(); });
-    afterEach(function () { server.restore(); });
+    beforeEach(function() {
+      server = sinon.fakeServer.create();
+    });
+    afterEach(function() {
+      server.restore();
+    });
 
-    describe("test auto initialisation", function(){
-      it("should emit fhinit events", function(){
+    describe("test auto initialisation", function() {
+      it("should emit fhinit events", function() {
 
         var callback = sinon.spy();
 
         initFakeServer(server);
         var $fh = require("feedhenry");
-        //at this point, $fh is already initialised (and failed), it will not emit another fhinit event 
+        //at this point, $fh is already initialised (and failed), it will not emit another fhinit event
         //until another call to any $fh cloud APIs, so for testing, call reset which will force it to re-intialise again.
         $fh.reset();
 
@@ -66,8 +70,8 @@ define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
       });
     });
 
-    describe("test act/cloud call", function(){
-      it("act call should success", function(){
+    describe("test act/cloud call", function() {
+      it("act call should success", function() {
         var success = sinon.spy();
         var fail = sinon.spy();
 
@@ -97,7 +101,7 @@ define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
         expect(fail2).to.have.not.been.called;
       });
 
-      it("should work with cloud call", function(){
+      it("should work with cloud call", function() {
         var success = sinon.spy();
         var fail = sinon.spy();
 
@@ -125,8 +129,8 @@ define(['require', 'chai', 'sinonChai'], function(require, chai, sinonChai){
       });
     });
 
-    describe("test auth call", function(){
-      it("auth call should work", function(){
+    describe("test auth call", function() {
+      it("auth call should work", function() {
         initFakeServer(server);
         server.respondWith('POST', /authpolicy/, buildFakeRes({status: "ok"}));
 

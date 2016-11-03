@@ -11,7 +11,7 @@ FieldCheckboxView = FieldView.extend({
     var checkboxesHtml = "";
     var html = "";
     var required = this.getFieldRequired(index);
-    
+
     var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
     checkboxesHtml = _.template(this.checkboxes);
     checkboxesHtml = checkboxesHtml({"repeatingClassName": repeatingClassName});
@@ -28,7 +28,7 @@ FieldCheckboxView = FieldView.extend({
       });
       choice = $(choice);
 
-      if(subfield.checked === true){
+      if (subfield.checked === true) {
         choice.addClass("active");
         choice.addClass('option-checked');
         choice.find(".choice_icon").removeClass("icon-check-empty");
@@ -36,7 +36,7 @@ FieldCheckboxView = FieldView.extend({
       }
 
       choice.off('click');
-      choice.on('click', function(e){
+      choice.on('click', function(e) {
         $(this).toggleClass('option-checked');
         $(this).find('.choice_icon').toggleClass('icon-check-empty');
         $(this).find('.choice_icon').toggleClass('icon-check');
@@ -46,7 +46,7 @@ FieldCheckboxView = FieldView.extend({
 
       checkboxesHtml.append(choice);
     });
-    
+
     return checkboxesHtml;
   },
   valueFromElement: function(index) {
@@ -55,14 +55,14 @@ FieldCheckboxView = FieldView.extend({
     };
     var wrapperObj=this.getWrapper(index);
     var checked=wrapperObj.find("button.option-checked");
-    checked.each(function(){
+    checked.each(function() {
       value.selections.push($(this).val());
     });
     return value;
   },
   valuePopulateToElement: function(index,value) {
     var wrapperObj=this.getWrapper(index);
-    if (!value || !(value instanceof Array)){
+    if (!value || !(value instanceof Array)) {
       return;
     }
 
@@ -70,11 +70,11 @@ FieldCheckboxView = FieldView.extend({
     wrapperObj.find('button .choice_icon').addClass('icon-check-empty');
     wrapperObj.find('button .choice_icon').removeClass('icon-check');
 
-    for (var i=0; i < value.length; i++){
+    for (var i=0; i < value.length; i++) {
       var v=value[i];
-      wrapperObj.find("button[value='"+v+"']").addClass("active");
-      wrapperObj.find("button[value='"+v+"'] .choice_icon").removeClass("icon-check-empty");
-      wrapperObj.find("button[value='"+v+"'] .choice_icon").addClass("icon-check");
+      wrapperObj.find(`button[value='${v}']`).addClass("active");
+      wrapperObj.find(`button[value='${v}'] .choice_icon`).removeClass("icon-check-empty");
+      wrapperObj.find(`button[value='${v}'] .choice_icon`).addClass("icon-check");
     }
   }
 });

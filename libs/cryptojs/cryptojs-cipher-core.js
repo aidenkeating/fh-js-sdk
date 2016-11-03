@@ -8,7 +8,7 @@
 /**
  * Cipher core components.
  */
-CryptoJS.lib.Cipher || (function (undefined) {
+CryptoJS.lib.Cipher || (function(undefined) {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -51,7 +51,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var cipher = CryptoJS.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
      */
-    createEncryptor: function (key, cfg) {
+    createEncryptor: function(key, cfg) {
       return this.create(this._ENC_XFORM_MODE, key, cfg);
     },
 
@@ -69,7 +69,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var cipher = CryptoJS.algo.AES.createDecryptor(keyWordArray, { iv: ivWordArray });
      */
-    createDecryptor: function (key, cfg) {
+    createDecryptor: function(key, cfg) {
       return this.create(this._DEC_XFORM_MODE, key, cfg);
     },
 
@@ -84,7 +84,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var cipher = CryptoJS.algo.AES.create(CryptoJS.algo.AES._ENC_XFORM_MODE, keyWordArray, { iv: ivWordArray });
      */
-    init: function (xformMode, key, cfg) {
+    init: function(xformMode, key, cfg) {
       // Apply config defaults
       this.cfg = this.cfg.extend(cfg);
 
@@ -103,7 +103,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     cipher.reset();
      */
-    reset: function () {
+    reset: function() {
       // Reset data buffer
       BufferedBlockAlgorithm.reset.call(this);
 
@@ -123,7 +123,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var encrypted = cipher.process('data');
      *     var encrypted = cipher.process(wordArray);
      */
-    process: function (dataUpdate) {
+    process: function(dataUpdate) {
       // Append
       this._append(dataUpdate);
 
@@ -145,7 +145,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var encrypted = cipher.finalize('data');
      *     var encrypted = cipher.finalize(wordArray);
      */
-    finalize: function (dataUpdate) {
+    finalize: function(dataUpdate) {
       // Final data update
       if (dataUpdate) {
         this._append(dataUpdate);
@@ -178,7 +178,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var AES = CryptoJS.lib.Cipher._createHelper(CryptoJS.algo.AES);
      */
-    _createHelper: (function () {
+    _createHelper: (function() {
       function selectCipherStrategy(key) {
         if (typeof key == 'string') {
           return PasswordBasedCipher;
@@ -187,13 +187,13 @@ CryptoJS.lib.Cipher || (function (undefined) {
         }
       }
 
-      return function (cipher) {
+      return function(cipher) {
         return {
-          encrypt: function (message, key, cfg) {
+          encrypt: function(message, key, cfg) {
             return selectCipherStrategy(key).encrypt(cipher, message, key, cfg);
           },
 
-          decrypt: function (ciphertext, key, cfg) {
+          decrypt: function(ciphertext, key, cfg) {
             return selectCipherStrategy(key).decrypt(cipher, ciphertext, key, cfg);
           }
         };
@@ -207,7 +207,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
    * @property {number} blockSize The number of 32-bit words this cipher operates on. Default: 1 (32 bits)
    */
   var StreamCipher = C_lib.StreamCipher = Cipher.extend({
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Process partial blocks
       var finalProcessedBlocks = this._process(!!'flush');
 
@@ -238,7 +238,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var mode = CryptoJS.mode.CBC.createEncryptor(cipher, iv.words);
      */
-    createEncryptor: function (cipher, iv) {
+    createEncryptor: function(cipher, iv) {
       return this.Encryptor.create(cipher, iv);
     },
 
@@ -254,7 +254,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var mode = CryptoJS.mode.CBC.createDecryptor(cipher, iv.words);
      */
-    createDecryptor: function (cipher, iv) {
+    createDecryptor: function(cipher, iv) {
       return this.Decryptor.create(cipher, iv);
     },
 
@@ -268,7 +268,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var mode = CryptoJS.mode.CBC.Encryptor.create(cipher, iv.words);
      */
-    init: function (cipher, iv) {
+    init: function(cipher, iv) {
       this._cipher = cipher;
       this._iv = iv;
     }
@@ -277,7 +277,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
   /**
    * Cipher Block Chaining mode.
    */
-  var CBC = C_mode.CBC = (function () {
+  var CBC = C_mode.CBC = (function() {
     /**
      * Abstract base CBC mode.
      */
@@ -297,7 +297,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
        *
        *     mode.processBlock(data.words, offset);
        */
-      processBlock: function (words, offset) {
+      processBlock: function(words, offset) {
         // Shortcuts
         var cipher = this._cipher;
         var blockSize = cipher.blockSize;
@@ -325,7 +325,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
        *
        *     mode.processBlock(data.words, offset);
        */
-      processBlock: function (words, offset) {
+      processBlock: function(words, offset) {
         // Shortcuts
         var cipher = this._cipher;
         var blockSize = cipher.blockSize;
@@ -386,7 +386,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     CryptoJS.pad.Pkcs7.pad(wordArray, 4);
      */
-    pad: function (data, blockSize) {
+    pad: function(data, blockSize) {
       // Shortcut
       var blockSizeBytes = blockSize * 4;
 
@@ -418,7 +418,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     CryptoJS.pad.Pkcs7.unpad(wordArray);
      */
-    unpad: function (data) {
+    unpad: function(data) {
       // Get number of padding bytes from last byte
       var nPaddingBytes = data.words[(data.sigBytes - 1) >>> 2] & 0xff;
 
@@ -444,7 +444,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
       padding: Pkcs7
     }),
 
-    reset: function () {
+    reset: function() {
       // Reset cipher
       Cipher.reset.call(this);
 
@@ -465,11 +465,11 @@ CryptoJS.lib.Cipher || (function (undefined) {
       this._mode = modeCreator.call(mode, this, iv && iv.words);
     },
 
-    _doProcessBlock: function (words, offset) {
+    _doProcessBlock: function(words, offset) {
       this._mode.processBlock(words, offset);
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcut
       var padding = this.cfg.padding;
 
@@ -527,7 +527,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
          *         formatter: CryptoJS.format.OpenSSL
          *     });
      */
-    init: function (cipherParams) {
+    init: function(cipherParams) {
       this.mixIn(cipherParams);
     },
 
@@ -546,7 +546,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var string = cipherParams.toString();
      *     var string = cipherParams.toString(CryptoJS.format.OpenSSL);
      */
-    toString: function (formatter) {
+    toString: function(formatter) {
       return (formatter || this.formatter).stringify(this);
     }
   });
@@ -573,7 +573,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var openSSLString = CryptoJS.format.OpenSSL.stringify(cipherParams);
      */
-    stringify: function (cipherParams) {
+    stringify: function(cipherParams) {
       // Shortcuts
       var ciphertext = cipherParams.ciphertext;
       var salt = cipherParams.salt;
@@ -601,7 +601,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var cipherParams = CryptoJS.format.OpenSSL.parse(openSSLString);
      */
-    parse: function (openSSLStr) {
+    parse: function(openSSLStr) {
       // Parse base64
       var ciphertext = Base64.parse(openSSLStr);
 
@@ -653,7 +653,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var ciphertextParams = CryptoJS.lib.SerializableCipher.encrypt(CryptoJS.algo.AES, message, key, { iv: iv });
      *     var ciphertextParams = CryptoJS.lib.SerializableCipher.encrypt(CryptoJS.algo.AES, message, key, { iv: iv, format: CryptoJS.format.OpenSSL });
      */
-    encrypt: function (cipher, message, key, cfg) {
+    encrypt: function(cipher, message, key, cfg) {
       // Apply config defaults
       cfg = this.cfg.extend(cfg);
 
@@ -694,7 +694,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var plaintext = CryptoJS.lib.SerializableCipher.decrypt(CryptoJS.algo.AES, formattedCiphertext, key, { iv: iv, format: CryptoJS.format.OpenSSL });
      *     var plaintext = CryptoJS.lib.SerializableCipher.decrypt(CryptoJS.algo.AES, ciphertextParams, key, { iv: iv, format: CryptoJS.format.OpenSSL });
      */
-    decrypt: function (cipher, ciphertext, key, cfg) {
+    decrypt: function(cipher, ciphertext, key, cfg) {
       // Apply config defaults
       cfg = this.cfg.extend(cfg);
 
@@ -722,7 +722,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *
      *     var ciphertextParams = CryptoJS.lib.SerializableCipher._parse(ciphertextStringOrParams, format);
      */
-    _parse: function (ciphertext, format) {
+    _parse: function(ciphertext, format) {
       if (typeof ciphertext == 'string') {
         return format.parse(ciphertext, this);
       } else {
@@ -757,7 +757,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32);
      *     var derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32, 'saltsalt');
      */
-    execute: function (password, keySize, ivSize, salt) {
+    execute: function(password, keySize, ivSize, salt) {
       // Generate random salt
       if (!salt) {
         salt = WordArray.random(64/8);
@@ -806,7 +806,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var ciphertextParams = CryptoJS.lib.PasswordBasedCipher.encrypt(CryptoJS.algo.AES, message, 'password');
      *     var ciphertextParams = CryptoJS.lib.PasswordBasedCipher.encrypt(CryptoJS.algo.AES, message, 'password', { format: CryptoJS.format.OpenSSL });
      */
-    encrypt: function (cipher, message, password, cfg) {
+    encrypt: function(cipher, message, password, cfg) {
       // Apply config defaults
       cfg = this.cfg.extend(cfg);
 
@@ -842,7 +842,7 @@ CryptoJS.lib.Cipher || (function (undefined) {
      *     var plaintext = CryptoJS.lib.PasswordBasedCipher.decrypt(CryptoJS.algo.AES, formattedCiphertext, 'password', { format: CryptoJS.format.OpenSSL });
      *     var plaintext = CryptoJS.lib.PasswordBasedCipher.decrypt(CryptoJS.algo.AES, ciphertextParams, 'password', { format: CryptoJS.format.OpenSSL });
      */
-    decrypt: function (cipher, ciphertext, password, cfg) {
+    decrypt: function(cipher, ciphertext, password, cfg) {
       // Apply config defaults
       cfg = this.cfg.extend(cfg);
 

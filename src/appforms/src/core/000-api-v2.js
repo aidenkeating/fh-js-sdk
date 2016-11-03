@@ -1,4 +1,4 @@
-;
+
 (function(root) {
 
   //!!!lib start!!!
@@ -157,19 +157,19 @@
     var JSON = function() {
 
       function f(n) { // Format integers to have at least two digits.
-        return n < 10 ? '0' + n : n;
+        return n < 10 ? `0${n}` : n;
       }
 
       Date.prototype.toJSON = function() {
 
         // Eventually, this method will be based on the date.toISOString method.
 
-        return this.getUTCFullYear() + '-' +
-          f(this.getUTCMonth() + 1) + '-' +
-          f(this.getUTCDate()) + 'T' +
-          f(this.getUTCHours()) + ':' +
-          f(this.getUTCMinutes()) + ':' +
-          f(this.getUTCSeconds()) + 'Z';
+        return `${this.getUTCFullYear()}-${
+          f(this.getUTCMonth() + 1)}-${
+          f(this.getUTCDate())}T${
+          f(this.getUTCHours())}:${
+          f(this.getUTCMinutes())}:${
+          f(this.getUTCSeconds())}Z`;
       };
 
 
@@ -196,16 +196,16 @@
         // sequences.
 
         return escapeable.test(string) ?
-          '"' + string.replace(escapeable, function(a) {
+          `"${string.replace(escapeable, function(a) {
             var c = meta[a];
             if (typeof c === 'string') {
               return c;
             }
             c = a.charCodeAt();
-            return '\\u00' + Math.floor(c / 16).toString(16) +
-              (c % 16).toString(16);
-          }) + '"' :
-          '"' + string + '"';
+            return `\\u00${Math.floor(c / 16).toString(16)
+              }${(c % 16).toString(16)}`;
+          })}"` :
+          `"${string}"`;
       }
 
 
@@ -238,98 +238,98 @@
         // What happens next depends on the value's type.
 
         switch (typeof value) {
-          case 'string':
-            return quote(value);
+        case 'string':
+          return quote(value);
 
-          case 'number':
+        case 'number':
 
             // JSON numbers must be finite. Encode non-finite numbers as null.
 
-            return isFinite(value) ? String(value) : 'null';
+          return isFinite(value) ? String(value) : 'null';
 
-          case 'boolean':
-          case 'null':
+        case 'boolean':
+        case 'null':
 
             // If the value is a boolean or null, convert it to a string. Note:
             // typeof null does not produce 'null'. The case is included here in
             // the remote chance that this gets fixed someday.
 
-            return String(value);
+          return String(value);
 
             // If the type is 'object', we might be dealing with an object or an array or
             // null.
 
-          case 'object':
+        case 'object':
 
             // Due to a specification blunder in ECMAScript, typeof null is 'object',
             // so watch out for that case.
 
-            if (!value) {
-              return 'null';
-            }
+          if (!value) {
+            return 'null';
+          }
 
             // Make an array to hold the partial results of stringifying this object value.
 
-            gap += indent;
-            partial = [];
+          gap += indent;
+          partial = [];
 
             // If the object has a dontEnum length property, we'll treat it as an array.
 
-            if (typeof value.length === 'number' && !(value.propertyIsEnumerable('length'))) {
+          if (typeof value.length === 'number' && !(value.propertyIsEnumerable('length'))) {
 
               // The object is an array. Stringify every element. Use null as a placeholder
               // for non-JSON values.
 
-              length = value.length;
-              for (i = 0; i < length; i += 1) {
-                partial[i] = str(i, value) || 'null';
-              }
+            length = value.length;
+            for (i = 0; i < length; i += 1) {
+              partial[i] = str(i, value) || 'null';
+            }
 
               // Join all of the elements together, separated with commas, and wrap them in
               // brackets.
 
-              v = partial.length === 0 ? '[]' :
-                gap ? '[\n' + gap + partial.join(',\n' + gap) +
-                '\n' + mind + ']' :
-                '[' + partial.join(',') + ']';
-              gap = mind;
-              return v;
-            }
+            v = partial.length === 0 ? '[]' :
+                gap ? `[\n${gap}${partial.join(`,\n${gap}`)
+                }\n${mind}]` :
+                `[${partial.join(',')}]`;
+            gap = mind;
+            return v;
+          }
 
             // If the replacer is an array, use it to select the members to be stringified.
 
-            if (typeof rep === 'object') {
-              length = rep.length;
-              for (i = 0; i < length; i += 1) {
-                k = rep[i];
-                if (typeof k === 'string') {
-                  v = str(k, value, rep);
-                  if (v) {
-                    partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                  }
-                }
-              }
-            } else {
-
-              // Otherwise, iterate through all of the keys in the object.
-
-              for (k in value) {
+          if (typeof rep === 'object') {
+            length = rep.length;
+            for (i = 0; i < length; i += 1) {
+              k = rep[i];
+              if (typeof k === 'string') {
                 v = str(k, value, rep);
                 if (v) {
                   partial.push(quote(k) + (gap ? ': ' : ':') + v);
                 }
               }
             }
+          } else {
+
+              // Otherwise, iterate through all of the keys in the object.
+
+            for (k in value) {
+              v = str(k, value, rep);
+              if (v) {
+                partial.push(quote(k) + (gap ? ': ' : ':') + v);
+              }
+            }
+          }
 
             // Join all of the member texts together, separated with commas,
             // and wrap them in braces.
 
-            v = partial.length === 0 ? '{}' :
-              gap ? '{\n' + gap + partial.join(',\n' + gap) +
-              '\n' + mind + '}' :
-              '{' + partial.join(',') + '}';
-            gap = mind;
-            return v;
+          v = partial.length === 0 ? '{}' :
+              gap ? `{\n${gap}${partial.join(`,\n${gap}`)
+              }\n${mind}}` :
+              `{${partial.join(',')}}`;
+          gap = mind;
+          return v;
         }
       }
 
@@ -444,7 +444,7 @@
             // in JavaScript: it can begin a block or an object literal. We wrap the text
             // in parens to eliminate the ambiguity.
 
-            j = eval('(' + text + ')');
+            j = eval(`(${text})`);
 
             // In the optional third stage, we recursively walk the new structure, passing
             // each name/value pair to a reviver function for possible transformation.
@@ -515,20 +515,20 @@
         var r = new Date();
         r.setTime(r.getTime());
         return r;
-      }
+      };
       var cookify = function(c_key, c_val) {
         var i, key, val, r = [],
           opt = (arguments.length > 2) ? arguments[2] : {};
-        r.push(esc(c_key) + '=' + esc(c_val));
+        r.push(`${esc(c_key)}=${esc(c_val)}`);
         for (i = 0; i < KEYS.length; i++) {
           key = KEYS[i];
           if (val = opt[key])
-            r.push(key + '=' + val);
+            r.push(`${key}=${val}`);
         }
         if (opt.secure)
           r.push('secure');
         return r.join('; ');
-      }
+      };
       var alive = function() {
         var k = '__EC_TEST__',
           v = new Date();
@@ -536,7 +536,7 @@
         this.set(k, v);
         this.enabled = (this.remove(k) == v);
         return this.enabled;
-      }
+      };
       me = {
         set: function(key, val) {
           var opt = (arguments.length > 2) ? arguments[2] : {}, now = get_now(),
@@ -557,7 +557,7 @@
         has: function(key) {
           key = esc(key);
           var c = doc.cookie,
-            ofs = c.indexOf(key + '='),
+            ofs = c.indexOf(`${key}=`),
             len = ofs + key.length + 1,
             sub = c.substring(0, key.length);
           return ((!ofs && key != sub) || ofs < 0) ? false : true;
@@ -565,7 +565,7 @@
         get: function(key) {
           key = esc(key);
           var c = doc.cookie,
-            ofs = c.indexOf(key + '='),
+            ofs = c.indexOf(`${key}=`),
             len = ofs + key.length + 1,
             sub = c.substring(0, key.length),
             end;
@@ -626,7 +626,7 @@
     })();
     empty = function() {};
     esc = function(str) {
-      return 'PS' + str.replace(/_/g, '__').replace(/ /g, '_s');
+      return `PS${str.replace(/_/g, '__').replace(/ /g, '_s')}`;
     };
     C = {
       search_order: ['localstorage', 'whatwg_db', 'globalstorage', 'gears', 'ie', 'flash', 'cookie'],
@@ -747,7 +747,7 @@
             this.db.transaction(fn);
           },
           init: function() {
-            this.db = openDatabase(this.name, C.sql.version, this.o.about || ("Persistent storage for " + this.name), this.o.size || B.whatwg_db.size);
+            this.db = openDatabase(this.name, C.sql.version, this.o.about || (`Persistent storage for ${this.name}`), this.o.size || B.whatwg_db.size);
           },
           get: function(key, fn, scope) {
             var sql = C.sql.get;
@@ -812,7 +812,7 @@
             return esc(this.name) + esc(key);
           },
           init: function() {
-            alert('domain = ' + this.o.domain);
+            alert(`domain = ${this.o.domain}`);
             this.store = globalStorage[this.o.domain];
           },
           get: function(key, fn, scope) {
@@ -968,7 +968,7 @@
           remove: function(key, val, fn, scope) {
             var val;
             key = this.key(key);
-            val = ec.remove(key)
+            val = ec.remove(key);
             if (fn)
               fn.call(scope || this, val != null, val);
           }
@@ -1069,7 +1069,7 @@
         o = o || {};
         this.name = name;
         o.domain = o.domain || location.host || 'localhost';
-        o.domain = o.domain.replace(/:\d+$/, '')
+        o.domain = o.domain.replace(/:\d+$/, '');
         this.o = o;
         o.expires = o.expires || 365 * 2;
         o.path = o.path || '/';
@@ -1127,7 +1127,7 @@
     if (redirectUrl) {
       this.setAttribute('redirectUrl', redirectUrl);
     }
-  }
+  };
   deconcept.SWFObject.prototype = {
     useExpressInstall: function(path) {
       this.xiSWFPath = !path ? "expressinstall.swf" : path;
@@ -1159,7 +1159,7 @@
       var key;
       var variables = this.getVariables();
       for (key in variables) {
-        variablePairs.push(key + "=" + variables[key]);
+        variablePairs.push(`${key}=${variables[key]}`);
       }
       return variablePairs;
     },
@@ -1170,15 +1170,15 @@
           this.addVariable("MMplayerType", "PlugIn");
           this.setAttribute('swf', this.xiSWFPath);
         }
-        swfNode = '<embed type="application/x-shockwave-flash" src="' + this.getAttribute('swf') + '" width="' + this.getAttribute('width') + '" height="' + this.getAttribute('height') + '"';
-        swfNode += ' id="' + this.getAttribute('id') + '" name="' + this.getAttribute('id') + '" ';
+        swfNode = `<embed type="application/x-shockwave-flash" src="${this.getAttribute('swf')}" width="${this.getAttribute('width')}" height="${this.getAttribute('height')}"`;
+        swfNode += ` id="${this.getAttribute('id')}" name="${this.getAttribute('id')}" `;
         var params = this.getParams();
         for (var key in params) {
-          swfNode += [key] + '="' + params[key] + '" ';
+          swfNode += `${[key]}="${params[key]}" `;
         }
         var pairs = this.getVariablePairs().join("&");
         if (pairs.length > 0) {
-          swfNode += 'flashvars="' + pairs + '"';
+          swfNode += `flashvars="${pairs}"`;
         }
         swfNode += '/>';
       } else {
@@ -1186,15 +1186,15 @@
           this.addVariable("MMplayerType", "ActiveX");
           this.setAttribute('swf', this.xiSWFPath);
         }
-        swfNode = '<object id="' + this.getAttribute('id') + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + this.getAttribute('width') + '" height="' + this.getAttribute('height') + '">';
-        swfNode += '<param name="movie" value="' + this.getAttribute('swf') + '" />';
+        swfNode = `<object id="${this.getAttribute('id')}" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="${this.getAttribute('width')}" height="${this.getAttribute('height')}">`;
+        swfNode += `<param name="movie" value="${this.getAttribute('swf')}" />`;
         var params = this.getParams();
         for (var key in params) {
-          swfNode += '<param name="' + key + '" value="' + params[key] + '" />';
+          swfNode += `<param name="${key}" value="${params[key]}" />`;
         }
         var pairs = this.getVariablePairs().join("&");
         if (pairs.length > 0) {
-          swfNode += '<param name="flashvars" value="' + pairs + '" />';
+          swfNode += `<param name="flashvars" value="${pairs}" />`;
         }
         swfNode += "</object>";
       }
@@ -1206,7 +1206,7 @@
         if (this.installedVer.versionIsValid(expressInstallReqVer) && !this.installedVer.versionIsValid(this.getAttribute('version'))) {
           this.setAttribute('doExpressInstall', true);
           this.addVariable("MMredirectURL", escape(this.getAttribute('xiRedirectUrl')));
-          document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+          document.title = `${document.title.slice(0, 47)} - Flash Player Installation`;
           this.addVariable("MMdoctitle", document.title);
         }
       }
@@ -1214,14 +1214,12 @@
         var n = (typeof elementId == 'string') ? document.getElementById(elementId) : elementId;
         n.innerHTML = this.getSWFHTML();
         return true;
-      } else {
-        if (this.getAttribute('redirectUrl') != "") {
-          document.location.replace(this.getAttribute('redirectUrl'));
-        }
+      } else if (this.getAttribute('redirectUrl') != "") {
+        document.location.replace(this.getAttribute('redirectUrl'));
       }
       return false;
     }
-  }
+  };
   deconcept.SWFObjectUtil.getPlayerVersion = function() {
     var PlayerVersion = new deconcept.PlayerVersion([0, 0, 0]);
     if (navigator.plugins && navigator.mimeTypes.length) {
@@ -1251,12 +1249,12 @@
       }
     }
     return PlayerVersion;
-  }
+  };
   deconcept.PlayerVersion = function(arrVersion) {
     this.major = arrVersion[0] != null ? parseInt(arrVersion[0]) : 0;
     this.minor = arrVersion[1] != null ? parseInt(arrVersion[1]) : 0;
     this.rev = arrVersion[2] != null ? parseInt(arrVersion[2]) : 0;
-  }
+  };
   deconcept.PlayerVersion.prototype.versionIsValid = function(fv) {
     if (this.major < fv.major) return false;
     if (this.major > fv.major) return true;
@@ -1264,7 +1262,7 @@
     if (this.minor > fv.minor) return true;
     if (this.rev < fv.rev) return false;
     return true;
-  }
+  };
   deconcept.util = {
     getRequestParameter: function(param) {
       var q = document.location.search || document.location.hash;
@@ -1278,7 +1276,7 @@
       }
       return "";
     }
-  }
+  };
   deconcept.SWFObjectUtil.cleanupSWFs = function() {
     var objects = document.getElementsByTagName("OBJECT");
     for (var i = 0; i < objects.length; i++) {
@@ -1289,20 +1287,20 @@
         }
       }
     }
-  }
+  };
   if (deconcept.SWFObject.doPrepUnload) {
     deconcept.SWFObjectUtil.prepUnload = function() {
       __flash_unloadHandler = function() {};
       __flash_savedUnloadHandler = function() {};
       window.attachEvent("onunload", deconcept.SWFObjectUtil.cleanupSWFs);
-    }
+    };
     window.attachEvent("onbeforeunload", deconcept.SWFObjectUtil.prepUnload);
   }
   if (Array.prototype.push == null) {
     Array.prototype.push = function(item) {
       this[this.length] = item;
       return this.length;
-    }
+    };
   }
   var getQueryParamValue = deconcept.util.getRequestParameter;
   var FlashObject = deconcept.SWFObject;
@@ -1375,12 +1373,12 @@
     outargs[2] = null == outargs[2] ? defaultargs.failure : outargs[2];
 
     applyto(outargs[0], outargs[1], outargs[2]);
-  }
+  };
 
   var eventSupported = function(event) {
     var element = document.createElement('i');
     return event in element || element.setAttribute && element.setAttribute(event, "return;") || false;
-  }
+  };
 
   var __is_ready = false;
   var __ready_list = [];
@@ -1389,7 +1387,7 @@
 
   _getHostPrefix = function() {
     return $fh.app_props.host + boxprefix;
-  }
+  };
 
   var __ready = function() {
     if (!__is_ready) {
@@ -1462,13 +1460,13 @@
   //Contains the target element and success function for $fh.map functions
   var _mapLoadSuccessParameters = [];
   //Flag to show if a map script is loading or not.
-  var _mapScriptLoading = false; 
+  var _mapScriptLoading = false;
   var _loadMapScript = function() {
     var script = document.createElement("script");
     script.type = "text/javascript";
     var protocol = document.location.protocol;
     protocol = (protocol === "http:" || protocol === "https:") ? protocol : "https:";
-    script.src = protocol + "//maps.google.com/maps/api/js?sensor=true&callback=$fh._mapLoaded";
+    script.src = `${protocol}//maps.google.com/maps/api/js?sensor=true&callback=$fh._mapLoaded`;
     document.body.appendChild(script);
   };
 
@@ -1516,7 +1514,7 @@
     ,
     data: function(p, s, f) {
       if (!$fh._persist) {
-        $fh._persist = new Persist.Store('FH' + $fh.app_props.appid, {
+        $fh._persist = new Persist.Store(`FH${$fh.app_props.appid}`, {
           swf_path: '/static/c/start/swf/persist.swf'
         });
       }
@@ -1654,16 +1652,16 @@
       if (!_mapScriptLoaded) {
 
         //Queue the success function
-        if(typeof(s) === 'function'){
-            _mapLoadSuccessParameters.push({target: target, successFunction: s, mOptions: p});    
+        if (typeof(s) === 'function') {
+          _mapLoadSuccessParameters.push({target: target, successFunction: s, mOptions: p});
         }
-        
+
 
         $fh._mapLoaded = function() {
           _mapScriptLoaded = true;
           var mapLoadSuccessParameter = _mapLoadSuccessParameters.shift();
 
-          while(typeof(mapLoadSuccessParameter) !== 'undefined'){
+          while (typeof(mapLoadSuccessParameter) !== 'undefined') {
             var mOptions = mapLoadSuccessParameter.mOptions;
             var mapOptions = {};
             mapOptions.zoom = mOptions.zoom ? mOptions.zoom : 8;
@@ -1671,16 +1669,16 @@
             mapOptions.mapTypeId = google.maps.MapTypeId.ROADMAP;
 
             var map = new google.maps.Map(mapLoadSuccessParameter.target, mapOptions);
-            mapLoadSuccessParameter.successFunction({map: map});  
+            mapLoadSuccessParameter.successFunction({map: map});
             mapLoadSuccessParameter = _mapLoadSuccessParameters.shift();
           }
         };
 
-        if(!_mapScriptLoading){
-            _mapScriptLoading = true;
-            _loadMapScript();    
+        if (!_mapScriptLoading) {
+          _mapScriptLoading = true;
+          _loadMapScript();
         }
-        
+
         //after 20 secs, if the map script is still not loaded, run the fail function
         setTimeout(function() {
           if (!_mapScriptLoaded) {
@@ -1783,7 +1781,7 @@
             f('no_audio');
           }
         }
-      }
+      };
 
       acts[p.act] ? acts[p.act]() : f('data_badact', p);
     }
@@ -1801,83 +1799,83 @@
         __ready_list.push(s);
       }
     }
-  }
+  };
 
   $fh.send = function() {
     handleargs(arguments, {
       type: 'email'
     }, $fh.__dest__.send);
-  }
+  };
 
   $fh.notify = function() {
     handleargs(arguments, {
       type: 'vibrate'
     }, $fh.__dest__.notify);
-  }
+  };
 
   $fh.contacts = function() {
     handleargs(arguments, {
       act: 'list'
     }, $fh.__dest__.contacts);
-  }
+  };
 
   $fh.acc = function() {
     handleargs(arguments, {
       act: 'register',
       interval: 0
     }, $fh.__dest__.acc);
-  }
+  };
 
   $fh.geo = function() {
     handleargs(arguments, {
       act: 'register',
       interval: 0
     }, $fh.__dest__.geo);
-  }
+  };
 
   $fh.cam = function() {
     handleargs(arguments, {
       act: 'picture'
     }, $fh.__dest__.cam);
-  }
+  };
 
   $fh.data = function() {
     handleargs(arguments, {
       act: 'load'
     }, $fh.__dest__.data);
-  }
+  };
 
   $fh.log = function() {
     handleargs(arguments, {
       message: 'none'
     }, $fh.__dest__.log);
-  }
+  };
 
   $fh.device = function() {
     handleargs(arguments, {}, $fh.__dest__.device);
-  }
+  };
 
   $fh.listen = function() {
     handleargs(arguments, {
       act: 'add'
     }, $fh.__dest__.listen);
-  }
+  };
 
   $fh.ori = function() {
     handleargs(arguments, {}, $fh.__dest__.ori);
-  }
+  };
 
   $fh.map = function() {
     handleargs(arguments, {}, $fh.__dest__.map);
-  }
+  };
 
   $fh.audio = function() {
     handleargs(arguments, {}, $fh.__dest__.audio);
-  }
+  };
 
   $fh.webview = function() {
     handleargs(arguments, {}, $fh.__dest__.webview);
-  }
+  };
 
   $fh.ready = function() {
     handleargs(arguments, {}, $fh.__dest__.ready);
@@ -1908,16 +1906,16 @@
         s(destEnv);
       });
     });
-  }
+  };
 
   $fh.device = function() {
     handleargs(arguments, {}, function(p, s, f) {
 
     });
-  }
+  };
 
 
-  // defaults: 
+  // defaults:
   //    {act:'get'} -> {geoip:{...}}
   //  failures: geoip_badact
   //
@@ -1929,9 +1927,9 @@
         var data = {
           instance: $fh.app_props.appid,
           domain: $fh.cloud_props.domain
-        }
+        };
         $fh.__ajax({
-          "url": _getHostPrefix() + "act/wid/geoip/resolve",
+          "url": `${_getHostPrefix()}act/wid/geoip/resolve`,
           "type": "POST",
           "data": JSON.stringify(data),
           "success": function(res) {
@@ -1971,10 +1969,10 @@
           error: function() {
             f();
           }
-        })
+        });
       } else {
         $fh.__ajax({
-          "url": _getHostPrefix() + "act/wid/web",
+          "url": `${_getHostPrefix()}act/wid/web`,
           "type": "POST",
           "data": JSON.stringify(p),
           "success": function(res) {
@@ -1995,14 +1993,12 @@
       var old_url = p.url;
       $fh.__webview_win = window.open(p.url, '_blank');
       s("opened");
-    } else {
-      if (p.act === 'close') {
-        if (typeof $fh.__webview_win != 'undefined') {
-          $fh.__webview_win.close();
-          $fh.__webview_win = undefined;
-        }
-        s("closed");
+    } else if (p.act === 'close') {
+      if (typeof $fh.__webview_win != 'undefined') {
+        $fh.__webview_win.close();
+        $fh.__webview_win = undefined;
       }
+      s("closed");
     }
   };
 
@@ -2012,7 +2008,7 @@
         try {
           s();
         } catch (e) {
-          console.log("Error during $fh.ready. Skip. Error = " + e.message);
+          console.log(`Error during $fh.ready. Skip. Error = ${e.message}`);
         }
       } else {
         __ready_list.push(s);
@@ -2042,8 +2038,8 @@
             s(resdata);
           }, function(err) {
             f('error_geo', {}, p);
-          }, { timeout: 30000, enableHighAccuracy: true })
-        };
+          }, { timeout: 30000, enableHighAccuracy: true });
+        }
         if (p.interval > 0) {
           var internalWatcher = navigator.geolocation.watchPosition(function(position) {
             var coords = position.coords;
@@ -2063,12 +2059,12 @@
             frequency: p.interval
           });
           $fh.__dest__._geoWatcher = internalWatcher;
-        };
+        }
       } else if (p.act == "unregister") {
         if ($fh.__dest__._geoWatcher) {
           navigator.geolocation.clearWatch($fh.__dest__._geoWatcher);
           $fh.__dest__._geoWatcher = undefined;
-        };
+        }
         s();
       } else {
         f('geo_badact', {}, p);
@@ -2085,7 +2081,7 @@
       z: (Math.random() * 4) - 2,
       when: new Date().getTime()
     });
-  }
+  };
 
   root.$fh = $fh;
 

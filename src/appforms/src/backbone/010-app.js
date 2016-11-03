@@ -1,9 +1,9 @@
 // Namespace
-var App=(function(module){
-    module.views={};
-    module.models={};
-    module.collections={};
-    module.config={};
+var App=(function(module) {
+  module.views={};
+  module.models={};
+  module.collections={};
+  module.config={};
 
-    return module;
+  return module;
 })(App || {});

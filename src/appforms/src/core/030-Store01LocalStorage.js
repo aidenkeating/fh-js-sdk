@@ -19,8 +19,8 @@ appForm.stores = function(module) {
   };
   //read a model from local storage
   LocalStorage.prototype.read = function(model, cb) {
-    if(typeof(model) === "object"){
-      if (model.get("_type") === "offlineTest"){
+    if (typeof(model) === "object") {
+      if (model.get("_type") === "offlineTest") {
         return cb(null, {});
       }
     }
@@ -73,8 +73,8 @@ appForm.stores = function(module) {
       return fileSystem.isFileSystemAvailable();
     };
   };
-  LocalStorage.prototype.saveFile = function(fileName, fileToSave, cb){
-    if(!_fileSystemAvailable()){
+  LocalStorage.prototype.saveFile = function(fileName, fileToSave, cb) {
+    if (!_fileSystemAvailable()) {
       return cb("File system not available");
     }
 
@@ -84,20 +84,20 @@ appForm.stores = function(module) {
       'val': fileToSave
     }, cb, cb);
   };
-  LocalStorage.prototype.updateTextFile = function(key, dataStr, cb){
+  LocalStorage.prototype.updateTextFile = function(key, dataStr, cb) {
     _fhData({
       'act': 'save',
       'key': key,
       'val': dataStr
     }, cb, cb);
   };
-  LocalStorage.prototype.readFile = function(fileName, cb){
+  LocalStorage.prototype.readFile = function(fileName, cb) {
     _fhData({
       'act': 'loadFile',
       'key': fileName
     }, cb, cb);
   };
-  LocalStorage.prototype.readFileText = function(fileName, cb){
+  LocalStorage.prototype.readFileText = function(fileName, cb) {
     _fhData({
       'act': 'load',
       'key': fileName
@@ -107,7 +107,7 @@ appForm.stores = function(module) {
     return fileSystem.isFileSystemAvailable();
   };
 
-  function _getKey(key){
+  function _getKey(key) {
     return typeof(key.getLocalId) === "function" ? key.getLocalId() : key;
   }
   //use different local storage model according to environment
@@ -121,11 +121,11 @@ appForm.stores = function(module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     //allow for no $fh api in studio
-    if(! $fh || ! $fh.data) {
+    if (! $fh || ! $fh.data) {
       return success();
     }
 
-    $fh.data(options, function (res) {
+    $fh.data(options, function(res) {
       if (typeof res === 'undefined') {
         res = {
           key: options.key,
@@ -157,7 +157,7 @@ appForm.stores = function(module) {
 
         var filename = hash;
 
-        if(key.indexOf("filePlaceHolder") === -1){
+        if (key.indexOf("filePlaceHolder") === -1) {
           filename += ".txt";
         }
 
@@ -255,10 +255,8 @@ appForm.stores = function(module) {
       return load(options.key);
     } else if (options.act === 'loadFile') {
       return loadFile(options.key);
-    } else {
-      if (typeof failure !== 'undefined') {
-        return failure('Action [' + options.act + '] is not defined', {});
-      }
+    } else if (typeof failure !== 'undefined') {
+      return failure(`Action [${options.act}] is not defined`, {});
     }
   }
   module.localStorage = new LocalStorage();

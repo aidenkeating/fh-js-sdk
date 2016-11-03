@@ -6,20 +6,20 @@ var handleError = require("./handleError");
 var consts = require("./constants");
 var appProps = require("./appProps");
 
-module.exports = function(opts, success, fail){
+module.exports = function(opts, success, fail) {
   logger.debug("mbaas is called.");
-  if(!fail){
-    fail = function(msg, error){
-      console.debug(msg + ":" + JSON.stringify(error));
+  if (!fail) {
+    fail = function(msg, error) {
+      console.debug(`${msg}:${JSON.stringify(error)}`);
     };
   }
 
   var mbaas = opts.service;
   var params = opts.params;
 
-  cloud.ready(function(err, cloudHost){
+  cloud.ready(function(err, cloudHost) {
     logger.debug("Calling mbaas now");
-    if(err){
+    if (err) {
       return fail(err.message, err);
     } else {
       var cloud_host = cloud.getCloudHost();
@@ -35,7 +35,7 @@ module.exports = function(opts, success, fail){
         "contentType": "application/json",
         "timeout": opts.timeout || appProps.timeout,
         "success": success,
-        "error": function(req, statusText, error){
+        "error": function(req, statusText, error) {
           return handleError(fail, req, statusText, error);
         }
       });

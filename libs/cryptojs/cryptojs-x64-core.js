@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function (undefined) {
+(function(undefined) {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -31,7 +31,7 @@
      *
      *     var x64Word = CryptoJS.x64.Word.create(0x00010203, 0x04050607);
      */
-    init: function (high, low) {
+    init: function(high, low) {
       this.high = high;
       this.low = low;
     }
@@ -229,7 +229,7 @@
      *         CryptoJS.x64.Word.create(0x18191a1b, 0x1c1d1e1f)
      *     ], 10);
      */
-    init: function (words, sigBytes) {
+    init: function(words, sigBytes) {
       words = this.words = words || [];
 
       if (sigBytes != undefined) {
@@ -248,7 +248,7 @@
      *
      *     var x32WordArray = x64WordArray.toX32();
      */
-    toX32: function () {
+    toX32: function() {
       // Shortcuts
       var x64Words = this.words;
       var x64WordsLength = x64Words.length;
@@ -273,7 +273,7 @@
      *
      *     var clone = x64WordArray.clone();
      */
-    clone: function () {
+    clone: function() {
       var clone = Base.clone.call(this);
 
       // Clone "words" array

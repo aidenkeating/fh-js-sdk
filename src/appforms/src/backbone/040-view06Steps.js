@@ -2,10 +2,10 @@ StepsView = Backbone.View.extend({
   className: 'fh_appform_progress_steps col-xs-12',
 
   templates: {
-      table: '<ul class="pagination pagination-lg col-xs-12"></ul>',
-      step: '<li data-index="<%= index %>"><span class="number_container text-center" style="width: <%= width %>%;"><%= step_num %></span></li>',
-      page_title: '<div class="col-xs-12 text-center"><h3 class="fh_appform_page_title"></h3></div>',
-      page_description: '<div class="col-xs-12 text-center"><h3 class="fh_appform_page_description"></h3></div>'
+    table: '<ul class="pagination pagination-lg col-xs-12"></ul>',
+    step: '<li data-index="<%= index %>"><span class="number_container text-center" style="width: <%= width %>%;"><%= step_num %></span></li>',
+    page_title: '<div class="col-xs-12 text-center"><h3 class="fh_appform_page_title"></h3></div>',
+    page_description: '<div class="col-xs-12 text-center"><h3 class="fh_appform_page_description"></h3></div>'
   },
   events: {
     'click li': 'switchPage'
@@ -28,7 +28,7 @@ StepsView = Backbone.View.extend({
     var displayedPages = this.parentView.getDisplayedPages();
     var width = 100;
 
-    if(displayedPages.length > 0){
+    if (displayedPages.length > 0) {
       width = 100 / displayedPages.length;
     }
 
@@ -36,10 +36,10 @@ StepsView = Backbone.View.extend({
       displayedPages.forEach(function(pageId, index) {
         var pageModel = self.parentView.getPageViewById(pageId).model;
         var item = $(_.template(self.templates.step)( {
-            step_name: pageModel.getName(),
-            step_num: index + 1,
-            index: self.parentView.getPageIndexById(pageId),
-            width: width
+          step_name: pageModel.getName(),
+          step_num: index + 1,
+          index: self.parentView.getPageIndexById(pageId),
+          width: width
         }));
         $(table).append(item);
       });
@@ -49,12 +49,12 @@ StepsView = Backbone.View.extend({
     this.$el.append(self.templates.page_description);
     return this;
   },
-  switchPage: function(e){
+  switchPage: function(e) {
     var index = 0;
 
-    if(e && $(e.currentTarget).data()){
+    if (e && $(e.currentTarget).data()) {
       index = $(e.currentTarget).data().index;
-      if(typeof(index) !== "undefined"){
+      if (typeof(index) !== "undefined") {
         this.parentView.goToPage(index, false);
       }
     }
@@ -70,18 +70,18 @@ StepsView = Backbone.View.extend({
     var pageName = pageModel.getName();
     var pageDescription = pageModel.getDescription();
 
-    self.$el.find('li:eq(' + displayIndex + ')').addClass('active');
+    self.$el.find(`li:eq(${displayIndex})`).addClass('active');
 
     var hasCustomPageName = pageName.length !== 0;
     var displayedPages = this.parentView.getDisplayedPages();
     if (displayedPages.length > 1 || hasCustomPageName) {
-      if (!hasCustomPageName){
-        pageName = "Page " + (displayIndex + 1);
+      if (!hasCustomPageName) {
+        pageName = `Page ${displayIndex + 1}`;
       }
       self.$el.find('.fh_appform_page_title').html(pageName);
     }
 
-    if(pageDescription.length > 0){
+    if (pageDescription.length > 0) {
       self.$el.find('.fh_appform_page_description').html(pageDescription);
     } else {
       //If there is no description, hide it.

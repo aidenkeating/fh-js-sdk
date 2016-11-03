@@ -42,7 +42,7 @@ appForm.models = function(module) {
     params = params ? params : {};
     var sub = new Submission(form, params);
 
-    if(params.submissionId){
+    if (params.submissionId) {
       appForm.models.submissions.updateSubmissionWithoutSaving(sub);
     }
     return sub;
@@ -65,7 +65,7 @@ appForm.models = function(module) {
           cb(err);
         } else {
           $fh.forms.log.d("Submission fromLocal. Load from local sucessfull: ", localId);
-          if(submission.isDownloadSubmission()){
+          if (submission.isDownloadSubmission()) {
             return cb(null, submission);
           } else {
             submission.reloadForm(function(err, res) {
@@ -112,7 +112,7 @@ appForm.models = function(module) {
       this.transactionMode = false;
     } else {
       this.set('appId', appForm.config.get('appId'));
-      if(params.submissionId){
+      if (params.submissionId) {
         this.set('downloadSubmission', true);
         this.setRemoteSubmissionId(params.submissionId);
       } else {
@@ -171,7 +171,7 @@ appForm.models = function(module) {
     });
   };
 
-  Submission.prototype.performValidation = function(cb){
+  Submission.prototype.performValidation = function(cb) {
     var self = this;
     self.getForm(function(err, form) {
       if (err) {
@@ -187,11 +187,11 @@ appForm.models = function(module) {
   /**
    * Validate the submission only.
    */
-  Submission.prototype.validateSubmission = function(cb){
+  Submission.prototype.validateSubmission = function(cb) {
     var self = this;
 
-    self.performValidation(function(err, res){
-      if(err){
+    self.performValidation(function(err, res) {
+      if (err) {
         return cb(err);
       }
       var validation = res.validation;
@@ -258,26 +258,24 @@ appForm.models = function(module) {
       cb(null, null);
     }
   };
-  Submission.prototype.getFormId = function(){
+  Submission.prototype.getFormId = function() {
     return this.get("formId");
   };
   /**
    * If a submission is a download submission, the JSON definition of the form
    * that it was submitted against is contained in the submission.
    */
-  Submission.prototype.getFormSubmittedAgainst = function(){
+  Submission.prototype.getFormSubmittedAgainst = function() {
     return this.get("formSubmittedAgainst");
   };
-  Submission.prototype.getDownloadTask = function(cb){
+  Submission.prototype.getDownloadTask = function(cb) {
     var self = this;
     $fh.forms.log.d("getDownloadTask");
-    if(self.isDownloadSubmission()){
+    if (self.isDownloadSubmission()) {
       self.getUploadTask(cb);
-    } else {
-      if(cb && typeof(cb) === 'function'){
-        $fh.forms.log.e("Submission is not a download submission");
-        return cb("Submission is not a download submission");
-      }
+    } else if (cb && typeof(cb) === 'function') {
+      $fh.forms.log.e("Submission is not a download submission");
+      return cb("Submission is not a download submission");
     }
   };
   Submission.prototype.cancelUploadTask = function(cb) {
@@ -296,18 +294,18 @@ appForm.models = function(module) {
   Submission.prototype.setUploadTaskId = function(utId) {
     this.set('uploadTaskId', utId);
   };
-  Submission.prototype.isInProgress = function(){
+  Submission.prototype.isInProgress = function() {
     return this.get("status") === "inprogress";
   };
-  Submission.prototype.isDownloaded = function(){
+  Submission.prototype.isDownloaded = function() {
     return this.get("status") === "downloaded";
   };
-  Submission.prototype.isSubmitted = function(){
+  Submission.prototype.isSubmitted = function() {
     return this.get("status") === "submitted";
   };
   Submission.prototype.submitted = function(cb) {
     var self = this;
-    if(self.isDownloadSubmission()){
+    if (self.isDownloadSubmission()) {
       var errMsg = "Downloaded submissions should not call submitted function.";
       $fh.forms.log.e(errMsg);
       return cb(errMsg);
@@ -319,37 +317,37 @@ appForm.models = function(module) {
     self.set('submittedDate', appForm.utils.getTime());
     self.changeStatus(targetStatus, function(err) {
       if (err) {
-        $fh.forms.log.e("Error setting submitted status " + err);
+        $fh.forms.log.e(`Error setting submitted status ${err}`);
         cb(err);
       } else {
-        $fh.forms.log.d("Submitted status set for submission " + self.get('submissionId') + " with localId " + self.getLocalId());
+        $fh.forms.log.d(`Submitted status set for submission ${self.get('submissionId')} with localId ${self.getLocalId()}`);
         self.emit('submitted', self.get('submissionId'));
         cb(null, null);
       }
     });
   };
-  Submission.prototype.queued = function(cb){
+  Submission.prototype.queued = function(cb) {
     var self = this;
-    if(self.isDownloadSubmission()){
+    if (self.isDownloadSubmission()) {
       var errMsg = "Downloaded submissions should not call queued function.";
       $fh.forms.log.e(errMsg);
       return cb(errMsg);
     }
 
-     var targetStatus = 'queued';
-     self.set('queuedDate', appForm.utils.getTime());
-     self.changeStatus(targetStatus, function(err) {
+    var targetStatus = 'queued';
+    self.set('queuedDate', appForm.utils.getTime());
+    self.changeStatus(targetStatus, function(err) {
       if (err) {
-        $fh.forms.log.e("Error setting queued status " + err);
+        $fh.forms.log.e(`Error setting queued status ${err}`);
         cb(err);
       } else {
-        $fh.forms.log.d("Queued status set for submission " + self.get('submissionId') + " with localId " + self.getLocalId());
+        $fh.forms.log.d(`Queued status set for submission ${self.get('submissionId')} with localId ${self.getLocalId()}`);
         self.emit('queued', self.get('submissionId'));
         cb(null, self);
       }
     });
   };
-  Submission.prototype.downloaded = function(cb){
+  Submission.prototype.downloaded = function(cb) {
     $fh.forms.log.d("Submission Downloaded called");
     var that = this;
     var targetStatus = 'downloaded';
@@ -358,10 +356,10 @@ appForm.models = function(module) {
     that.pruneNullValues();
     that.changeStatus(targetStatus, function(err) {
       if (err) {
-        $fh.forms.log.e("Error setting downloaded status " + err);
+        $fh.forms.log.e(`Error setting downloaded status ${err}`);
         cb(err);
       } else {
-        $fh.forms.log.d("Downloaded status set for submission " + that.get('submissionId') + " with localId " + that.getLocalId());
+        $fh.forms.log.d(`Downloaded status set for submission ${that.get('submissionId')} with localId ${that.getLocalId()}`);
         that.emit('downloaded', that.get('submissionId'));
         cb(null, that);
       }
@@ -374,12 +372,12 @@ appForm.models = function(module) {
    *
    * @return {type}  description
    */
-  Submission.prototype.pruneNullValues = function(){
+  Submission.prototype.pruneNullValues = function() {
     var formFields = this.getFormFields();
 
-    for(var formFieldIndex = 0; formFieldIndex < formFields.length; formFieldIndex++){
+    for (var formFieldIndex = 0; formFieldIndex < formFields.length; formFieldIndex++) {
       formFields[formFieldIndex].fieldValues = formFields[formFieldIndex].fieldValues || [];
-      formFields[formFieldIndex].fieldValues = formFields[formFieldIndex].fieldValues.filter(function(fieldValue){
+      formFields[formFieldIndex].fieldValues = formFields[formFieldIndex].fieldValues.filter(function(fieldValue) {
         return fieldValue !== null && typeof(fieldValue) !== "undefined";
       });
     }
@@ -427,7 +425,7 @@ appForm.models = function(module) {
   Submission.prototype.genLocalId = function() {
     var lid = appForm.utils.localId(this);
     var formId = this.get('formId') || Math.ceil(Math.random() * 100000);
-    this.setLocalId(formId + '_' + lid);
+    this.setLocalId(`${formId}_${lid}`);
   };
   /**
    * change status and save the submission locally and register to submissions list.
@@ -444,8 +442,8 @@ appForm.models = function(module) {
       });
       this.saveLocal(cb);
     } else {
-      $fh.forms.log.e('Target status is not valid: ' + status);
-      cb('Target status is not valid: ' + status);
+      $fh.forms.log.e(`Target status is not valid: ${status}`);
+      cb(`Target status is not valid: ${status}`);
     }
   };
   Submission.prototype.upload = function(cb) {
@@ -462,12 +460,12 @@ appForm.models = function(module) {
           ut.set("error", null);
           ut.saveLocal(function(err) {
             if (err) {
-              $fh.forms.log.e("Error saving upload task: " + err);
+              $fh.forms.log.e(`Error saving upload task: ${err}`);
             }
           });
           self.emit("inprogress", ut);
           ut.on("progress", function(progress) {
-            $fh.forms.log.d("Emitting upload progress for submission: " + self.getLocalId() + JSON.stringify(progress));
+            $fh.forms.log.d(`Emitting upload progress for submission: ${self.getLocalId()}${JSON.stringify(progress)}`);
             self.emit("progress", progress);
           });
           cb(null, ut);
@@ -477,29 +475,29 @@ appForm.models = function(module) {
       return cb("Invalid Status to upload a form submission.");
     }
   };
-  Submission.prototype.download = function(cb){
+  Submission.prototype.download = function(cb) {
     var that = this;
-    $fh.forms.log.d("Starting download for submission: " + that.getLocalId());
+    $fh.forms.log.d(`Starting download for submission: ${that.getLocalId()}`);
     var targetStatus = "pending";
-    if(this.isStatusValid(targetStatus)){
+    if (this.isStatusValid(targetStatus)) {
       this.set("status", targetStatus);
       targetStatus = "inprogress";
-      if(this.isStatusValid(targetStatus)){
+      if (this.isStatusValid(targetStatus)) {
         this.set("status", targetStatus);
         //Status is valid, add the submission to the
         appForm.models.uploadManager.queueSubmission(that, function(err, downloadTask) {
-          if(err){
+          if (err) {
             return cb(err);
           }
           downloadTask.set("error", null);
           downloadTask.saveLocal(function(err) {
             if (err) {
-              $fh.forms.log.e("Error saving download task: " + err);
+              $fh.forms.log.e(`Error saving download task: ${err}`);
             }
           });
           that.emit("inprogress", downloadTask);
           downloadTask.on("progress", function(progress) {
-            $fh.forms.log.d("Emitting download progress for submission: " + that.getLocalId() + JSON.stringify(progress));
+            $fh.forms.log.d(`Emitting download progress for submission: ${that.getLocalId()}${JSON.stringify(progress)}`);
             that.emit("progress", progress);
           });
           return cb(null, downloadTask);
@@ -523,7 +521,7 @@ appForm.models = function(module) {
   Submission.prototype.getStatus = function() {
     return this.get('status');
   };
-  Submission.prototype.getErrorMessage = function(){
+  Submission.prototype.getErrorMessage = function() {
     return this.get('errorMessage', 'No Error');
   };
   /**
@@ -532,7 +530,7 @@ appForm.models = function(module) {
    * @return {Boolean}              [description]
    */
   Submission.prototype.isStatusValid = function(targetStatus) {
-    $fh.forms.log.d("isStatusValid. Target Status: " + targetStatus + " Current Status: " + this.get('status').toLowerCase());
+    $fh.forms.log.d(`isStatusValid. Target Status: ${targetStatus} Current Status: ${this.get('status').toLowerCase()}`);
     var status = this.get('status').toLowerCase();
     var nextStatus = statusMachine[status];
     if (nextStatus.indexOf(targetStatus) > -1) {
@@ -574,9 +572,9 @@ appForm.models = function(module) {
 
     var submissionFiles = self.getSubmissionFiles();
     for (var fieldValIndex = 0; fieldValIndex < submissionFiles.length; fieldValIndex++) {
-      if(submissionFiles[fieldValIndex].fileName){
+      if (submissionFiles[fieldValIndex].fileName) {
         tmpFileNames.push(submissionFiles[fieldValIndex].fileName);
-      } else if(submissionFiles[fieldValIndex].hashName){
+      } else if (submissionFiles[fieldValIndex].hashName) {
         tmpFileNames.push(submissionFiles[fieldValIndex].hashName);
       }
     }
@@ -586,7 +584,7 @@ appForm.models = function(module) {
 
   Submission.prototype.getSubmissionFiles = function() {
     var self = this;
-    $fh.forms.log.d("In getSubmissionFiles: " + self.getLocalId());
+    $fh.forms.log.d(`In getSubmissionFiles: ${self.getLocalId()}`);
     var submissionFiles = [];
 
     var formFields = self.getFormFields();
@@ -594,9 +592,9 @@ appForm.models = function(module) {
     for (var formFieldIndex = 0; formFieldIndex < formFields.length; formFieldIndex++) {
       var tmpFieldValues = formFields[formFieldIndex].fieldValues || [];
       for (var fieldValIndex = 0; fieldValIndex < tmpFieldValues.length; fieldValIndex++) {
-        if(tmpFieldValues[fieldValIndex] && tmpFieldValues[fieldValIndex].fileName){
+        if (tmpFieldValues[fieldValIndex] && tmpFieldValues[fieldValIndex].fileName) {
           submissionFiles.push(tmpFieldValues[fieldValIndex]);
-        } else if(tmpFieldValues[fieldValIndex] && tmpFieldValues[fieldValIndex].hashName){
+        } else if (tmpFieldValues[fieldValIndex] && tmpFieldValues[fieldValIndex].hashName) {
           submissionFiles.push(tmpFieldValues[fieldValIndex]);
         }
       }
@@ -624,12 +622,12 @@ appForm.models = function(module) {
     var inputValue = params.value;
     var index = params.index === undefined ? -1 : params.index;
 
-    if(!fieldId){
+    if (!fieldId) {
       return cb("Invalid parameters. fieldId is required");
     }
 
     //Transaction entries are not saved to memory, they are only saved when the transaction has completed.
-    function processTransaction(form, fieldModel){
+    function processTransaction(form, fieldModel) {
       if (!that.tmpFields[fieldId]) {
         that.tmpFields[fieldId] = [];
       }
@@ -651,13 +649,13 @@ appForm.models = function(module) {
     }
 
     //Direct entries are saved immediately to local storage when they are input.
-    function processDirectStore(form, fieldModel){
+    function processDirectStore(form, fieldModel) {
       var target = that.getInputValueObjectById(fieldId);
 
       //File already exists for this input, overwrite rather than create a new file
       //If pushing the value to the end of the list, then there will be no previous value
-      if(index > -1 && target.fieldValues[index]){
-        if(typeof(target.fieldValues[index].hashName) === "string"){
+      if (index > -1 && target.fieldValues[index]) {
+        if (typeof(target.fieldValues[index].hashName) === "string") {
           params.previousFile = target.fieldValues[index];
         } else {
           params.previousValue = target.fieldValues[index];
@@ -674,7 +672,7 @@ appForm.models = function(module) {
             target.fieldValues.push(result);
           }
 
-          if(result && typeof(result.hashName) === "string"){
+          if (result && typeof(result.hashName) === "string") {
             that.pushFile(result.hashName);
           }
 
@@ -686,8 +684,8 @@ appForm.models = function(module) {
     function gotForm(err, form) {
       var fieldModel = form.getFieldModelById(fieldId);
 
-      if(!fieldModel){
-        return cb("No field model found for fieldId " + fieldId);
+      if (!fieldModel) {
+        return cb(`No field model found for fieldId ${fieldId}`);
       }
 
       if (that.transactionMode) {
@@ -699,18 +697,18 @@ appForm.models = function(module) {
 
     this.getForm(gotForm);
   };
-  Submission.prototype.pushFile = function(hashName){
+  Submission.prototype.pushFile = function(hashName) {
     var subFiles = this.get('filesInSubmission', []);
-    if(typeof(hashName) === "string"){
-      if(subFiles.indexOf(hashName) === -1){
+    if (typeof(hashName) === "string") {
+      if (subFiles.indexOf(hashName) === -1) {
         subFiles.push(hashName);
         this.set('filesInSubmission', subFiles);
       }
     }
   };
-  Submission.prototype.removeFileValue = function(hashName){
+  Submission.prototype.removeFileValue = function(hashName) {
     var subFiles = this.get('filesInSubmission', []);
-    if(typeof(hashName) === "string" && subFiles.indexOf(hashName) > -1){
+    if (typeof(hashName) === "string" && subFiles.indexOf(hashName) > -1) {
       subFiles.splice(subFiles.indexOf(hashName),1);
       this.set('filesInSubmission', subFiles);
     }
@@ -729,15 +727,15 @@ appForm.models = function(module) {
    */
   Submission.prototype.reset = function() {
     var self = this;
-    self.clearLocalSubmissionFiles(function(err){
+    self.clearLocalSubmissionFiles(function(err) {
       self.set('formFields', []);
     });
   };
-  Submission.prototype.isDownloadSubmission = function(){
+  Submission.prototype.isDownloadSubmission = function() {
     return this.get("downloadSubmission") === true;
   };
 
-  Submission.prototype.getSubmissionFile = function(fileName, cb){
+  Submission.prototype.getSubmissionFile = function(fileName, cb) {
     appForm.stores.localStorage.readFile(fileName, cb);
   };
   Submission.prototype.clearLocalSubmissionFiles = function(cb) {
@@ -748,10 +746,10 @@ appForm.models = function(module) {
     var localFileName = "";
 
     for (var fileMetaObject in filesInSubmission) {
-      $fh.forms.log.d("Clearing file " + filesInSubmission[fileMetaObject]);
+      $fh.forms.log.d(`Clearing file ${filesInSubmission[fileMetaObject]}`);
       appForm.stores.localStorage.removeEntry(filesInSubmission[fileMetaObject], function(err) {
         if (err) {
-          $fh.forms.log.e("Error removing files from " + err);
+          $fh.forms.log.e(`Error removing files from ${err}`);
         }
       });
     }
@@ -776,7 +774,7 @@ appForm.models = function(module) {
         for (valIndex = 0; valIndex < valArr.length; valIndex++) {
           val = valArr[valIndex];
           target.fieldValues.push(val);
-          if(typeof(val.hashName) === "string"){
+          if (typeof(val.hashName) === "string") {
             this.pushFile(val.hashName);
           }
         }
@@ -790,9 +788,9 @@ appForm.models = function(module) {
         valArr = tmpFields[fieldId];
         for (valIndex = 0; valIndex < valArr.length; valIndex++) {
           val = valArr[valIndex];
-          if(typeof(val.hashName) === "string"){
+          if (typeof(val.hashName) === "string") {
             //This is a file, needs to be removed
-            appForm.stores.localStorage.removeEntry(val.hashName, function(err){
+            appForm.stores.localStorage.removeEntry(val.hashName, function(err) {
               $fh.forms.log.e("Error removing file from transaction ", err);
             });
           }
@@ -808,7 +806,7 @@ appForm.models = function(module) {
    * @return {[type]}         [description]
    */
   Submission.prototype.removeFieldValue = function(fieldId, index, callback) {
-    callback = callback || function(){};
+    callback = callback || function() {};
     var self = this;
     var targetArr = [];
     var valsRemoved = {};
@@ -820,17 +818,15 @@ appForm.models = function(module) {
     //If no index is supplied, all values are removed.
     if (typeof index === 'undefined') {
       valsRemoved = targetArr.splice(0, targetArr.length);
-    } else {
-      if (targetArr.length > index) {
-        valsRemoved = targetArr.splice(index, 1, null);
-      }
+    } else if (targetArr.length > index) {
+      valsRemoved = targetArr.splice(index, 1, null);
     }
 
     //Clearing up any files from local storage.
-    async.forEach(valsRemoved, function(valRemoved, cb){
-      if(valRemoved && valRemoved.hashName){
-        appForm.stores.localStorage.removeEntry(valRemoved.hashName, function(err){
-          if(err){
+    async.forEach(valsRemoved, function(valRemoved, cb) {
+      if (valRemoved && valRemoved.hashName) {
+        appForm.stores.localStorage.removeEntry(valRemoved.hashName, function(err) {
+          if (err) {
             $fh.forms.log.e("Error removing file: ", err, valRemoved);
           } else {
             self.removeFileValue(valRemoved.hashName);
@@ -840,7 +836,7 @@ appForm.models = function(module) {
       } else {
         return cb();
       }
-    }, function(err){
+    }, function(err) {
       callback(err);
     });
   };
@@ -849,14 +845,12 @@ appForm.models = function(module) {
     for (var i = 0; i < formFields.length; i++) {
       var formField = formFields[i];
 
-      if(formField.fieldId._id){
+      if (formField.fieldId._id) {
         if (formField.fieldId._id === fieldId) {
           return formField;
         }
-      } else {
-        if (formField.fieldId === fieldId) {
-          return formField;
-        }
+      } else if (formField.fieldId === fieldId) {
+        return formField;
       }
     }
     var newField = {
@@ -874,8 +868,8 @@ appForm.models = function(module) {
     var Form = appForm.models.Form;
     var formId = this.get('formId');
 
-    if(formId){
-      $fh.forms.log.d("FormId found for getForm: " + formId);
+    if (formId) {
+      $fh.forms.log.d(`FormId found for getForm: ${formId}`);
       new Form({
         'formId': formId,
         'rawMode': true
@@ -912,8 +906,8 @@ appForm.models = function(module) {
    */
   Submission.prototype.getFileInputValues = function(cb) {
     var self = this;
-    self.getFileFieldsId(function(err, fileFieldIds){
-      if(err){
+    self.getFileFieldsId(function(err, fileFieldIds) {
+      if (err) {
         return cb(err);
       }
       return cb(null, self.getInputValueArray(fileFieldIds));
@@ -926,7 +920,7 @@ appForm.models = function(module) {
    *
    * @return {type}                   description
    */
-  Submission.prototype.getFormFields = function(){
+  Submission.prototype.getFormFields = function() {
     return this.get("formFields", []);
   };
 
@@ -936,31 +930,31 @@ appForm.models = function(module) {
    * @param  {boolean} includeNullValues flag on whether to include null values or not.
    * @return {type}                   description
    */
-  Submission.prototype.setFormFields = function(values){
+  Submission.prototype.setFormFields = function(values) {
     return this.get("formFields", values);
   };
 
-  Submission.prototype.getFileFieldsId = function(cb){
+  Submission.prototype.getFileFieldsId = function(cb) {
     var self = this;
     var formFieldIds = [];
 
-    if(self.isDownloadSubmission()){
+    if (self.isDownloadSubmission()) {
       //For Submission downloads, there needs to be a scan through the formFields param
       var formFields = self.getFormFields();
 
-      for(var formFieldIndex = 0; formFieldIndex < formFields.length; formFieldIndex++){
+      for (var formFieldIndex = 0; formFieldIndex < formFields.length; formFieldIndex++) {
         var formFieldEntry = formFields[formFieldIndex].fieldId || {};
-        if(formFieldEntry.type === 'file' || formFieldEntry.type === 'photo'  || formFieldEntry.type === 'signature'){
-          if(formFieldEntry._id){
+        if (formFieldEntry.type === 'file' || formFieldEntry.type === 'photo'  || formFieldEntry.type === 'signature') {
+          if (formFieldEntry._id) {
             formFieldIds.push(formFieldEntry._id);
           }
         }
       }
       return cb(null, formFieldIds);
     } else {
-      self.getForm(function(err, form){
-        if(err){
-          $fh.forms.log.e("Error getting form for getFileFieldsId" + err);
+      self.getForm(function(err, form) {
+        if (err) {
+          $fh.forms.log.e(`Error getting form for getFileFieldsId${err}`);
           return cb(err);
         }
         return cb(err, form.getFileFieldsId());
@@ -968,44 +962,44 @@ appForm.models = function(module) {
     }
   };
 
-  Submission.prototype.updateFileLocalURI = function(fileDetails, newLocalFileURI, cb){
-    $fh.forms.log.d("updateFileLocalURI: " + newLocalFileURI);
+  Submission.prototype.updateFileLocalURI = function(fileDetails, newLocalFileURI, cb) {
+    $fh.forms.log.d(`updateFileLocalURI: ${newLocalFileURI}`);
     var self = this;
     fileDetails = fileDetails || {};
 
-    if(fileDetails.fileName && newLocalFileURI){
+    if (fileDetails.fileName && newLocalFileURI) {
       //Search for the file placeholder name.
-      self.findFilePlaceholderFieldId(fileDetails.fileName, function(err, fieldDetails){
-        if(err){
+      self.findFilePlaceholderFieldId(fileDetails.fileName, function(err, fieldDetails) {
+        if (err) {
           return cb(err);
         }
-        if(fieldDetails.fieldId){
+        if (fieldDetails.fieldId) {
           var tmpObj = self.getInputValueObjectById(fieldDetails.fieldId).fieldValues[fieldDetails.valueIndex];
           tmpObj.localURI = newLocalFileURI;
           self.getInputValueObjectById(fieldDetails.fieldId).fieldValues[fieldDetails.valueIndex] = tmpObj;
           self.saveLocal(cb);
         } else {
-          $fh.forms.log.e("No file field matches the placeholder name " + fileDetails.fileName);
-          return cb("No file field matches the placeholder name " + fileDetails.fileName);
+          $fh.forms.log.e(`No file field matches the placeholder name ${fileDetails.fileName}`);
+          return cb(`No file field matches the placeholder name ${fileDetails.fileName}`);
         }
       });
     } else {
-      $fh.forms.log.e("Submission: updateFileLocalURI : No fileName for submissionId : "+ JSON.stringify(fileDetails));
-      return cb("Submission: updateFileLocalURI : No fileName for submissionId : "+ JSON.stringify(fileDetails));
+      $fh.forms.log.e(`Submission: updateFileLocalURI : No fileName for submissionId : ${JSON.stringify(fileDetails)}`);
+      return cb(`Submission: updateFileLocalURI : No fileName for submissionId : ${JSON.stringify(fileDetails)}`);
     }
   };
 
-  Submission.prototype.findFilePlaceholderFieldId = function(filePlaceholderName, cb){
+  Submission.prototype.findFilePlaceholderFieldId = function(filePlaceholderName, cb) {
     var self = this;
     var fieldDetails = {};
-    self.getFileFieldsId(function(err, fieldIds){
+    self.getFileFieldsId(function(err, fieldIds) {
       for (var i = 0; i< fieldIds.length; i++) {
         var fieldId = fieldIds[i];
         var inputValue = self.getInputValueObjectById(fieldId);
         for (var j = 0; j < inputValue.fieldValues.length; j++) {
           var tmpObj = inputValue.fieldValues[j];
           if (tmpObj) {
-            if(tmpObj.fileName !== null && tmpObj.fileName === filePlaceholderName){
+            if (tmpObj.fileName !== null && tmpObj.fileName === filePlaceholderName) {
               fieldDetails.fieldId = fieldId;
               fieldDetails.valueIndex = j;
             }
@@ -1060,8 +1054,8 @@ appForm.models = function(module) {
   Submission.prototype.getRemoteSubmissionId = function() {
     return this.get("submissionId") || this.get('_id');
   };
-  Submission.prototype.setRemoteSubmissionId = function(submissionId){
-    if(submissionId){
+  Submission.prototype.setRemoteSubmissionId = function(submissionId) {
+    if (submissionId) {
       this.set("submissionId", submissionId);
       this.set("_id", submissionId);
     }

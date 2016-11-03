@@ -1,4 +1,4 @@
-Lawnchair.adapter('html5-filesystem', (function(global){
+Lawnchair.adapter('html5-filesystem', (function(global) {
 
   var FileError = global.FileError;
 
@@ -6,26 +6,26 @@ Lawnchair.adapter('html5-filesystem', (function(global){
     var msg;
     var show = true;
     switch (e.code) {
-      case FileError.QUOTA_EXCEEDED_ERR:
-        msg = 'QUOTA_EXCEEDED_ERR';
-        break;
-      case FileError.NOT_FOUND_ERR:
-        msg = 'NOT_FOUND_ERR';
-        show = false;
-        break;
-      case FileError.SECURITY_ERR:
-        msg = 'SECURITY_ERR';
-        break;
-      case FileError.INVALID_MODIFICATION_ERR:
-        msg = 'INVALID_MODIFICATION_ERR';
-        break;
-      case FileError.INVALID_STATE_ERR:
-        msg = 'INVALID_STATE_ERR';
-        break;
-      default:
-        msg = 'Unknown Error';
-        break;
-    };
+    case FileError.QUOTA_EXCEEDED_ERR:
+      msg = 'QUOTA_EXCEEDED_ERR';
+      break;
+    case FileError.NOT_FOUND_ERR:
+      msg = 'NOT_FOUND_ERR';
+      show = false;
+      break;
+    case FileError.SECURITY_ERR:
+      msg = 'SECURITY_ERR';
+      break;
+    case FileError.INVALID_MODIFICATION_ERR:
+      msg = 'INVALID_MODIFICATION_ERR';
+      break;
+    case FileError.INVALID_STATE_ERR:
+      msg = 'INVALID_STATE_ERR';
+      break;
+    default:
+      msg = 'Unknown Error';
+      break;
+    }
     if ( console && show ) console.error( e, msg );
   };
 
@@ -33,7 +33,9 @@ Lawnchair.adapter('html5-filesystem', (function(global){
     var result = entries || [];
     reader.readEntries(function( results ) {
       if ( !results.length ) {
-        if ( callback ) callback( result.map(function(entry) { return entry.name; }) );
+        if ( callback ) callback( result.map(function(entry) {
+          return entry.name;
+        }) );
       } else {
         ls( reader, callback, result.concat( Array.prototype.slice.call( results ) ) );
       }
@@ -62,7 +64,7 @@ Lawnchair.adapter('html5-filesystem', (function(global){
     } else {
       return false;
     }
-  }
+  };
 
   var createBlobOrString = function(contentstr) {
     var retVal;
@@ -72,8 +74,7 @@ Lawnchair.adapter('html5-filesystem', (function(global){
       var targetContentType = 'application/json';
       try {
         retVal = new Blob( [contentstr], { type: targetContentType });  // Blob doesn't exist on all androids
-      }
-      catch (e){
+      }      catch (e) {
         // TypeError old chrome and FF
         var blobBuilder = window.BlobBuilder ||
           window.WebKitBlobBuilder ||
@@ -90,7 +91,7 @@ Lawnchair.adapter('html5-filesystem', (function(global){
       }
     }
     return retVal;
-  }
+  };
 
   return {
     // boolean; true if the adapter is valid for the current environment
@@ -102,12 +103,14 @@ Lawnchair.adapter('html5-filesystem', (function(global){
     // constructor call and callback. 'name' is the most common option
     init: function( options, callback ) {
       var me = this;
-      var error = function(e) { fail(e); if ( callback ) me.fn( me.name, callback ).call( me, me ); };
+      var error = function(e) {
+        fail(e); if ( callback ) me.fn( me.name, callback ).call( me, me );
+      };
       var size = options.size || 100*1024*1024;
       var name = this.name;
       //disable file backup to icloud
       me.backup = false;
-      if(typeof options.backup !== 'undefined'){
+      if (typeof options.backup !== 'undefined') {
         me.backup = options.backup;
       }
 
@@ -115,9 +118,9 @@ Lawnchair.adapter('html5-filesystem', (function(global){
 //        console.log('in requestFileSystem');
         var fs = global.requestFileSystem || global.webkitRequestFileSystem || global.moz_requestFileSystem;
         var mode = window.PERSISTENT;
-        if(typeof LocalFileSystem !== "undefined" && typeof LocalFileSystem.PERSISTENT !== "undefined"){
+        if (typeof LocalFileSystem !== "undefined" && typeof LocalFileSystem.PERSISTENT !== "undefined") {
           mode = LocalFileSystem.PERSISTENT;
-        }      
+        }
         fs(mode, amount, function(fs) {
 //          console.log('got FS ', fs);
           fs.root.getDirectory( name, {create:true}, function( directory ) {
@@ -132,7 +135,7 @@ Lawnchair.adapter('html5-filesystem', (function(global){
 //          console.log('error getting FS :: ', e);
           error(e);
         });
-      };
+      }
 
       // When in the browser we need to use the html5 file system rather than
       // the one cordova supplies, but it needs to request a quota first.
@@ -164,16 +167,18 @@ Lawnchair.adapter('html5-filesystem', (function(global){
       var me = this;
       var key = obj.key || this.uuid();
       obj.key = key;
-      var error = function(e) { fail(e); if ( callback ) me.lambda( callback ).call( me ); };
+      var error = function(e) {
+        fail(e); if ( callback ) me.lambda( callback ).call( me );
+      };
       root( this, function( store ) {
-        var writeContent = function(file, error){
+        var writeContent = function(file, error) {
           file.createWriter(function( writer ) {
             writer.onerror = error;
             writer.onwriteend = function() {
               // Clear the onWriteEnd handler so the truncate does not call it and cause an infinite loop
               this.onwriteend = null;
-              // Truncate the file at the end of the written contents. This ensures that if we are updating 
-              // a file which was previously longer, we will not be left with old contents beyond the end of 
+              // Truncate the file at the end of the written contents. This ensures that if we are updating
+              // a file which was previously longer, we will not be left with old contents beyond the end of
               // the current buffer.
               this.truncate(this.position);
               if ( callback ) me.lambda( callback ).call( me, obj );
@@ -183,13 +188,13 @@ Lawnchair.adapter('html5-filesystem', (function(global){
             var writerContent = createBlobOrString(contentStr);
             writer.write(writerContent);
           }, error );
-        }
+        };
         store.getFile( key, {create:true}, function( file ) {
-          if(typeof file.setMetadata === 'function' && (me.backup === false || me.backup === 'false')){
+          if (typeof file.setMetadata === 'function' && (me.backup === false || me.backup === 'false')) {
             //set meta data on the file to make sure it won't be backed up by icloud
-            file.setMetadata(function(){
+            file.setMetadata(function() {
               writeContent(file, error);
-            }, function(){
+            }, function() {
               writeContent(file, error);
             }, {'com.apple.MobileBackup': 1});
           } else {
@@ -294,7 +299,9 @@ Lawnchair.adapter('html5-filesystem', (function(global){
     // remove a doc or collection of em
     remove: function( key /* or object */, callback ) {
       var me = this;
-      var error = function(e) { fail( e ); if ( callback ) me.lambda( callback ).call( me ); };
+      var error = function(e) {
+        fail( e ); if ( callback ) me.lambda( callback ).call( me );
+      };
       root( this, function( store ) {
         store.getFile( (typeof key === 'string' ? key : key.key ), {create:false}, function( file ) {
           file.remove(function() {

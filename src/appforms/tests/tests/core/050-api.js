@@ -1,5 +1,5 @@
 describe("$fh.forms API", function() {
-  after(function(done){
+  after(function(done) {
     if (appForm.utils.fileSystem.isFileSystemAvailable()) {
       appForm.utils.fileSystem.clearFileSystem(done, done);
     } else {
@@ -12,7 +12,7 @@ describe("$fh.forms API", function() {
     getForms({
       "fromRemote": true
     }, function(err, foundForms) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
 
       assert(foundForms.get("_type") === "forms");
       assert(Array.isArray(foundForms.getFormsList()));
@@ -26,7 +26,7 @@ describe("$fh.forms API", function() {
     getForm({
       "formId": testData.formId
     }, function(err, foundForm) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
 
       assert(foundForm.get("_type") === "form");
       assert(foundForm.getName() === testData.formName);
@@ -39,7 +39,7 @@ describe("$fh.forms API", function() {
     getTheme({
       "fromRemote": true
     }, function(err, theme) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
 
       assert(theme.get("name") === testData.themeName);
       done();
@@ -52,7 +52,7 @@ describe("$fh.forms API", function() {
       "fromRemote": true,
       "css" : true
     }, function(err, themeCSS) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
 
       assert(typeof(themeCSS) === "string");
       done();
@@ -65,14 +65,14 @@ describe("$fh.forms API", function() {
     var form = new Form({
       formId: testData.formId
     }, function(err, form) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
       var submission = appForm.models.submission.newInstance(form);
 
       submission.saveDraft(function(err) {
-        assert(!err, "Expected no error: " + err);
+        assert(!err, `Expected no error: ${err}`);
 
         getSubmissions({}, function(err, submissions) {
-          assert(!err, "Expected no error: " + err);
+          assert(!err, `Expected no error: ${err}`);
 
           assert(submissions);
           assert(submissions.get("_type") === "submissions");
@@ -89,13 +89,13 @@ describe("$fh.forms API", function() {
     this.timeout(10000);
 
     forms.refresh(true, function(err, forms) {
-      assert(!err, "Expected no error: " + err);
+      assert(!err, `Expected no error: ${err}`);
 
       var form = new Form({
         "formId": testData.formId,
         "fromRemote": false
       }, function(err, form) {
-        assert(!err, "Expected no error: " + err);
+        assert(!err, `Expected no error: ${err}`);
 
         //Create submission
         var newSubmission = form.newSubmission();
@@ -139,43 +139,43 @@ describe("$fh.forms API", function() {
         });
 
         submitForm(newSubmission, function(err, uploadTask) {
-          assert(!err, "Expected no error: " + err);
+          assert(!err, `Expected no error: ${err}`);
           assert.ok(uploadTask);
 
         });
       });
     });
   });
-  it("$fh.forms.downloadSubmission", function(done){
+  it("$fh.forms.downloadSubmission", function(done) {
     this.timeout(10000);
     var submissionId = "submissionData";
     var downloadSubmission = appForm.api.downloadSubmission;
 
-    downloadSubmission({fromRemote: true, submissionId: submissionId}, function(err, submission){
+    downloadSubmission({fromRemote: true, submissionId: submissionId}, function(err, submission) {
       assert.ok(submission);
       console.log("Submission Data: ", submission);
       assert.ok(submission.getRemoteSubmissionId().length > 0);
-      submission.clearLocal(function(err){
+      submission.clearLocal(function(err) {
         assert.ok(!err, "Expected No Error When Clearing Submission");
         done(err);
       });
     });
   });
-  it("$fh.forms.downloadSubmission No Callback. Global Event Listener Instead", function(done){
+  it("$fh.forms.downloadSubmission No Callback. Global Event Listener Instead", function(done) {
     this.timeout(3000);
     var submissionId = "submissionData";
     var downloadSubmission = appForm.api.downloadSubmission;
 
-    appForm.api.once('submission:error', function(err){
-      assert.ok(!err, "Expected No Error " + err);
+    appForm.api.once('submission:error', function(err) {
+      assert.ok(!err, `Expected No Error ${err}`);
       done(err);
     });
 
-    appForm.api.once('submission:downloaded', function(remoteSubmissionId){
+    appForm.api.once('submission:downloaded', function(remoteSubmissionId) {
       assert.equal("submissionData", remoteSubmissionId);
       assert.equal("submissionData", this.getRemoteSubmissionId());
       //Clearing Out The Submission.
-      this.clearLocal(function(err){
+      this.clearLocal(function(err) {
         assert.ok(!err, "Expected No Error When Clearing Submission");
         done(err);
       });
@@ -184,12 +184,12 @@ describe("$fh.forms API", function() {
     //In this case, the submission is queued for download, but does not wait for a download to complete.
     downloadSubmission({submissionId: submissionId});
   });
-  it("$fh.forms.downloadSubmission with files", function(done){
+  it("$fh.forms.downloadSubmission with files", function(done) {
     this.timeout(10000);
     var submissionId = "submissionFile";
     var downloadSubmission = appForm.api.downloadSubmission;
 
-    downloadSubmission({fromRemote: true, submissionId: submissionId}, function(err, submission){
+    downloadSubmission({fromRemote: true, submissionId: submissionId}, function(err, submission) {
       assert.ok(submission);
       console.log("Submission File: ", submission);
       assert.ok(submission.getRemoteSubmissionId().length > 0);
@@ -199,9 +199,9 @@ describe("$fh.forms API", function() {
 
       //Checking for no null values
       var formFields = submission.getFormFields();
-      _.each(formFields, function(formField){
+      _.each(formFields, function(formField) {
         var values = formField.fieldValues;
-        _.each(values, function(value){
+        _.each(values, function(value) {
           assert.ok(value !== null && typeof(value) !== "undefined");
         });
       });
@@ -209,7 +209,7 @@ describe("$fh.forms API", function() {
       done();
     });
   });
-  it("$fh.forms.on function should register a global event emitter", function(done){
+  it("$fh.forms.on function should register a global event emitter", function(done) {
     //First Register A Function to be emitted
     var modelEventCalled = false;
     var firstArg = "arg1";
@@ -219,7 +219,7 @@ describe("$fh.forms API", function() {
       _type: "somemodel"
     });
 
-    testModel.on('someevent', function(arg1, arg2){
+    testModel.on('someevent', function(arg1, arg2) {
       modelEventCalled = true;
       assert.equal(firstArg, arg1);
       assert.equal(secondArg, arg2);
@@ -227,7 +227,7 @@ describe("$fh.forms API", function() {
     });
 
     //A Global Monitoring Function
-    var functionToEmit = function(arg1, arg2){
+    var functionToEmit = function(arg1, arg2) {
       assert.equal(firstArg, arg1);
       assert.equal(secondArg, arg2);
       assert.equal(true, modelEventCalled);
@@ -239,7 +239,7 @@ describe("$fh.forms API", function() {
 
     testModel.emit("someevent", firstArg, secondArg);
   });
-  it("$fh.forms.once function should register a global event emitter to be called only once", function(done){
+  it("$fh.forms.once function should register a global event emitter to be called only once", function(done) {
     //First Register A Function to be emitted
     var modelEventCalled = false;
     var numTimesGlobalEventCalled = 0;
@@ -250,7 +250,7 @@ describe("$fh.forms API", function() {
       _type: "somemodel"
     });
 
-    testModel.on('onceevent', function(arg1, arg2){
+    testModel.on('onceevent', function(arg1, arg2) {
       modelEventCalled = true;
       assert.equal(firstArg, arg1);
       assert.equal(secondArg, arg2);
@@ -258,7 +258,7 @@ describe("$fh.forms API", function() {
     });
 
     //A Global Monitoring Function
-    var functionToEmitOnce = function(arg1, arg2){
+    var functionToEmitOnce = function(arg1, arg2) {
       numTimesGlobalEventCalled++;
       assert.equal(1, numTimesGlobalEventCalled);
       assert.equal(firstArg, arg1);

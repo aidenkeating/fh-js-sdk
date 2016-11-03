@@ -1,7 +1,7 @@
 /**
  * Manages submission uploading tasks
  */
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   function UploadManager() {
     var self = this;
@@ -23,14 +23,14 @@ appForm.models = function (module) {
      * @param {Function} cb callback once finished
      * @return {[type]}                 [description]
      */
-  UploadManager.prototype.queueSubmission = function (submissionModel, cb) {
+  UploadManager.prototype.queueSubmission = function(submissionModel, cb) {
     $fh.forms.log.d("Queueing Submission for uploadManager");
     var utId;
     var uploadTask = null;
     var self = this;
 
-    self.checkOnlineStatus(function(){
-      if($fh.forms.config.isOnline()){
+    self.checkOnlineStatus(function() {
+      if ($fh.forms.config.isOnline()) {
         if (submissionModel.getUploadTaskId()) {
           utId = submissionModel.getUploadTaskId();
         } else {
@@ -43,21 +43,21 @@ appForm.models = function (module) {
           self.start();
         }
         if (uploadTask) {
-          uploadTask.saveLocal(function (err) {
+          uploadTask.saveLocal(function(err) {
             if (err) {
               $fh.forms.log.e(err);
             }
-            self.saveLocal(function (err) {
+            self.saveLocal(function(err) {
               if (err) {
-                $fh.forms.log.e("Error saving upload manager: " + err);
+                $fh.forms.log.e(`Error saving upload manager: ${err}`);
               }
               cb(null, uploadTask);
             });
           });
         } else {
-          self.saveLocal(function (err) {
+          self.saveLocal(function(err) {
             if (err) {
-              $fh.forms.log.e("Error saving upload manager: " + err);
+              $fh.forms.log.e(`Error saving upload manager: ${err}`);
             }
             self.getTaskById(utId, cb);
           });
@@ -74,7 +74,7 @@ appForm.models = function (module) {
      * @param  {Function} cb               [description]
      * @return {[type]}                    [description]
      */
-  UploadManager.prototype.cancelSubmission = function (submissionsModel, cb) {
+  UploadManager.prototype.cancelSubmission = function(submissionsModel, cb) {
     var uploadTId = submissionsModel.getUploadTaskId();
     var queue = this.get('taskQueue');
     if (uploadTId) {
@@ -82,20 +82,18 @@ appForm.models = function (module) {
       if (index > -1) {
         queue.splice(index, 1);
       }
-      this.getTaskById(uploadTId, function (err, task) {
+      this.getTaskById(uploadTId, function(err, task) {
         if (err) {
           $fh.forms.log.e(err);
           cb(err, task);
+        } else if (task) {
+          task.clearLocal(cb);
         } else {
-          if (task) {
-            task.clearLocal(cb);
-          } else {
-            cb(null, null);
-          }
+          cb(null, null);
         }
       });
-      this.saveLocal(function (err) {
-        if (err){
+      this.saveLocal(function(err) {
+        if (err) {
           $fh.forms.log.e(err);
         }
       });
@@ -104,7 +102,7 @@ appForm.models = function (module) {
     }
   };
 
-  UploadManager.prototype.getTaskQueue = function () {
+  UploadManager.prototype.getTaskQueue = function() {
     return this.get('taskQueue', []);
   };
   /**
@@ -112,10 +110,10 @@ appForm.models = function (module) {
      * @param  {} interval ms
      * @return {[type]}      [description]
      */
-  UploadManager.prototype.start = function () {
+  UploadManager.prototype.start = function() {
     var that = this;
     that.stop();
-    that.timer = setInterval(function () {
+    that.timer = setInterval(function() {
       that.tick();
     }, this.timerInterval);
   };
@@ -123,33 +121,33 @@ appForm.models = function (module) {
      * stop uploading
      * @return {[type]} [description]
      */
-  UploadManager.prototype.stop = function () {
+  UploadManager.prototype.stop = function() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
     }
   };
-  UploadManager.prototype.push = function (uploadTaskId) {
+  UploadManager.prototype.push = function(uploadTaskId) {
     this.get('taskQueue').push(uploadTaskId);
-    this.saveLocal(function (err) {
-      if (err){
+    this.saveLocal(function(err) {
+      if (err) {
         $fh.forms.log.e("Error saving local Upload manager", err);
       }
     });
   };
-  UploadManager.prototype.shift = function () {
+  UploadManager.prototype.shift = function() {
     var shiftedTask = this.get('taskQueue').shift();
-    this.saveLocal(function (err) {
+    this.saveLocal(function(err) {
       if (err) {
         $fh.forms.log.e(err);
       }
     });
     return shiftedTask;
   };
-  UploadManager.prototype.rollTask = function () {
+  UploadManager.prototype.rollTask = function() {
     this.push(this.shift());
   };
-  UploadManager.prototype.tick = function () {
+  UploadManager.prototype.tick = function() {
     var self = this;
     if (self.sending) {
       var now = appForm.utils.getTime();
@@ -160,53 +158,49 @@ appForm.models = function (module) {
         self.sending = false;
         self.rollTask();
       }
-    } else {
-      if (self.hasTask()) {
-        self.sending = true;
-        self.sendingStart = appForm.utils.getTime();
+    } else if (self.hasTask()) {
+      self.sending = true;
+      self.sendingStart = appForm.utils.getTime();
 
-        self.getCurrentTask(function (err, task) {
-          if (err || !task) {
-            $fh.forms.log.e(err);
-            self.sending = false;
-          } else {
-            if (task.isCompleted() || task.isError()) {
+      self.getCurrentTask(function(err, task) {
+        if (err || !task) {
+          $fh.forms.log.e(err);
+          self.sending = false;
+        } else if (task.isCompleted() || task.isError()) {
               //current task uploaded or aborted by error. shift it from queue
-              self.shift();
-              self.sending = false;
-              self.saveLocal(function (err) {
-                if(err){
-                  $fh.forms.log.e("Error saving upload manager: ", err);
+          self.shift();
+          self.sending = false;
+          self.saveLocal(function(err) {
+            if (err) {
+              $fh.forms.log.e("Error saving upload manager: ", err);
+            }
+          });
+        } else {
+          self.checkOnlineStatus(function() {
+            if ($fh.forms.config.isOnline()) {
+              task.uploadTick(function(err) {
+                if (err) {
+                  $fh.forms.log.e("Error on upload tick: ", err, task);
                 }
-              });
-            } else {
-              self.checkOnlineStatus(function(){
-                if($fh.forms.config.isOnline()){
-                  task.uploadTick(function (err) {
-                    if(err){
-                      $fh.forms.log.e("Error on upload tick: ", err, task);
-                    }
 
                     //callback when finished. ready for next upload command
-                    self.sending = false;
-                  });
-                } else {
-                  $fh.forms.log.d("Upload Manager: Tick: Not online.");
-                }
+                self.sending = false;
               });
+            } else {
+              $fh.forms.log.d("Upload Manager: Tick: Not online.");
             }
-          }
-        });
-      } else {
+          });
+        }
+      });
+    } else {
         //no task . stop timer.
-        self.stop();
-      }
+      self.stop();
     }
   };
-  UploadManager.prototype.hasTask = function () {
+  UploadManager.prototype.hasTask = function() {
     return this.get('taskQueue').length > 0;
   };
-  UploadManager.prototype.getCurrentTask = function (cb) {
+  UploadManager.prototype.getCurrentTask = function(cb) {
     var taskId = this.getTaskQueue()[0];
     if (taskId) {
       this.getTaskById(taskId, cb);
@@ -214,10 +208,10 @@ appForm.models = function (module) {
       cb(null, null);
     }
   };
-  UploadManager.prototype.checkOnlineStatus = function (cb) {
+  UploadManager.prototype.checkOnlineStatus = function(cb) {
     appForm.stores.dataAgent.checkOnlineStatus(cb);
   };
-  UploadManager.prototype.getTaskById = function (taskId, cb) {
+  UploadManager.prototype.getTaskById = function(taskId, cb) {
     appForm.models.uploadTask.fromLocal(taskId, cb);
   };
   module.uploadManager = new UploadManager();

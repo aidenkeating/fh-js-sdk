@@ -5,7 +5,7 @@
  (c) 2009-2013 by Jeff Mott. All rights reserved.
  code.google.com/p/crypto-js/wiki/License
  */
-(function () {
+(function() {
   // Shortcuts
   var C = CryptoJS;
   var C_lib = C.lib;
@@ -20,7 +20,7 @@
    * SHA-1 hash algorithm.
    */
   var SHA1 = C_algo.SHA1 = Hasher.extend({
-    _doReset: function () {
+    _doReset: function() {
       this._hash = new WordArray.init([
         0x67452301, 0xefcdab89,
         0x98badcfe, 0x10325476,
@@ -28,7 +28,7 @@
       ]);
     },
 
-    _doProcessBlock: function (M, offset) {
+    _doProcessBlock: function(M, offset) {
       // Shortcut
       var H = this._hash.words;
 
@@ -74,7 +74,7 @@
       H[4] = (H[4] + e) | 0;
     },
 
-    _doFinalize: function () {
+    _doFinalize: function() {
       // Shortcuts
       var data = this._data;
       var dataWords = data.words;
@@ -95,7 +95,7 @@
       return this._hash;
     },
 
-    clone: function () {
+    clone: function() {
       var clone = Hasher.clone.call(this);
       clone._hash = this._hash.clone();
 

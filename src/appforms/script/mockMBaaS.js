@@ -10,8 +10,8 @@ var submissionData = require("./sampleData/submissionData.json");
 var submissionStatusFileHash = "";
 var failedFileUploadFileHash = "";
 var submissionStatusCounter = 0;
-var testPhoto = __dirname+"/sampleData/testPhoto.jpg";
-var testFile = __dirname+"/sampleData/testFile.pdf";
+var testPhoto = `${__dirname}/sampleData/testPhoto.jpg`;
+var testFile = `${__dirname}/sampleData/testFile.pdf`;
 var responseDelay = 100;
 
 function applyServer(app) {
@@ -36,35 +36,35 @@ function applyServer(app) {
   app.get("/mbaas/forms/:appId/:submissionId/status", _getSubmissionStatus);
   app.post("/mbaas/forms/:appId/:submissionId/completeSubmission", _completeSubmission);
   app.get("/sys/info/ping", _ping);
-};
+}
 
-function _ping(req, res){
+function _ping(req, res) {
   console.log("In _ping, ", req.params);
   res.json("OK");
 }
 
-function _getConfig(req, res){
+function _getConfig(req, res) {
   console.log("In _getConfig, ", req.params);
 
   res.json(config);
-};
+}
 
 
-function _getSubmissionData(req, res){
+function _getSubmissionData(req, res) {
   console.log("In _getSubmissionData", req.params);
   var retVal = {};
 
-  if(req.params.submissionId === "submissionData"){
+  if (req.params.submissionId === "submissionData") {
     retVal = submissionData;
-  } else if(req.params.submissionId === "submissionFile"){
+  } else if (req.params.submissionId === "submissionFile") {
     retVal = submissionFile;
   } else {   //If it is not either of these, send back an error
-    retVal = {error: "No submission matches id: "+ req.params.submissionId }
+    retVal = {error: `No submission matches id: ${req.params.submissionId}` };
   }
   res.json(retVal);
-};
+}
 
-function _getSubmissionFile(req, res){
+function _getSubmissionFile(req, res) {
   console.log("In _getSubmissionData", req.params);
   var fileToRead = req.params.fileId === "photo" ? testPhoto : testFile;
 
@@ -72,7 +72,7 @@ function _getSubmissionFile(req, res){
   var fileStream = fileHandler.createReadStream(fileToRead);
 
   fileStream.pipe(res);
-};
+}
 
 function _postInit(req, res) {
   console.log("In _postInit, ", req.params);
@@ -123,12 +123,12 @@ function _getSubmissionStatus(req, res) {
     responseJSON = {
       "status": "pending",
       "pendingFiles": [failedFileUploadFileHash]
-    }
+    };
   } else if (req.params.submissionId === "submissionError") {
     responseJSON = {
       "status": "pending",
       "pendingFiles": ["filePlaceHolder123456"]
-    }
+    };
   }
 
   setTimeout(function() {
@@ -171,11 +171,11 @@ function _postFormSubmission(req, res) {
   console.log(body);
 
   if (body.testText === "failedFileUpload") {
-    submissionId = "failedFileUpload"
+    submissionId = "failedFileUpload";
   } else if (body.testText === "submissionNotComplete") {
-    submissionId = "submissionNotComplete"
+    submissionId = "submissionNotComplete";
   } else if (body.testText === "submissionError") {
-    submissionId = "submissionError"
+    submissionId = "submissionError";
   } else if (body.testText === "submissionStatus") {
     submissionId = "submissionStatus";
   } else {

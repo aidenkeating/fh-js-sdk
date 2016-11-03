@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   function Forms() {
     Model.call(this, {
@@ -9,7 +9,7 @@ appForm.models = function (module) {
   }
   appForm.utils.extend(Forms, Model);
 
-  Forms.prototype.isFormUpdated = function (formModel) {
+  Forms.prototype.isFormUpdated = function(formModel) {
     var id = formModel.get('_id');
     var formLastUpdate = formModel.getLastUpdate();
     var formMeta = this.getFormMetaById(id);
@@ -20,10 +20,10 @@ appForm.models = function (module) {
       return false;
     }
   };
-  Forms.prototype.setLocalId = function(){
+  Forms.prototype.setLocalId = function() {
     $fh.forms.log.e("Forms setLocalId. Not Permitted for Forms.");
   };
-  Forms.prototype.getFormMetaById = function (formId) {
+  Forms.prototype.getFormMetaById = function(formId) {
     $fh.forms.log.d("Forms getFormMetaById ", formId);
     var forms = this.getFormsList();
     for (var i = 0; i < forms.length; i++) {
@@ -35,13 +35,13 @@ appForm.models = function (module) {
     $fh.forms.log.e("Forms getFormMetaById: No form found for id: ", formId);
     return null;
   };
-  Forms.prototype.size = function () {
+  Forms.prototype.size = function() {
     return this.get('forms').length;
   };
-  Forms.prototype.getFormsList = function () {
+  Forms.prototype.getFormsList = function() {
     return this.get('forms', []);
   };
-  Forms.prototype.getFormIdByIndex = function (index) {
+  Forms.prototype.getFormIdByIndex = function(index) {
     $fh.forms.log.d("Forms getFormIdByIndex: ", index);
     return this.getFormsList()[index]._id;
   };

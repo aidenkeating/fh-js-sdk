@@ -3,7 +3,7 @@ var assert = chai.assert;
 
 describe("Backbone - DateTime Field View", function() {
 
-  beforeEach(function(done){
+  beforeEach(function(done) {
     var self = this;
     var Form = appForm.models.Form;
     new Form({
@@ -21,7 +21,7 @@ describe("Backbone - DateTime Field View", function() {
 
       self.formView.loadForm({
         form: form
-      }, function(err){
+      }, function(err) {
         assert.ok(!err, "Expected no error");
         self.formView.render();
 
@@ -49,7 +49,7 @@ describe("Backbone - DateTime Field View", function() {
     assert.equal(1, parentView.$el.find('input[type="time"]').length, "Expected a time field view to be rendered");
   });
 
-  it('datetime option - no format', function(done){
+  it('datetime option - no format', function(done) {
     var dateTimeTimeFieldModel = this.form.getFieldModelById("datetimefieldnoformat");
 
     assert.ok(dateTimeTimeFieldModel, "Expected a datetime field with no format");
@@ -60,7 +60,7 @@ describe("Backbone - DateTime Field View", function() {
     done();
   });
 
-  it('datetime option - format specified', function(done){
+  it('datetime option - format specified', function(done) {
     var dateTimeTimeFieldModel = this.form.getFieldModelById("datetimefieldwithformat");
 
     assert.ok(dateTimeTimeFieldModel, "Expected a datetime field");
@@ -68,18 +68,18 @@ describe("Backbone - DateTime Field View", function() {
     assert.ok(format, "Expected a format");
 
     var parentView = createParentView(dateTimeTimeFieldModel, this.formView);
-    assert.equal(1, parentView.$el.find('input[type="text"][placeholder="' + format + '"]').length, "Expected a time field view to be rendered with default dateTimeFormat");
+    assert.equal(1, parentView.$el.find(`input[type="text"][placeholder="${format}"]`).length, "Expected a time field view to be rendered with default dateTimeFormat");
     done();
   });
 });
 
 // create backbone dropdown field View
 function createParentView(dateFieldModel, formView) {
-    var parentView = new Backbone.View();
-    new FieldDateTimeView({
-      parentEl: parentView.$el,
-      formView: formView,
-      model: dateFieldModel
-    });
-    return parentView
+  var parentView = new Backbone.View();
+  new FieldDateTimeView({
+    parentEl: parentView.$el,
+    formView: formView,
+    model: dateFieldModel
+  });
+  return parentView;
 }

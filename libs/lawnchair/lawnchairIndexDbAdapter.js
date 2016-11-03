@@ -1,18 +1,22 @@
-Lawnchair.adapter('indexed-db', (function(){
+Lawnchair.adapter('indexed-db', (function() {
 
   function fail(e, i) {
-    if(console) { console.log('error in indexed-db adapter!' + e.message, e, i); debugger;}
-  } ;
+    if (console) {
+      console.log(`error in indexed-db adapter!${e.message}`, e, i); debugger;
+    }
+  }
 
-  function getIDB(){
+  function getIDB() {
     return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
-  };
+  }
 
 
 
   return {
 
-    valid: function() { return !!getIDB(); },
+    valid: function() {
+      return !!getIDB();
+    },
 
     init:function(options, callback) {
       this.idb = getIDB();
@@ -20,25 +24,27 @@ Lawnchair.adapter('indexed-db', (function(){
       var request = this.idb.open(this.name, 2);
       var self = this;
       var cb = self.fn(self.name, callback);
-      var win = function(){ return cb.call(self, self); }
+      var win = function() {
+        return cb.call(self, self);
+      };
       //FEEDHENRY CHANGE TO ALLOW ERROR CALLBACK
-      if(options && 'function' === typeof options.fail) fail = options.fail
+      if (options && 'function' === typeof options.fail) fail = options.fail;
       //END CHANGE
-      request.onupgradeneeded = function(event){
+      request.onupgradeneeded = function(event) {
         self.store = request.result.createObjectStore("teststore", { autoIncrement: true} );
         for (var i = 0; i < self.waiting.length; i++) {
           self.waiting[i].call(self);
         }
         self.waiting = [];
         win();
-      }
+      };
 
       request.onsuccess = function(event) {
         self.db = request.result;
 
 
-        if(self.db.version != "2.0") {
-          if(typeof self.db.setVersion == 'function'){
+        if (self.db.version != "2.0") {
+          if (typeof self.db.setVersion == 'function') {
 
             var setVrequest = self.db.setVersion("2.0");
             // onsuccess is the only place we can create Object Stores
@@ -53,7 +59,7 @@ Lawnchair.adapter('indexed-db', (function(){
             setVrequest.onerror = function(e) {
              // console.log("Failed to create objectstore " + e);
               fail(e);
-            }
+            };
 
           }
         } else {
@@ -64,12 +70,12 @@ Lawnchair.adapter('indexed-db', (function(){
           self.waiting = [];
           win();
         }
-      }
+      };
       request.onerror = fail;
     },
 
     save:function(obj, callback) {
-      if(!this.store) {
+      if (!this.store) {
         this.waiting.push(function() {
           this.save(obj, callback);
         });
@@ -77,7 +83,11 @@ Lawnchair.adapter('indexed-db', (function(){
       }
 
       var self = this;
-      var win  = function (e) { if (callback) { obj.key = e.target.result; self.lambda(callback).call(self, obj) }};
+      var win  = function(e) {
+        if (callback) {
+          obj.key = e.target.result; self.lambda(callback).call(self, obj);
+        }
+      };
       var accessType = "readwrite";
       var trans = this.db.transaction(["teststore"],accessType);
       var store = trans.objectStore("teststore");
@@ -90,33 +100,33 @@ Lawnchair.adapter('indexed-db', (function(){
     },
 
     // FIXME this should be a batch insert / just getting the test to pass...
-    batch: function (objs, cb) {
+    batch: function(objs, cb) {
 
       var results = []
         ,   done = false
-        ,   self = this
+        ,   self = this;
 
       var updateProgress = function(obj) {
-        results.push(obj)
-        done = results.length === objs.length
-      }
+        results.push(obj);
+        done = results.length === objs.length;
+      };
 
       var checkProgress = setInterval(function() {
         if (done) {
-          if (cb) self.lambda(cb).call(self, results)
-          clearInterval(checkProgress)
+          if (cb) self.lambda(cb).call(self, results);
+          clearInterval(checkProgress);
         }
-      }, 200)
+      }, 200);
 
       for (var i = 0, l = objs.length; i < l; i++)
-        this.save(objs[i], updateProgress)
+        this.save(objs[i], updateProgress);
 
-      return this
+      return this;
     },
 
 
     get:function(key, callback) {
-      if(!this.store || !this.db) {
+      if (!this.store || !this.db) {
         this.waiting.push(function() {
           this.get(key, callback);
         });
@@ -125,10 +135,14 @@ Lawnchair.adapter('indexed-db', (function(){
 
 
       var self = this;
-      var win  = function (e) { if (callback) { self.lambda(callback).call(self, e.target.result) }};
+      var win  = function(e) {
+        if (callback) {
+          self.lambda(callback).call(self, e.target.result);
+        }
+      };
 
 
-      if (!this.isArray(key)){
+      if (!this.isArray(key)) {
         var req = this.db.transaction("teststore").objectStore("teststore").get(key);
 
         req.onsuccess = win;
@@ -143,22 +157,22 @@ Lawnchair.adapter('indexed-db', (function(){
         // note: these are hosted.
         var results = []
           ,   done = false
-          ,   keys = key
+          ,   keys = key;
 
         var updateProgress = function(obj) {
-          results.push(obj)
-          done = results.length === keys.length
-        }
+          results.push(obj);
+          done = results.length === keys.length;
+        };
 
         var checkProgress = setInterval(function() {
           if (done) {
-            if (callback) self.lambda(callback).call(self, results)
-            clearInterval(checkProgress)
+            if (callback) self.lambda(callback).call(self, results);
+            clearInterval(checkProgress);
           }
-        }, 200)
+        }, 200);
 
         for (var i = 0, l = keys.length; i < l; i++)
-          this.get(keys[i], updateProgress)
+          this.get(keys[i], updateProgress);
 
       }
 
@@ -166,7 +180,7 @@ Lawnchair.adapter('indexed-db', (function(){
     },
 
     all:function(callback) {
-      if(!this.store) {
+      if (!this.store) {
         this.waiting.push(function() {
           this.all(callback);
         });
@@ -181,16 +195,13 @@ Lawnchair.adapter('indexed-db', (function(){
         if (cursor) {
           toReturn.push(cursor.value);
           cursor.continue();
-        }
-        else {
-          if (cb) cb.call(self, toReturn);
-        }
+        }        else if (cb) cb.call(self, toReturn);
       };
       return this;
     },
 
     remove:function(keyOrObj, callback) {
-      if(!this.store) {
+      if (!this.store) {
         this.waiting.push(function() {
           this.remove(keyOrObj, callback);
         });
@@ -200,7 +211,9 @@ Lawnchair.adapter('indexed-db', (function(){
         keyOrObj = keyOrObj.key;
       }
       var self = this;
-      var win  = function () { if (callback) self.lambda(callback).call(self) };
+      var win  = function() {
+        if (callback) self.lambda(callback).call(self);
+      };
 
       var request = this.db.transaction(["teststore"], "readwrite").objectStore("teststore").delete(keyOrObj);
       request.onsuccess = win;
@@ -209,7 +222,7 @@ Lawnchair.adapter('indexed-db', (function(){
     },
 
     nuke:function(callback) {
-      if(!this.store) {
+      if (!this.store) {
         this.waiting.push(function() {
           this.nuke(callback);
         });
@@ -217,14 +230,16 @@ Lawnchair.adapter('indexed-db', (function(){
       }
 
       var self = this
-        ,   win  = callback ? function() { self.lambda(callback).call(self) } : function(){};
+        ,   win  = callback ? function() {
+          self.lambda(callback).call(self);
+        } : function() {};
 
       try {
         this.db
           .transaction(["teststore"], "readwrite")
           .objectStore("teststore").clear().onsuccess = win;
 
-      } catch(e) {
+      } catch (e) {
         fail();
       }
       return this;

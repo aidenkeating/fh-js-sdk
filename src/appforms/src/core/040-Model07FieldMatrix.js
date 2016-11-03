@@ -1,8 +1,8 @@
 /**
  * extension of Field class to support matrix field
  */
-appForm.models.Field = function (module) {
-  module.prototype.getMatrixRows = function () {
+appForm.models.Field = function(module) {
+  module.prototype.getMatrixRows = function() {
     var def = this.getFieldDefinition();
     if (def.rows) {
       return def.rows;
@@ -10,7 +10,7 @@ appForm.models.Field = function (module) {
       throw 'matrix rows definition is not found in field definition';
     }
   };
-  module.prototype.getMatrixCols = function () {
+  module.prototype.getMatrixCols = function() {
     var def = this.getFieldDefinition();
     if (def.columns) {
       return def.columns;

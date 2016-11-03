@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var FileSubmission = appForm.models.FileSubmission;
   module.Base64FileSubmission = Base64FileSubmission;
   function Base64FileSubmission(fileData) {

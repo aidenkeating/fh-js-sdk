@@ -17,7 +17,7 @@ var appProps = require("./modules/appProps");
 var device = require("./modules/device");
 
 var defaultFail = function(msg, error) {
-  logger.error(msg + ":" + JSON.stringify(error));
+  logger.error(`${msg}:${JSON.stringify(error)}`);
 };
 
 var addListener = function(type, listener) {
@@ -54,10 +54,8 @@ var init = function(opts, success, fail) {
       if (typeof fail === "function") {
         return fail(err);
       }
-    } else {
-      if (typeof success === "function") {
-        success(host.host);
-      }
+    } else if (typeof success === "function") {
+      success(host.host);
     }
   });
 };

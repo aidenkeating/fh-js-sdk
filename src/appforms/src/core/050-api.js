@@ -1,7 +1,7 @@
 /**
  * FeedHenry License
  */
-appForm.api = function (module) {
+appForm.api = function(module) {
   module.getForms = getForms;
   module.getForm = getForm;
   module.getTheme = getTheme;
@@ -13,7 +13,7 @@ appForm.api = function (module) {
   module._events = {};
 
   //Registering For Global Events
-  module.on = function(name, func, callOnce){
+  module.on = function(name, func, callOnce) {
     if (!module._events[name]) {
       module._events[name] = [];
     }
@@ -25,12 +25,12 @@ appForm.api = function (module) {
     }
   };
 
-  module.once = function(name, func){
+  module.once = function(name, func) {
     module.on(name, func, true);
   };
 
   //Emitting A Global Event
-  module.emit = function () {
+  module.emit = function() {
     var args = Array.prototype.slice.call(arguments, 0);
     var eventName = args.shift();
     var funcDetailsArray = module._events[eventName];
@@ -40,7 +40,7 @@ appForm.api = function (module) {
         var functionToCall = funcDetailsArray[i].func;
         //If the function was not already called, or is not only set to call once, the call the function,
         //Otherwise, don't call it.
-        if(!functionDetails.called || !functionDetails.callOnce){
+        if (!functionDetails.called || !functionDetails.callOnce) {
           functionDetails.called = true;
           functionToCall.apply(this, args);
         }
@@ -51,27 +51,27 @@ appForm.api = function (module) {
   var _submissions = null;
   var waitOnSubmission = {};
   var formConfig = appForm.models.config;
-  var defaultFunction = function(err){
+  var defaultFunction = function(err) {
     err = err ? err : "";
-    $fh.forms.log.w("Default Function Called " + err);
+    $fh.forms.log.w(`Default Function Called ${err}`);
   };
 
   /**
    * Get and set config values. Can only set a config value if you are an config_admin_user
    */
   var configInterface = {
-    "editAllowed" : function(){
+    "editAllowed" : function() {
       var defaultConfigValues = formConfig.get("defaultConfigValues", {});
       return defaultConfigValues["config_admin_user"] === true;
     },
-    "get" : function(key){
+    "get" : function(key) {
       var self = this;
-      if(key){
+      if (key) {
         var userConfigValues = formConfig.get("userConfigValues", {});
         var defaultConfigValues = formConfig.get("defaultConfigValues", {});
 
 
-        if(userConfigValues[key]){
+        if (userConfigValues[key]) {
           return userConfigValues[key];
         } else {
           return defaultConfigValues[key];
@@ -79,31 +79,31 @@ appForm.api = function (module) {
 
       }
     },
-    "getDeviceId": function(){
+    "getDeviceId": function() {
       return formConfig.get("deviceId", "Not Set");
     },
-    "set" : function(key, val){
+    "set" : function(key, val) {
       var self = this;
-      if(typeof(key) !== "string" || typeof(val) === "undefined" || val === null){
+      if (typeof(key) !== "string" || typeof(val) === "undefined" || val === null) {
         return;
       }
 
-      if(self.editAllowed() || key === "max_sent_saved"){
+      if (self.editAllowed() || key === "max_sent_saved") {
         var userConfig = formConfig.get("userConfigValues", {});
         userConfig[key] = val;
         formConfig.set("userConfigValues", userConfig);
       }
 
     },
-    "getConfig" : function(){
+    "getConfig" : function() {
       var self = this;
       var defaultValues = formConfig.get("defaultConfigValues", {});
       var userConfigValues = formConfig.get("userConfigValues", {});
       var returnObj = {};
 
-      if(self.editAllowed()){
-        for(var defKey in defaultValues){
-          if(userConfigValues[defKey]){
+      if (self.editAllowed()) {
+        for (var defKey in defaultValues) {
+          if (userConfigValues[defKey]) {
             returnObj[defKey] = userConfigValues[defKey];
           } else {
             returnObj[defKey] = defaultValues[defKey];
@@ -114,43 +114,43 @@ appForm.api = function (module) {
         return defaultValues;
       }
     },
-    "saveConfig": function(cb){
+    "saveConfig": function(cb) {
       var self = this;
-      formConfig.saveLocal(function(err, configModel){
-        if(err){
+      formConfig.saveLocal(function(err, configModel) {
+        if (err) {
           $fh.forms.log.e("Error saving a form config: ", err);
-        }else{
+        } else {
           $fh.forms.log.l("Form config saved sucessfully.");
         }
 
-        if(typeof(cb) ==='function'){
+        if (typeof(cb) ==='function') {
           cb();
         }
       });
     },
-    "offline": function(){
+    "offline": function() {
       formConfig.setOffline();
     },
-    "online": function(){
+    "online": function() {
       formConfig.setOnline();
     },
-    "mbaasOnline": function(cb){
-      if(typeof(cb) === "function"){
+    "mbaasOnline": function(cb) {
+      if (typeof(cb) === "function") {
         formConfig.on('online', cb);
       }
     },
-    "mbaasOffline": function(cb){
-      if(typeof(cb) === "function"){
+    "mbaasOffline": function(cb) {
+      if (typeof(cb) === "function") {
         formConfig.on('offline', cb);
       }
     },
-    "isOnline": function(){
+    "isOnline": function() {
       return formConfig.isOnline();
     },
-    "isStudioMode": function(){
+    "isStudioMode": function() {
       return formConfig.isStudioMode();
     },
-    refresh: function(cb){
+    refresh: function(cb) {
       formConfig.refresh(true, cb);
     }
   };
@@ -165,7 +165,7 @@ appForm.api = function (module) {
      * @return {[type]}          [description]
      */
   function getForms(params, cb) {
-    if(typeof(params) === 'function'){
+    if (typeof(params) === 'function') {
       cb = params;
       params = {};
     }
@@ -185,7 +185,7 @@ appForm.api = function (module) {
      * @return {[type]}          [description]
      */
   function getForm(params, cb) {
-    if(typeof(params) === 'function'){
+    if (typeof(params) === 'function') {
       cb = params;
       params = {};
     }
@@ -200,7 +200,7 @@ appForm.api = function (module) {
      * @param {Function} cb {err, themeData} . themeData = {"json" : {<theme json definition>}, "css" : "css" : "<css style definition for this app>"}
      */
   function getTheme(params, cb) {
-    if(typeof(params) === 'function'){
+    if (typeof(params) === 'function') {
       cb = params;
       params = {};
     }
@@ -211,7 +211,7 @@ appForm.api = function (module) {
     if (!params.fromRemote) {
       params.fromRemote = false;
     }
-    theme.refresh(params.fromRemote, function (err, updatedTheme) {
+    theme.refresh(params.fromRemote, function(err, updatedTheme) {
       if (err) {
         return cb(err);
       }
@@ -231,7 +231,7 @@ appForm.api = function (module) {
      * @param {Function} cb     (err, submittedArray)
      */
   function getSubmissions(params, cb) {
-    if(typeof(params) === 'function'){
+    if (typeof(params) === 'function') {
       cb = params;
       params = {};
     }
@@ -242,7 +242,7 @@ appForm.api = function (module) {
     //Getting submissions that have been completed.
     var submissions = appForm.models.submissions;
     if (_submissions === null) {
-      appForm.models.submissions.loadLocal(function (err) {
+      appForm.models.submissions.loadLocal(function(err) {
         if (err) {
           $fh.forms.log.e(err);
           cb(err);
@@ -257,8 +257,8 @@ appForm.api = function (module) {
   }
   function submitForm(submission, cb) {
     if (submission) {
-      submission.submit(function (err) {
-        if (err){
+      submission.submit(function(err) {
+        if (err) {
           return cb(err);
         }
 
@@ -276,102 +276,102 @@ appForm.api = function (module) {
      * @param params {}
      * @param {function} cb (err, downloadTask)
      * */
-    function downloadSubmission(params, cb) {
-      $fh.forms.log.d("downloadSubmission called", params);
-      params = params ? params : {};
-      var waitCallbackPassed = typeof(cb) === "function";
-      cb = typeof(cb) === "function" ? cb : function(){};
+  function downloadSubmission(params, cb) {
+    $fh.forms.log.d("downloadSubmission called", params);
+    params = params ? params : {};
+    var waitCallbackPassed = typeof(cb) === "function";
+    cb = typeof(cb) === "function" ? cb : function() {};
 
       //There should be a submission id to download.
-      if(!params.submissionId){
-        $fh.forms.log.e("No submissionId passed to download a submission");
-        return cb("No submissionId passed to download a submission");
-      }
+    if (!params.submissionId) {
+      $fh.forms.log.e("No submissionId passed to download a submission");
+      return cb("No submissionId passed to download a submission");
+    }
 
-      var submissionToDownload = null;
+    var submissionToDownload = null;
 
-      function finishSubmissionDownload(err) {
-        err = typeof(err) === "string" && err.length === 24 ? null : err;
-        $fh.forms.log.d("finishSubmissionDownload ", err, submissionToDownload);
-        var subCBId = submissionToDownload.getRemoteSubmissionId();
-        var subsCbsWatiting = waitOnSubmission[subCBId];
-        if (subsCbsWatiting) {
-          var subCB = subsCbsWatiting.pop();
-          while (typeof(subCB) === 'function') {
-            subCB(err, submissionToDownload);
-            subCB = subsCbsWatiting.pop();
-          }
+    function finishSubmissionDownload(err) {
+      err = typeof(err) === "string" && err.length === 24 ? null : err;
+      $fh.forms.log.d("finishSubmissionDownload ", err, submissionToDownload);
+      var subCBId = submissionToDownload.getRemoteSubmissionId();
+      var subsCbsWatiting = waitOnSubmission[subCBId];
+      if (subsCbsWatiting) {
+        var subCB = subsCbsWatiting.pop();
+        while (typeof(subCB) === 'function') {
+          subCB(err, submissionToDownload);
+          subCB = subsCbsWatiting.pop();
+        }
 
-          if (submissionToDownload.clearEvents) {
-            submissionToDownload.clearEvents();
-          }
-        } else {
+        if (submissionToDownload.clearEvents) {
           submissionToDownload.clearEvents();
-          return cb(err, submissionToDownload);
         }
+      } else {
+        submissionToDownload.clearEvents();
+        return cb(err, submissionToDownload);
       }
+    }
 
-      $fh.forms.log.d("downloadSubmission SubmissionId exists" + params.submissionId);
-      var submissionAlreadySaved = appForm.models.submissions.findMetaByRemoteId(params.submissionId);
+    $fh.forms.log.d(`downloadSubmission SubmissionId exists${params.submissionId}`);
+    var submissionAlreadySaved = appForm.models.submissions.findMetaByRemoteId(params.submissionId);
 
-      if (submissionAlreadySaved === null) {
+    if (submissionAlreadySaved === null) {
 
-        $fh.forms.log.d("downloadSubmission submission does not exist, downloading", params);
-        submissionToDownload = new appForm.models.submission.newInstance(null, {
-          submissionId: params.submissionId
-        });
+      $fh.forms.log.d("downloadSubmission submission does not exist, downloading", params);
+      submissionToDownload = new appForm.models.submission.newInstance(null, {
+        submissionId: params.submissionId
+      });
 
-        submissionToDownload.on('error', finishSubmissionDownload);
+      submissionToDownload.on('error', finishSubmissionDownload);
 
-        submissionToDownload.on('downloaded', finishSubmissionDownload);
+      submissionToDownload.on('downloaded', finishSubmissionDownload);
 
-        if (typeof(params.updateFunction) === 'function') {
-          submissionToDownload.on('progress', params.updateFunction);
-        }
+      if (typeof(params.updateFunction) === 'function') {
+        submissionToDownload.on('progress', params.updateFunction);
+      }
 
         //If there is no callback function, then just trigger the download.
         //Users can register global listeners for submission downloads events now.
-        if(typeof(cb) === "function"){
-          if(waitOnSubmission[params.submissionId]){
+      if (typeof(cb) === "function") {
+        if (waitOnSubmission[params.submissionId]) {
+          waitOnSubmission[params.submissionId].push(cb);
+        } else {
+          waitOnSubmission[params.submissionId] = [];
+          waitOnSubmission[params.submissionId].push(cb);
+        }
+      }
+
+      submissionToDownload.download(function(err) {
+        if (err) {
+          $fh.forms.log.e(`Error queueing submission for download ${err}`);
+          return cb(err);
+        }
+      });
+    } else {
+      $fh.forms.log.d("downloadSubmission submission exists", params);
+
+        //Submission was created, but not finished downloading
+      if (submissionAlreadySaved.status !== "downloaded" && submissionAlreadySaved.status !== "submitted") {
+        if (typeof(cb) === "function") {
+          if (waitOnSubmission[params.submissionId]) {
             waitOnSubmission[params.submissionId].push(cb);
           } else {
             waitOnSubmission[params.submissionId] = [];
             waitOnSubmission[params.submissionId].push(cb);
           }
         }
-
-        submissionToDownload.download(function(err) {
+      } else {
+        appForm.models.submissions.getSubmissionByMeta(submissionAlreadySaved, function(err, submission) {
           if (err) {
-            $fh.forms.log.e("Error queueing submission for download " + err);
             return cb(err);
           }
-        });
-      } else {
-        $fh.forms.log.d("downloadSubmission submission exists", params);
-
-        //Submission was created, but not finished downloading
-        if (submissionAlreadySaved.status !== "downloaded" && submissionAlreadySaved.status !== "submitted") {
-          if(typeof(cb) === "function"){
-            if(waitOnSubmission[params.submissionId]){
-              waitOnSubmission[params.submissionId].push(cb);
-            } else {
-              waitOnSubmission[params.submissionId] = [];
-              waitOnSubmission[params.submissionId].push(cb);
-            }
-          }
-        } else {
-          appForm.models.submissions.getSubmissionByMeta(submissionAlreadySaved, function(err, submission){
-            if(err){
-              return cb(err);
-            }
 
             //If the submission has already been downloaded - emit the downloaded event again
-            submission.emit('downloaded', submission.getRemoteSubmissionId());
-            return cb(undefined, submission);
-          });
-        }
+          submission.emit('downloaded', submission.getRemoteSubmissionId());
+          return cb(undefined, submission);
+        });
       }
     }
+  }
   return module;
 }(appForm.api || {});
 //mockup $fh apis for Addons.

@@ -1,4 +1,4 @@
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
   module.Form = Form;
   var _forms = {};
@@ -26,7 +26,7 @@ appForm.models = function (module) {
     }
 
     if (!formId) {
-      return cb('Cannot initialise a form object without an id. id:' + formId, null);
+      return cb(`Cannot initialise a form object without an id. id:${formId}`, null);
     }
 
 
@@ -38,7 +38,7 @@ appForm.models = function (module) {
     that.setLocalId(that.genLocalId(formId));
 
 
-    function loadFromLocal(){
+    function loadFromLocal() {
       $fh.forms.log.d("Form: loadFromLocal ", rawMode, rawData, formId, fromRemote);
       if (_forms[formId]) {
         //found form object in mem return it.
@@ -46,7 +46,7 @@ appForm.models = function (module) {
         return _forms[formId];
       }
 
-      function processRawFormJSON(){
+      function processRawFormJSON() {
         that.fromJSON(rawData);
         that.initialise();
 
@@ -54,7 +54,7 @@ appForm.models = function (module) {
         return cb(null, that);
       }
 
-      if(rawData){
+      if (rawData) {
         return processRawFormJSON();
       } else {
 
@@ -62,8 +62,8 @@ appForm.models = function (module) {
          * No Form JSON object to process into Models, load the form from local
          * storage.
          */
-        that.refresh(false, function(err, form){
-          if(err){
+        that.refresh(false, function(err, form) {
+          if (err) {
             return cb(err);
           }
 
@@ -76,17 +76,17 @@ appForm.models = function (module) {
     }
 
 
-    function loadFromRemote(){
+    function loadFromRemote() {
       $fh.forms.log.d("Form: loadFromRemote", rawMode, rawData, formId, fromRemote);
-      function checkForUpdate(form){
+      function checkForUpdate(form) {
         $fh.forms.log.d("Form: checkForUpdate", rawMode, rawData, formId, fromRemote);
-        form.refresh(false, function (err, obj) {
-          if(err){
-             $fh.forms.log.e("Error refreshing form from local: ", err);
+        form.refresh(false, function(err, obj) {
+          if (err) {
+            $fh.forms.log.e("Error refreshing form from local: ", err);
           }
           if (appForm.models.forms.isFormUpdated(form)) {
-            form.refresh(true, function (err, obj1) {
-              if(err){
+            form.refresh(true, function(err, obj1) {
+              if (err) {
                 return cb(err, null);
               }
               form.initialise();
@@ -105,7 +105,7 @@ appForm.models = function (module) {
       if (_forms[formId]) {
         $fh.forms.log.d("Form: loaded from cache", rawMode, rawData, formId, fromRemote);
         //found form object in mem return it.
-        if(!appForm.models.forms.isFormUpdated(_forms[formId])){
+        if (!appForm.models.forms.isFormUpdated(_forms[formId])) {
           cb(null, _forms[formId]);
           return _forms[formId];
         }
@@ -115,26 +115,26 @@ appForm.models = function (module) {
     }
 
     //Raw mode is for avoiding interaction with the mbaas
-    if(rawMode === true){
+    if (rawMode === true) {
       loadFromLocal();
     } else {
       loadFromRemote();
     }
   }
   appForm.utils.extend(Form, Model);
-  Form.prototype.getLastUpdate = function () {
+  Form.prototype.getLastUpdate = function() {
     $fh.forms.log.d("Form: getLastUpdate");
     return this.get('lastUpdatedTimestamp');
   };
-  Form.prototype.genLocalId = function (formId) {
+  Form.prototype.genLocalId = function(formId) {
     formId = typeof(formId) === 'string' ? formId : this.get("_id", "");
-    return "form_" + formId;
+    return `form_${formId}`;
   };
   /**
      * Initiliase form json to objects
      * @return {[type]} [description]
      */
-  Form.prototype.initialise = function () {
+  Form.prototype.initialise = function() {
     this.filterAdminFields();
     this.initialisePage();
     this.initialiseFields();
@@ -143,21 +143,21 @@ appForm.models = function (module) {
   /**
    * Admin fields should not be part of the form.
    */
-  Form.prototype.filterAdminFields = function(){
+  Form.prototype.filterAdminFields = function() {
     var pages = this.getPagesDef();
     var newFieldRef = {};
 
 
-    for(var pageIndex = 0; pageIndex < pages.length; pageIndex++){
+    for (var pageIndex = 0; pageIndex < pages.length; pageIndex++) {
       var page = pages[pageIndex];
       var pageFields = page.fields;
       var filteredFields = [];
       var fieldInPageIndex = 0;
 
-      for(var fieldIndex = 0; fieldIndex < pageFields.length; fieldIndex++){
+      for (var fieldIndex = 0; fieldIndex < pageFields.length; fieldIndex++) {
         var field = pageFields[fieldIndex];
 
-        if(!field.adminOnly){
+        if (!field.adminOnly) {
           newFieldRef[field._id] = {page: pageIndex, field: fieldInPageIndex};
           fieldInPageIndex++;
           filteredFields.push(field);
@@ -171,7 +171,7 @@ appForm.models = function (module) {
     this.set("fieldRef", newFieldRef);
   };
 
-  Form.prototype.initialiseFields = function () {
+  Form.prototype.initialiseFields = function() {
     $fh.forms.log.d("Form: initialiseFields");
     var fieldsRef = this.getFieldRef();
     this.fields = {};
@@ -190,7 +190,7 @@ appForm.models = function (module) {
       }
     }
   };
-  Form.prototype.initialiseRules = function () {
+  Form.prototype.initialiseRules = function() {
     $fh.forms.log.d("Form: initialiseRules");
     this.rules = {};
     var pageRules = this.getPageRules();
@@ -223,11 +223,11 @@ appForm.models = function (module) {
       }
     }
   };
-  Form.prototype.getRulesByFieldId = function (fieldId) {
+  Form.prototype.getRulesByFieldId = function(fieldId) {
     $fh.forms.log.d("Form: getRulesByFieldId");
     return this.rules[fieldId];
   };
-  Form.prototype.initialisePage = function () {
+  Form.prototype.initialisePage = function() {
     $fh.forms.log.d("Form: initialisePage");
     var pages = this.getPagesDef();
     this.pages = [];
@@ -237,38 +237,38 @@ appForm.models = function (module) {
       this.pages.push(pageModel);
     }
   };
-  Form.prototype.getPageNumberByFieldId = function(fieldId){
-    if(fieldId){
+  Form.prototype.getPageNumberByFieldId = function(fieldId) {
+    if (fieldId) {
       return this.getFieldRef()[fieldId].page;
     } else {
       return null;
     }
   };
-  Form.prototype.getPageModelList = function () {
+  Form.prototype.getPageModelList = function() {
     return this.pages;
   };
-  Form.prototype.getName = function () {
+  Form.prototype.getName = function() {
     return this.get('name', '');
   };
-  Form.prototype.getDescription = function () {
+  Form.prototype.getDescription = function() {
     return this.get('description', '');
   };
-  Form.prototype.getPageRules = function () {
+  Form.prototype.getPageRules = function() {
     return this.get('pageRules', []);
   };
-  Form.prototype.getFieldRules = function () {
+  Form.prototype.getFieldRules = function() {
     return this.get('fieldRules', []);
   };
-  Form.prototype.getFieldRef = function () {
+  Form.prototype.getFieldRef = function() {
     return this.get('fieldRef', {});
   };
-  Form.prototype.getPagesDef = function () {
+  Form.prototype.getPagesDef = function() {
     return this.get('pages', []);
   };
-  Form.prototype.getPageRef = function () {
+  Form.prototype.getPageRef = function() {
     return this.get('pageRef', {});
   };
-  Form.prototype.getFieldModelById = function (fieldId) {
+  Form.prototype.getFieldModelById = function(fieldId) {
     return this.fields[fieldId];
   };
   /**
@@ -276,22 +276,22 @@ appForm.models = function (module) {
    * Otherwise return null;
    * @param code - The code of the field that is being searched for
    */
-  Form.prototype.getFieldModelByCode = function(code){
+  Form.prototype.getFieldModelByCode = function(code) {
     var self = this;
-    if(!code || typeof(code) !== "string"){
+    if (!code || typeof(code) !== "string") {
       return null;
     }
 
-    for(var fieldId in self.fields){
+    for (var fieldId in self.fields) {
       var field = self.fields[fieldId];
-      if(field.getCode() !== null && field.getCode() === code){
+      if (field.getCode() !== null && field.getCode() === code) {
         return field;
       }
     }
 
     return null;
   };
-  Form.prototype.getFieldDefByIndex = function (pageIndex, fieldIndex) {
+  Form.prototype.getFieldDefByIndex = function(pageIndex, fieldIndex) {
     $fh.forms.log.d("Form: getFieldDefByIndex: ", pageIndex, fieldIndex);
     var pages = this.getPagesDef();
     var page = pages[pageIndex];
@@ -305,29 +305,29 @@ appForm.models = function (module) {
     $fh.forms.log.e("Form: getFieldDefByIndex: No field found for page and field index: ", pageIndex, fieldIndex);
     return null;
   };
-  Form.prototype.getPageModelById = function (pageId) {
+  Form.prototype.getPageModelById = function(pageId) {
     $fh.forms.log.d("Form: getPageModelById: ", pageId);
     var index = this.getPageRef()[pageId];
     if (typeof index === 'undefined') {
-      $fh.forms.log.e('page id is not found in pageRef: ' + pageId);
+      $fh.forms.log.e(`page id is not found in pageRef: ${pageId}`);
     } else {
       return this.pages[index];
     }
   };
-  Form.prototype.newSubmission = function () {
+  Form.prototype.newSubmission = function() {
     $fh.forms.log.d("Form: newSubmission");
     return appForm.models.submission.newInstance(this);
   };
-  Form.prototype.getFormId = function () {
+  Form.prototype.getFormId = function() {
     return this.get('_id');
   };
-  Form.prototype.removeFromCache = function () {
+  Form.prototype.removeFromCache = function() {
     $fh.forms.log.d("Form: removeFromCache");
     if (_forms[this.getFormId()]) {
       delete _forms[this.getFormId()];
     }
   };
-  Form.prototype.getFileFieldsId = function () {
+  Form.prototype.getFileFieldsId = function() {
     $fh.forms.log.d("Form: getFileFieldsId");
     var fieldsId = [];
     for (var fieldId in this.fields) {
@@ -339,7 +339,7 @@ appForm.models = function (module) {
     return fieldsId;
   };
 
-  Form.prototype.getRuleEngine = function () {
+  Form.prototype.getRuleEngine = function() {
     $fh.forms.log.d("Form: getRuleEngine");
     if (this.rulesEngine) {
       return this.rulesEngine;
